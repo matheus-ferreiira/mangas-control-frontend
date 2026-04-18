@@ -17,13 +17,21 @@ api.interceptors.request.use((config) => {
 });
 
 api.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        if (error.response?.status === 401) {
-            localStorage.removeItem('auth_token');
-            localStorage.removeItem('auth_user');
-            window.location.href = '/login';
+    (response) => {
+        // Unwrap ApiResponse trait: { success, message, data: {...} }
+        const d = response.data;
+        if (d && typeof d === 'object' && 'success' in d && 'data' in d) {
+            response.data = d.data;
         }
+        return response;
+    },
+    (error) => {
+        console.log(error.response);
+        // if (error.response?.status === 401) {
+        //     localStorage.removeItem('auth_token');
+        //     localStorage.removeItem('auth_user');
+        //     window.location.href = '/login';
+        // }
         return Promise.reject(error);
     }
 );

@@ -11,78 +11,39 @@
                     <span class="name-curator"> CURATOR</span>
                 </h1>
                 <p class="tagline">
-                    Archiving the world's finest<br />visual narratives.
+                    Arquivando as melhores narrativas<br />visuais do mundo.
                 </p>
             </div>
 
             <!-- Auth card -->
             <div class="auth-card">
-                <h2 class="card-title">Welcome back</h2>
+                <h2 class="card-title">Bem-vindo de volta</h2>
                 <p class="card-subtitle">
-                    Sign in to access your digital archives.
+                    Entre para acessar seus arquivos digitais.
                 </p>
 
                 <!-- Google -->
-                <button class="google-btn" @click="loginWithGoogle">
-                    <svg width="20" height="20" viewBox="0 0 48 48">
-                        <path
-                            fill="#EA4335"
-                            d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"
-                        />
-                        <path
-                            fill="#4285F4"
-                            d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"
-                        />
-                        <path
-                            fill="#FBBC05"
-                            d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"
-                        />
-                        <path
-                            fill="#34A853"
-                            d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
-                        />
-                    </svg>
-                    Login com Google
+                <button
+                    class="google-btn"
+                    :class="{ loading: loading }"
+                    :disabled="loading"
+                    @click="loginWithGoogle"
+                >
+                    <ion-spinner v-if="loading" name="crescent" class="btn-spinner" />
+                    <template v-else>
+                        <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true">
+                            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                        </svg>
+                        Entrar com Google
+                    </template>
                 </button>
 
-                <div class="divider">
-                    <span class="divider-line"></span>
-                    <span class="divider-text">OU CONTINUE COM</span>
-                    <span class="divider-line"></span>
-                </div>
-
-                <!-- Email -->
-                <div class="field-group">
-                    <div class="input-wrap">
-                        <ion-icon :icon="mailOutline" class="input-icon" />
-                        <input
-                            v-model="email"
-                            type="email"
-                            placeholder="Email Address"
-                            class="email-input"
-                            @keyup.enter="continueWithEmail"
-                        />
-                    </div>
-                </div>
-
-                <ion-button
-                    expand="block"
-                    class="continue-btn"
-                    :disabled="loading || !email"
-                    @click="continueWithEmail"
-                >
-                    <ion-spinner v-if="loading" name="crescent" />
-                    <span v-else>Continue</span>
-                </ion-button>
-
                 <p class="register-link">
-                    Don't have an archive yet?
-                    <a
-                        href="#"
-                        @click.prevent="beginCollecting"
-                        class="accent-link"
-                        >Begin Collecting</a
-                    >
+                    Acesso apenas via Google.<br />
+                    <span class="muted-text">Fale com o administrador para obter acesso.</span>
                 </p>
             </div>
 
@@ -100,8 +61,8 @@
             <div class="login-footer">
                 <p class="footer-copy">© 2024 DIGITAL ARCHIVIST PROTOCOL</p>
                 <div class="footer-links">
-                    <a href="#" class="footer-link">PRIVACY LEXICON</a>
-                    <a href="#" class="footer-link">SERVICE TERMS</a>
+                    <a href="#" class="footer-link">POLÍTICA DE PRIVACIDADE</a>
+                    <a href="#" class="footer-link">TERMOS DE USO</a>
                 </div>
             </div>
         </ion-content>
@@ -110,77 +71,75 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import {
-    IonPage,
-    IonContent,
-    IonButton,
-    IonIcon,
-    IonSpinner,
-    toastController,
-} from '@ionic/vue';
-import { bookSharp, mailOutline } from 'ionicons/icons';
+import { IonPage, IonContent, IonIcon, IonSpinner, toastController } from '@ionic/vue';
+import { bookSharp } from 'ionicons/icons';
 import { authService } from '@/services/authService';
 import { authStore } from '@/store/auth';
 
 export default defineComponent({
     name: 'LoginPage',
-    components: { IonPage, IonContent, IonButton, IonIcon, IonSpinner },
+    components: { IonPage, IonContent, IonIcon, IonSpinner },
     data() {
-        return {
-            email: '',
-            loading: false,
-            bookSharp,
-            mailOutline,
-        };
+        return { loading: false, bookSharp };
     },
     methods: {
-        async continueWithEmail() {
-            if (!this.email.trim()) return;
-            this.loading = true;
-            try {
-                const res = await authService.login(this.email.trim());
-                authStore.setAuth(res.token, res.user);
-                this.$router.replace('/tabs/library');
-            } catch {
-                const toast = await toastController.create({
-                    message: 'Login failed. Check your credentials.',
-                    duration: 2500,
-                    color: 'danger',
-                    position: 'top',
-                });
-                await toast.present();
-            } finally {
-                this.loading = false;
+        loginWithGoogle() {
+            const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+            if (!clientId) {
+                toastController.create({
+                    message: 'Configure VITE_GOOGLE_CLIENT_ID no arquivo .env',
+                    duration: 3000, color: 'warning', position: 'top',
+                }).then((t) => t.present());
+                return;
             }
-        },
 
-        async loginWithGoogle() {
-            const toast = await toastController.create({
-                message: 'Google login integration pending.',
-                duration: 2000,
-                color: 'warning',
-                position: 'top',
-            });
-            await toast.present();
-        },
+            const g = (window as any).google;
+            if (!g) {
+                toastController.create({
+                    message: 'Google Sign-In não disponível. Recarregue a página.',
+                    duration: 2500, color: 'warning', position: 'top',
+                }).then((t) => t.present());
+                return;
+            }
 
-        async beginCollecting() {
-            const toast = await toastController.create({
-                message: 'Registration coming soon.',
-                duration: 2000,
-                position: 'top',
+            g.accounts.id.initialize({
+                client_id: clientId,
+                callback: async (response: { credential: string }) => {
+                    this.loading = true;
+                    try {
+                        const res = await authService.loginWithGoogle(response.credential);
+                        authStore.setAuth(res.token, res.user);
+                        this.$router.replace('/tabs/library');
+                    } catch {
+                        const toast = await toastController.create({
+                            message: 'Falha no login. Verifique suas credenciais.',
+                            duration: 2500, color: 'danger', position: 'top',
+                        });
+                        await toast.present();
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+                use_fedcm_for_prompt: false,
             });
-            await toast.present();
+
+            this.loading = true;
+            g.accounts.id.prompt((notification: any) => {
+                if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+                    this.loading = false;
+                    toastController.create({
+                        message: 'Pop-up bloqueado. Verifique as configurações do navegador.',
+                        duration: 3000, color: 'warning', position: 'top',
+                    }).then((t) => t.present());
+                }
+            });
         },
     },
 });
 </script>
 
 <style scoped>
-.login-page {
-    --background: #0a0e1a;
-}
-
+.login-page,
 .login-content {
     --background: #0a0e1a;
 }
@@ -218,13 +177,8 @@ export default defineComponent({
     line-height: 1;
 }
 
-.name-neon {
-    color: #5b6ee1;
-}
-
-.name-curator {
-    color: #00e5b0;
-}
+.name-neon { color: #5b6ee1; }
+.name-curator { color: #00e5b0; }
 
 .tagline {
     color: #8892a4;
@@ -256,6 +210,7 @@ export default defineComponent({
     margin: 0 0 24px;
 }
 
+/* Google button */
 .google-btn {
     width: 100%;
     display: flex;
@@ -265,102 +220,46 @@ export default defineComponent({
     background: #1a2035;
     border: 1px solid #1e2538;
     border-radius: 14px;
-    padding: 14px;
+    padding: 16px;
     color: #e8eaf0;
     font-size: 15px;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: background 0.2s, border-color 0.2s;
     -webkit-tap-highlight-color: transparent;
+    min-height: 52px;
 }
 
-.google-btn:active {
+.google-btn:not(:disabled):active {
     background: #212b45;
 }
 
-.divider {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin: 20px 0;
+.google-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
 }
 
-.divider-line {
-    flex: 1;
-    height: 1px;
-    background: #1e2538;
+.google-btn.loading {
+    border-color: rgba(0, 229, 176, 0.3);
 }
 
-.divider-text {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    color: #4a5568;
-    white-space: nowrap;
-}
-
-.field-group {
-    margin-bottom: 16px;
-}
-
-.input-wrap {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: #1a2035;
-    border: 1px solid #1e2538;
-    border-radius: 14px;
-    padding: 14px 16px;
-    transition: border-color 0.2s;
-}
-
-.input-wrap:focus-within {
-    border-color: rgba(0, 229, 176, 0.4);
-}
-
-.input-icon {
-    color: #4a5568;
-    font-size: 20px;
-    flex-shrink: 0;
-}
-
-.email-input {
-    flex: 1;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: #e8eaf0;
-    font-size: 15px;
-    min-width: 0;
-}
-
-.email-input::placeholder {
-    color: #4a5568;
-}
-
-.continue-btn {
-    --background: #5b6ee1;
-    --background-activated: #4a5dc9;
-    --border-radius: 14px;
-    --color: #ffffff;
-    height: 52px;
-    font-size: 15px;
-    font-weight: 700;
-    margin: 0 0 16px;
-    letter-spacing: 0.5px;
+.btn-spinner {
+    width: 20px;
+    height: 20px;
+    --color: #00e5b0;
 }
 
 .register-link {
     text-align: center;
     font-size: 13px;
     color: #6b7a99;
-    margin: 0;
+    margin: 20px 0 0;
+    line-height: 1.5;
 }
 
-.accent-link {
-    color: #00e5b0;
-    font-weight: 700;
-    text-decoration: none;
+.muted-text {
+    font-size: 12px;
+    color: #4a5568;
 }
 
 /* Atmospheric */
@@ -389,11 +288,7 @@ export default defineComponent({
 .atm-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-        to top,
-        rgba(10, 14, 26, 0.8) 0%,
-        transparent 50%
-    );
+    background: linear-gradient(to top, rgba(10, 14, 26, 0.8) 0%, transparent 50%);
 }
 
 /* Footer */

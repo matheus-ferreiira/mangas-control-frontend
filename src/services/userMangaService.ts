@@ -27,11 +27,11 @@ export interface UserManga {
 }
 
 export const STATUS_LABELS: Record<MangaStatus, string> = {
-    reading: 'Reading',
-    completed: 'Completed',
-    plan_to_read: 'Plan to Read',
-    dropped: 'Dropped',
-    on_hold: 'On Hold',
+    reading: 'Lendo',
+    completed: 'Completo',
+    plan_to_read: 'Quero Ler',
+    dropped: 'Abandonado',
+    on_hold: 'Pausado',
 };
 
 export const STATUS_COLORS: Record<MangaStatus, string> = {
@@ -45,12 +45,12 @@ export const STATUS_COLORS: Record<MangaStatus, string> = {
 export const userMangaService = {
     async getAll(): Promise<UserManga[]> {
         const { data } = await api.get('/user-mangas');
-        return data;
+        return (Array.isArray(data) ? data : data?.data ?? []) as UserManga[];
     },
 
     async getOne(id: number): Promise<UserManga> {
         const { data } = await api.get(`/user-mangas/${id}`);
-        return data;
+        return data as UserManga;
     },
 
     async create(payload: {
@@ -60,17 +60,15 @@ export const userMangaService = {
         status: MangaStatus;
     }): Promise<UserManga> {
         const { data } = await api.post('/user-mangas', payload);
-        return data;
+        return data as UserManga;
     },
 
     async update(
         id: number,
-        payload: Partial<
-            Pick<UserManga, 'current_chapter' | 'status' | 'site_id'>
-        >
+        payload: Partial<Pick<UserManga, 'current_chapter' | 'status' | 'site_id'>>
     ): Promise<UserManga> {
-        const { data } = await api.put(`/user-mangas/${id}`, payload);
-        return data;
+        const { data } = await api.patch(`/user-mangas/${id}`, payload);
+        return data as UserManga;
     },
 
     async delete(id: number): Promise<void> {
@@ -78,12 +76,7 @@ export const userMangaService = {
     },
 
     async increment(id: number): Promise<UserManga> {
-        const { data } = await api.post(`/user-mangas/${id}/increment`);
-        return data;
-    },
-
-    async decrement(id: number): Promise<UserManga> {
-        const { data } = await api.post(`/user-mangas/${id}/decrement`);
-        return data;
+        const { data } = await api.patch(`/user-mangas/${id}/increment`);
+        return data as UserManga;
     },
 };

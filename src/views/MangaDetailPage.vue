@@ -5,21 +5,16 @@
                 <ion-buttons slot="start">
                     <ion-back-button default-href="/tabs/library" text="" />
                 </ion-buttons>
-                <ion-title>Detail</ion-title>
+                <ion-title>Detalhes</ion-title>
                 <ion-buttons slot="end">
                     <ion-button fill="clear" @click="confirmDelete">
-                        <ion-icon
-                            slot="icon-only"
-                            :icon="trashOutline"
-                            color="danger"
-                        />
+                        <ion-icon slot="icon-only" :icon="trashOutline" color="danger" />
                     </ion-button>
                 </ion-buttons>
             </ion-toolbar>
         </ion-header>
 
         <ion-content :fullscreen="true">
-            <!-- Loading -->
             <div v-if="loading" class="loading-state">
                 <ion-spinner name="crescent" color="primary" />
             </div>
@@ -31,7 +26,7 @@
                         v-if="item.manga?.cover_url"
                         :src="item.manga.cover_url"
                         class="hero-img"
-                        alt="Cover"
+                        alt="Capa"
                     />
                     <div v-else class="hero-placeholder">
                         <ion-icon :icon="bookOutline" />
@@ -46,39 +41,31 @@
                     <!-- Stats row -->
                     <div class="stats-row">
                         <div class="stat-item">
-                            <span class="stat-label">Current</span>
-                            <span class="stat-value"
-                                >Ch. {{ item.current_chapter }}</span
-                            >
+                            <span class="stat-label">Atual</span>
+                            <span class="stat-value">Cap. {{ item.current_chapter }}</span>
                         </div>
                         <div class="stat-divider"></div>
                         <div class="stat-item">
                             <span class="stat-label">Total</span>
                             <span class="stat-value">
-                                {{
-                                    item.manga?.total_chapters
-                                        ? `Ch. ${item.manga.total_chapters}`
-                                        : '—'
-                                }}
+                                {{ item.manga?.total_chapters ? `Cap. ${item.manga.total_chapters}` : '—' }}
                             </span>
                         </div>
                         <div class="stat-divider"></div>
                         <div class="stat-item">
-                            <span class="stat-label">Source</span>
-                            <span class="stat-value">{{
-                                item.site?.name || '—'
-                            }}</span>
+                            <span class="stat-label">Fonte</span>
+                            <span class="stat-value">{{ item.site?.name || '—' }}</span>
                         </div>
                     </div>
 
                     <!-- Chapter controls -->
                     <div class="section-block">
-                        <span class="neon-label">Chapter Progress</span>
+                        <span class="neon-label">Progresso do Capítulo</span>
                         <div class="chapter-controls">
                             <button
                                 class="ctrl-btn"
                                 @click="decrement"
-                                :disabled="saving"
+                                :disabled="saving || item.current_chapter <= 0"
                             >
                                 <ion-icon :icon="removeOutline" />
                             </button>
@@ -100,7 +87,7 @@
                                 >
                                     {{ item.current_chapter }}
                                 </span>
-                                <span class="chapter-sub">Tap to edit</span>
+                                <span class="chapter-sub">Toque para editar</span>
                             </div>
                             <button
                                 class="ctrl-btn ctrl-add"
@@ -130,14 +117,14 @@
 
                     <!-- Site -->
                     <div class="section-block" v-if="sites.length">
-                        <span class="neon-label">Reading Source</span>
+                        <span class="neon-label">Fonte de Leitura</span>
                         <div class="site-select-wrap">
                             <select
                                 v-model="selectedSiteId"
                                 class="site-select"
                                 @change="changeSite"
                             >
-                                <option value="">No site</option>
+                                <option value="">Sem fonte</option>
                                 <option
                                     v-for="site in sites"
                                     :key="site.id"
@@ -158,45 +145,26 @@
                         @click="confirmDelete"
                     >
                         <ion-icon slot="start" :icon="trashOutline" />
-                        Remove from Library
+                        Remover da Biblioteca
                     </ion-button>
                 </div>
             </div>
         </ion-content>
 
-        <!-- Loading overlay -->
-        <ion-loading :is-open="saving" message="Saving..." spinner="crescent" />
+        <ion-loading :is-open="saving" message="Salvando..." spinner="crescent" />
     </ion-page>
 </template>
 
 <script lang="ts">
 import { defineComponent, nextTick } from 'vue';
 import {
-    IonPage,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonContent,
-    IonButtons,
-    IonBackButton,
-    IonButton,
-    IonIcon,
-    IonSpinner,
-    IonLoading,
-    toastController,
-    alertController,
+    IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
+    IonBackButton, IonButton, IonIcon, IonSpinner, IonLoading,
+    toastController, alertController,
 } from '@ionic/vue';
+import { bookOutline, addOutline, removeOutline, trashOutline } from 'ionicons/icons';
 import {
-    bookOutline,
-    addOutline,
-    removeOutline,
-    trashOutline,
-} from 'ionicons/icons';
-import {
-    userMangaService,
-    UserManga,
-    MangaStatus,
-    STATUS_LABELS,
+    userMangaService, UserManga, MangaStatus, STATUS_LABELS,
 } from '@/services/userMangaService';
 import { siteService, Site } from '@/services/siteService';
 import StatusBadge from '@/components/StatusBadge.vue';
@@ -204,18 +172,8 @@ import StatusBadge from '@/components/StatusBadge.vue';
 export default defineComponent({
     name: 'MangaDetailPage',
     components: {
-        IonPage,
-        IonHeader,
-        IonToolbar,
-        IonTitle,
-        IonContent,
-        IonButtons,
-        IonBackButton,
-        IonButton,
-        IonIcon,
-        IonSpinner,
-        IonLoading,
-        StatusBadge,
+        IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
+        IonBackButton, IonButton, IonIcon, IonSpinner, IonLoading, StatusBadge,
     },
     data() {
         return {
@@ -226,13 +184,9 @@ export default defineComponent({
             editingChapter: false,
             chapterInput: 0,
             selectedSiteId: '' as string | number,
-            bookOutline,
-            addOutline,
-            removeOutline,
-            trashOutline,
+            bookOutline, addOutline, removeOutline, trashOutline,
             statuses: Object.entries(STATUS_LABELS).map(([value, label]) => ({
-                value: value as MangaStatus,
-                label,
+                value: value as MangaStatus, label,
             })),
         };
     },
@@ -249,14 +203,12 @@ export default defineComponent({
                     siteService.getAll(),
                 ]);
                 this.item = item;
-                this.sites = sites;
+                this.sites = Array.isArray(sites) ? sites : (sites as any)?.data ?? [];
                 this.selectedSiteId = item.site_id ?? '';
             } catch {
                 const toast = await toastController.create({
-                    message: 'Failed to load manga.',
-                    duration: 2000,
-                    color: 'danger',
-                    position: 'top',
+                    message: 'Falha ao carregar manga.',
+                    duration: 2000, color: 'danger', position: 'top',
                 });
                 await toast.present();
                 this.$router.back();
@@ -271,19 +223,21 @@ export default defineComponent({
             try {
                 this.item = await userMangaService.increment(this.item.id);
             } catch {
-                await this.showError('Failed to update chapter.');
+                await this.showError('Falha ao atualizar capítulo.');
             } finally {
                 this.saving = false;
             }
         },
 
         async decrement() {
-            if (!this.item) return;
+            if (!this.item || this.item.current_chapter <= 0) return;
             this.saving = true;
             try {
-                this.item = await userMangaService.decrement(this.item.id);
+                this.item = await userMangaService.update(this.item.id, {
+                    current_chapter: this.item.current_chapter - 1,
+                });
             } catch {
-                await this.showError('Failed to update chapter.');
+                await this.showError('Falha ao atualizar capítulo.');
             } finally {
                 this.saving = false;
             }
@@ -307,7 +261,7 @@ export default defineComponent({
                     current_chapter: this.chapterInput,
                 });
             } catch {
-                await this.showError('Failed to save chapter.');
+                await this.showError('Falha ao salvar capítulo.');
             } finally {
                 this.saving = false;
             }
@@ -317,11 +271,9 @@ export default defineComponent({
             if (!this.item || this.item.status === status) return;
             this.saving = true;
             try {
-                this.item = await userMangaService.update(this.item.id, {
-                    status,
-                });
+                this.item = await userMangaService.update(this.item.id, { status });
             } catch {
-                await this.showError('Failed to update status.');
+                await this.showError('Falha ao atualizar status.');
             } finally {
                 this.saving = false;
             }
@@ -332,12 +284,10 @@ export default defineComponent({
             this.saving = true;
             try {
                 this.item = await userMangaService.update(this.item.id, {
-                    site_id: this.selectedSiteId
-                        ? Number(this.selectedSiteId)
-                        : undefined,
+                    site_id: this.selectedSiteId ? Number(this.selectedSiteId) : undefined,
                 });
             } catch {
-                await this.showError('Failed to update source.');
+                await this.showError('Falha ao atualizar fonte.');
             } finally {
                 this.saving = false;
             }
@@ -345,17 +295,11 @@ export default defineComponent({
 
         async confirmDelete() {
             const alert = await alertController.create({
-                header: 'Remove Manga',
-                message: 'Remove this manga from your library?',
-                cssClass: 'neon-alert',
+                header: 'Remover Manga',
+                message: 'Remover este manga da sua biblioteca?',
                 buttons: [
-                    { text: 'Cancel', role: 'cancel' },
-                    {
-                        text: 'Remove',
-                        role: 'destructive',
-                        cssClass: 'danger-btn',
-                        handler: () => this.deleteManga(),
-                    },
+                    { text: 'Cancelar', role: 'cancel' },
+                    { text: 'Remover', role: 'destructive', handler: () => this.deleteManga() },
                 ],
             });
             await alert.present();
@@ -367,15 +311,13 @@ export default defineComponent({
             try {
                 await userMangaService.delete(this.item.id);
                 const toast = await toastController.create({
-                    message: 'Manga removed from library.',
-                    duration: 2000,
-                    color: 'success',
-                    position: 'top',
+                    message: 'Manga removido da biblioteca.',
+                    duration: 2000, color: 'success', position: 'top',
                 });
                 await toast.present();
                 this.$router.back();
             } catch {
-                await this.showError('Failed to remove manga.');
+                await this.showError('Falha ao remover manga.');
             } finally {
                 this.saving = false;
             }
@@ -383,10 +325,7 @@ export default defineComponent({
 
         async showError(msg: string) {
             const toast = await toastController.create({
-                message: msg,
-                duration: 2000,
-                color: 'danger',
-                position: 'top',
+                message: msg, duration: 2000, color: 'danger', position: 'top',
             });
             await toast.present();
         },
@@ -395,7 +334,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-/* Hero */
 .hero-section {
     position: relative;
     width: 100%;
@@ -425,11 +363,7 @@ export default defineComponent({
     left: 0;
     right: 0;
     padding: 20px;
-    background: linear-gradient(
-        to top,
-        rgba(10, 14, 26, 1) 0%,
-        transparent 100%
-    );
+    background: linear-gradient(to top, rgba(10, 14, 26, 1) 0%, transparent 100%);
 }
 
 .hero-title {
@@ -440,12 +374,10 @@ export default defineComponent({
     line-height: 1.2;
 }
 
-/* Body */
 .detail-body {
     padding: 20px 20px 100px;
 }
 
-/* Stats */
 .stats-row {
     display: flex;
     align-items: center;
@@ -489,10 +421,7 @@ export default defineComponent({
     background: var(--neon-border);
 }
 
-/* Section block */
-.section-block {
-    margin-bottom: 24px;
-}
+.section-block { margin-bottom: 24px; }
 
 .neon-label {
     font-size: 11px;
@@ -504,7 +433,6 @@ export default defineComponent({
     display: block;
 }
 
-/* Chapter controls */
 .chapter-controls {
     display: flex;
     align-items: center;
@@ -532,13 +460,8 @@ export default defineComponent({
     -webkit-tap-highlight-color: transparent;
 }
 
-.ctrl-btn:active {
-    background: #212b45;
-}
-
-.ctrl-btn:disabled {
-    opacity: 0.4;
-}
+.ctrl-btn:active { background: #212b45; }
+.ctrl-btn:disabled { opacity: 0.4; }
 
 .ctrl-add {
     background: var(--neon-accent-dim);
@@ -580,7 +503,6 @@ export default defineComponent({
     margin-top: 4px;
 }
 
-/* Status grid */
 .status-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -607,7 +529,6 @@ export default defineComponent({
     color: var(--neon-accent);
 }
 
-/* Site select */
 .site-select-wrap {
     background: var(--neon-surface-elevated);
     border: 1px solid var(--neon-border);
@@ -626,9 +547,7 @@ export default defineComponent({
     cursor: pointer;
 }
 
-.site-select option {
-    background: #131929;
-}
+.site-select option { background: #131929; }
 
 .delete-btn {
     --border-radius: 14px;

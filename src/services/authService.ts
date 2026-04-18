@@ -8,21 +8,15 @@ export interface User {
 }
 
 export const authService = {
-    async login(email: string): Promise<{ token: string; user: User }> {
-        const { data } = await api.post('/auth/login', { email });
-        return data;
-    },
-
-    async loginWithGoogle(
-        token: string
-    ): Promise<{ token: string; user: User }> {
+    async loginWithGoogle(token: string): Promise<{ token: string; user: User }> {
         const { data } = await api.post('/auth/google', { token });
-        return data;
+        // Backend returns: { user: UserResource, access_token: string, token_type: string }
+        return { token: data.access_token as string, user: data.user as User };
     },
 
     async getUser(): Promise<User> {
-        const { data } = await api.get('/auth/user');
-        return data;
+        const { data } = await api.get('/auth/me');
+        return data as User;
     },
 
     async logout(): Promise<void> {
