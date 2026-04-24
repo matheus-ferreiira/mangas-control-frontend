@@ -15,66 +15,61 @@
         </ion-header>
 
         <ion-content :fullscreen="true">
-            <div v-if="loading" class="loading-state">
+            <div v-if="loading" class="flex justify-center py-20">
                 <ion-spinner name="crescent" color="primary" />
             </div>
 
             <div v-else-if="item">
-                <!-- Hero cover -->
-                <div class="hero-section">
-                    <img
-                        v-if="item.manga?.cover_url"
-                        :src="item.manga.cover_url"
-                        class="hero-img"
-                        alt="Capa"
-                    />
-                    <div v-else class="hero-placeholder">
+                <!-- Hero -->
+                <div class="relative w-full h-[280px]">
+                    <img v-if="item.manga?.cover" :src="item.manga.cover" class="w-full h-full object-cover" alt="Capa" />
+                    <div v-else class="w-full h-full bg-gradient-to-br from-[#0d1a2d] to-[#1a0d2e] flex items-center justify-center text-[80px] text-[#2a3550]">
                         <ion-icon :icon="bookOutline" />
                     </div>
-                    <div class="hero-overlay">
+                    <div class="absolute bottom-0 left-0 right-0 px-5 pb-5 bg-gradient-to-t from-[rgba(10,14,26,1)] to-transparent">
                         <status-badge :status="item.status" />
-                        <h1 class="hero-title">{{ item.manga?.name }}</h1>
+                        <h1 class="text-2xl font-extrabold text-neon-text mt-2 mb-0 leading-tight">{{ item.manga?.name }}</h1>
                     </div>
                 </div>
 
-                <div class="detail-body">
-                    <!-- Stats row -->
-                    <div class="stats-row">
-                        <div class="stat-item">
-                            <span class="stat-label">Atual</span>
-                            <span class="stat-value">Cap. {{ item.current_chapter }}</span>
+                <div class="px-5 pt-5 pb-24">
+                    <!-- Stats -->
+                    <div class="flex items-center bg-neon-surface border border-neon-border rounded-2xl p-4 mb-6">
+                        <div class="flex-1 flex flex-col items-center gap-1">
+                            <span class="text-[11px] font-bold uppercase tracking-[1px] text-neon-muted">Atual</span>
+                            <span class="text-[15px] font-bold text-neon-text">Cap. {{ item.current_chapters }}</span>
                         </div>
-                        <div class="stat-divider"></div>
-                        <div class="stat-item">
-                            <span class="stat-label">Total</span>
-                            <span class="stat-value">
+                        <div class="w-px h-8 bg-neon-border"></div>
+                        <div class="flex-1 flex flex-col items-center gap-1">
+                            <span class="text-[11px] font-bold uppercase tracking-[1px] text-neon-muted">Total</span>
+                            <span class="text-[15px] font-bold text-neon-text">
                                 {{ item.manga?.total_chapters ? `Cap. ${item.manga.total_chapters}` : '—' }}
                             </span>
                         </div>
-                        <div class="stat-divider"></div>
-                        <div class="stat-item">
-                            <span class="stat-label">Fonte</span>
-                            <span class="stat-value">{{ item.site?.name || '—' }}</span>
+                        <div class="w-px h-8 bg-neon-border"></div>
+                        <div class="flex-1 flex flex-col items-center gap-1 min-w-0 px-1">
+                            <span class="text-[11px] font-bold uppercase tracking-[1px] text-neon-muted">Fonte</span>
+                            <span class="text-[15px] font-bold text-neon-text truncate max-w-[80px] text-center">{{ item.site?.name || '—' }}</span>
                         </div>
                     </div>
 
                     <!-- Chapter controls -->
-                    <div class="section-block">
-                        <span class="neon-label">Progresso do Capítulo</span>
-                        <div class="chapter-controls">
+                    <div class="mb-6">
+                        <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-3">Progresso do Capítulo</span>
+                        <div class="flex items-center gap-4 bg-neon-surface border border-neon-border rounded-2xl p-4">
                             <button
-                                class="ctrl-btn"
+                                class="w-12 h-12 rounded-xl bg-neon-elevated border border-neon-border text-neon-text text-[22px] flex items-center justify-center cursor-pointer transition-colors active:bg-[#212b45] disabled:opacity-40"
                                 @click="decrement"
-                                :disabled="saving || item.current_chapter <= 0"
+                                :disabled="saving || item.current_chapters <= 0"
                             >
                                 <ion-icon :icon="removeOutline" />
                             </button>
-                            <div class="chapter-display">
+                            <div class="flex-1 flex flex-col items-center">
                                 <input
                                     v-if="editingChapter"
                                     v-model.number="chapterInput"
                                     type="number"
-                                    class="chapter-input"
+                                    class="text-[36px] font-extrabold text-neon-text bg-transparent border-b-2 border-neon-accent outline-none w-20 text-center leading-none"
                                     @blur="saveChapter"
                                     @keyup.enter="saveChapter"
                                     ref="chapterField"
@@ -82,15 +77,15 @@
                                 />
                                 <span
                                     v-else
-                                    class="chapter-number"
+                                    class="text-[36px] font-extrabold text-neon-text cursor-pointer leading-none"
                                     @click="startEditChapter"
                                 >
-                                    {{ item.current_chapter }}
+                                    {{ item.current_chapters }}
                                 </span>
-                                <span class="chapter-sub">Toque para editar</span>
+                                <span class="text-[11px] text-neon-muted mt-1">Toque para editar</span>
                             </div>
                             <button
-                                class="ctrl-btn ctrl-add"
+                                class="w-12 h-12 rounded-xl bg-neon-accent/12 border border-neon-accent/30 text-neon-accent text-[22px] flex items-center justify-center cursor-pointer transition-colors active:bg-neon-accent/20 disabled:opacity-40"
                                 @click="increment"
                                 :disabled="saving"
                             >
@@ -100,14 +95,14 @@
                     </div>
 
                     <!-- Status -->
-                    <div class="section-block">
-                        <span class="neon-label">Status</span>
-                        <div class="status-grid">
+                    <div class="mb-6">
+                        <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-3">Status</span>
+                        <div class="grid grid-cols-2 gap-2.5">
                             <button
                                 v-for="s in statuses"
                                 :key="s.value"
-                                class="status-opt"
-                                :class="{ active: item.status === s.value }"
+                                class="py-3 rounded-xl bg-neon-surface border border-neon-border text-neon-muted text-[13px] font-semibold cursor-pointer transition-colors text-center"
+                                :class="item.status === s.value ? 'bg-neon-accent/12 border-neon-accent/40 text-neon-accent' : ''"
                                 @click="changeStatus(s.value)"
                             >
                                 {{ s.label }}
@@ -116,34 +111,18 @@
                     </div>
 
                     <!-- Site -->
-                    <div class="section-block" v-if="sites.length">
-                        <span class="neon-label">Fonte de Leitura</span>
-                        <div class="site-select-wrap">
-                            <select
-                                v-model="selectedSiteId"
-                                class="site-select"
-                                @change="changeSite"
-                            >
+                    <div class="mb-6" v-if="sites.length">
+                        <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-3">Fonte de Leitura</span>
+                        <div class="bg-neon-elevated border border-neon-border rounded-xl px-4">
+                            <select v-model="selectedSiteId" class="w-full bg-transparent border-none outline-none text-neon-text text-[15px] py-3 cursor-pointer" @change="changeSite">
                                 <option value="">Sem fonte</option>
-                                <option
-                                    v-for="site in sites"
-                                    :key="site.id"
-                                    :value="site.id"
-                                >
-                                    {{ site.name }}
-                                </option>
+                                <option v-for="site in sites" :key="site.id" :value="site.id">{{ site.name }}</option>
                             </select>
                         </div>
                     </div>
 
                     <!-- Delete -->
-                    <ion-button
-                        expand="block"
-                        fill="outline"
-                        color="danger"
-                        class="delete-btn"
-                        @click="confirmDelete"
-                    >
+                    <ion-button expand="block" fill="outline" color="danger" class="btn-delete" @click="confirmDelete">
                         <ion-icon slot="start" :icon="trashOutline" />
                         Remover da Biblioteca
                     </ion-button>
@@ -163,9 +142,7 @@ import {
     toastController, alertController,
 } from '@ionic/vue';
 import { bookOutline, addOutline, removeOutline, trashOutline } from 'ionicons/icons';
-import {
-    userMangaService, UserManga, MangaStatus, STATUS_LABELS,
-} from '@/services/userMangaService';
+import { userMangaService, UserManga, MangaStatus, STATUS_LABELS } from '@/services/userMangaService';
 import { siteService, Site } from '@/services/siteService';
 import StatusBadge from '@/components/StatusBadge.vue';
 
@@ -185,9 +162,7 @@ export default defineComponent({
             chapterInput: 0,
             selectedSiteId: '' as string | number,
             bookOutline, addOutline, removeOutline, trashOutline,
-            statuses: Object.entries(STATUS_LABELS).map(([value, label]) => ({
-                value: value as MangaStatus, label,
-            })),
+            statuses: Object.entries(STATUS_LABELS).map(([value, label]) => ({ value: value as MangaStatus, label })),
         };
     },
     async ionViewWillEnter() {
@@ -198,18 +173,12 @@ export default defineComponent({
             this.loading = true;
             const id = Number(this.$route.params.id);
             try {
-                const [item, sites] = await Promise.all([
-                    userMangaService.getOne(id),
-                    siteService.getAll(),
-                ]);
+                const [item, sites] = await Promise.all([userMangaService.getOne(id), siteService.getAll()]);
                 this.item = item;
                 this.sites = Array.isArray(sites) ? sites : (sites as any)?.data ?? [];
                 this.selectedSiteId = item.site_id ?? '';
             } catch {
-                const toast = await toastController.create({
-                    message: 'Falha ao carregar manga.',
-                    duration: 2000, color: 'danger', position: 'top',
-                });
+                const toast = await toastController.create({ message: 'Falha ao carregar manga.', duration: 2000, color: 'danger', position: 'top' });
                 await toast.present();
                 this.$router.back();
             } finally {
@@ -217,11 +186,17 @@ export default defineComponent({
             }
         },
 
+        patchItem(updated: UserManga) {
+            if (updated.manga === undefined && this.item?.manga) updated.manga = this.item.manga;
+            if (updated.site === undefined && this.item?.site) updated.site = this.item.site;
+            this.item = updated;
+        },
+
         async increment() {
             if (!this.item) return;
             this.saving = true;
             try {
-                this.item = await userMangaService.increment(this.item.id);
+                this.patchItem(await userMangaService.increment(this.item.id));
             } catch {
                 await this.showError('Falha ao atualizar capítulo.');
             } finally {
@@ -230,12 +205,10 @@ export default defineComponent({
         },
 
         async decrement() {
-            if (!this.item || this.item.current_chapter <= 0) return;
+            if (!this.item || this.item.current_chapters <= 0) return;
             this.saving = true;
             try {
-                this.item = await userMangaService.update(this.item.id, {
-                    current_chapter: this.item.current_chapter - 1,
-                });
+                this.patchItem(await userMangaService.update(this.item.id, { current_chapters: this.item.current_chapters - 1 }));
             } catch {
                 await this.showError('Falha ao atualizar capítulo.');
             } finally {
@@ -245,7 +218,7 @@ export default defineComponent({
 
         async startEditChapter() {
             if (!this.item) return;
-            this.chapterInput = this.item.current_chapter;
+            this.chapterInput = this.item.current_chapters;
             this.editingChapter = true;
             await nextTick();
             (this.$refs.chapterField as HTMLInputElement)?.focus();
@@ -254,12 +227,10 @@ export default defineComponent({
         async saveChapter() {
             if (!this.item) return;
             this.editingChapter = false;
-            if (this.chapterInput === this.item.current_chapter) return;
+            if (this.chapterInput === this.item.current_chapters) return;
             this.saving = true;
             try {
-                this.item = await userMangaService.update(this.item.id, {
-                    current_chapter: this.chapterInput,
-                });
+                this.patchItem(await userMangaService.update(this.item.id, { current_chapters: this.chapterInput }));
             } catch {
                 await this.showError('Falha ao salvar capítulo.');
             } finally {
@@ -271,7 +242,7 @@ export default defineComponent({
             if (!this.item || this.item.status === status) return;
             this.saving = true;
             try {
-                this.item = await userMangaService.update(this.item.id, { status });
+                this.patchItem(await userMangaService.update(this.item.id, { status }));
             } catch {
                 await this.showError('Falha ao atualizar status.');
             } finally {
@@ -283,9 +254,9 @@ export default defineComponent({
             if (!this.item) return;
             this.saving = true;
             try {
-                this.item = await userMangaService.update(this.item.id, {
+                this.patchItem(await userMangaService.update(this.item.id, {
                     site_id: this.selectedSiteId ? Number(this.selectedSiteId) : undefined,
-                });
+                }));
             } catch {
                 await this.showError('Falha ao atualizar fonte.');
             } finally {
@@ -310,10 +281,7 @@ export default defineComponent({
             this.saving = true;
             try {
                 await userMangaService.delete(this.item.id);
-                const toast = await toastController.create({
-                    message: 'Manga removido da biblioteca.',
-                    duration: 2000, color: 'success', position: 'top',
-                });
+                const toast = await toastController.create({ message: 'Manga removido da biblioteca.', duration: 2000, color: 'success', position: 'top' });
                 await toast.present();
                 this.$router.back();
             } catch {
@@ -324,9 +292,7 @@ export default defineComponent({
         },
 
         async showError(msg: string) {
-            const toast = await toastController.create({
-                message: msg, duration: 2000, color: 'danger', position: 'top',
-            });
+            const toast = await toastController.create({ message: msg, duration: 2000, color: 'danger', position: 'top' });
             await toast.present();
         },
     },
@@ -334,229 +300,5 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.hero-section {
-    position: relative;
-    width: 100%;
-    height: 280px;
-}
-
-.hero-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.hero-placeholder {
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, #0d1a2d 0%, #1a0d2e 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 80px;
-    color: #2a3550;
-}
-
-.hero-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 20px;
-    background: linear-gradient(to top, rgba(10, 14, 26, 1) 0%, transparent 100%);
-}
-
-.hero-title {
-    font-size: 24px;
-    font-weight: 800;
-    color: #e8eaf0;
-    margin: 8px 0 0;
-    line-height: 1.2;
-}
-
-.detail-body {
-    padding: 20px 20px 100px;
-}
-
-.stats-row {
-    display: flex;
-    align-items: center;
-    background: var(--neon-surface);
-    border: 1px solid var(--neon-border);
-    border-radius: 16px;
-    padding: 16px;
-    margin-bottom: 24px;
-}
-
-.stat-item {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-}
-
-.stat-label {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: var(--neon-text-muted);
-}
-
-.stat-value {
-    font-size: 15px;
-    font-weight: 700;
-    color: #e8eaf0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 80px;
-    text-align: center;
-}
-
-.stat-divider {
-    width: 1px;
-    height: 32px;
-    background: var(--neon-border);
-}
-
-.section-block { margin-bottom: 24px; }
-
-.neon-label {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--neon-text-muted);
-    margin-bottom: 12px;
-    display: block;
-}
-
-.chapter-controls {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    background: var(--neon-surface);
-    border: 1px solid var(--neon-border);
-    border-radius: 16px;
-    padding: 16px;
-}
-
-.ctrl-btn {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-    background: var(--neon-surface-elevated);
-    border: 1px solid var(--neon-border);
-    color: #e8eaf0;
-    font-size: 22px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    flex-shrink: 0;
-    transition: background 0.15s;
-    -webkit-tap-highlight-color: transparent;
-}
-
-.ctrl-btn:active { background: #212b45; }
-.ctrl-btn:disabled { opacity: 0.4; }
-
-.ctrl-add {
-    background: var(--neon-accent-dim);
-    border-color: rgba(0, 229, 176, 0.3);
-    color: var(--neon-accent);
-}
-
-.chapter-display {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.chapter-number {
-    font-size: 36px;
-    font-weight: 800;
-    color: #e8eaf0;
-    cursor: pointer;
-    line-height: 1;
-}
-
-.chapter-input {
-    font-size: 36px;
-    font-weight: 800;
-    color: #e8eaf0;
-    background: transparent;
-    border: none;
-    border-bottom: 2px solid var(--neon-accent);
-    outline: none;
-    width: 80px;
-    text-align: center;
-    line-height: 1;
-}
-
-.chapter-sub {
-    font-size: 11px;
-    color: var(--neon-text-muted);
-    margin-top: 4px;
-}
-
-.status-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-}
-
-.status-opt {
-    padding: 12px;
-    border-radius: 12px;
-    background: var(--neon-surface);
-    border: 1px solid var(--neon-border);
-    color: var(--neon-text-muted);
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s;
-    -webkit-tap-highlight-color: transparent;
-    text-align: center;
-}
-
-.status-opt.active {
-    background: var(--neon-accent-dim);
-    border-color: rgba(0, 229, 176, 0.4);
-    color: var(--neon-accent);
-}
-
-.site-select-wrap {
-    background: var(--neon-surface-elevated);
-    border: 1px solid var(--neon-border);
-    border-radius: 12px;
-    padding: 4px 16px;
-}
-
-.site-select {
-    width: 100%;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: #e8eaf0;
-    font-size: 15px;
-    padding: 12px 0;
-    cursor: pointer;
-}
-
-.site-select option { background: #131929; }
-
-.delete-btn {
-    --border-radius: 14px;
-    margin-top: 8px;
-}
-
-.loading-state {
-    display: flex;
-    justify-content: center;
-    padding: 80px 0;
-}
+.btn-delete { --border-radius: 14px; margin-top: 8px; }
 </style>

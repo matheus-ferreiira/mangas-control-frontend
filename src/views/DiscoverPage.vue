@@ -2,8 +2,10 @@
     <ion-page>
         <ion-header>
             <ion-toolbar>
-                <ion-title class="toolbar-title">
-                    <span class="title-gradient">Descobrir</span>
+                <ion-title>
+                    <span class="bg-gradient-to-br from-neon-blue to-neon-accent bg-clip-text text-transparent font-extrabold text-lg">
+                        Descobrir
+                    </span>
                 </ion-title>
                 <ion-buttons slot="end">
                     <ion-button fill="clear" router-link="/manage-mangas">
@@ -14,62 +16,58 @@
         </ion-header>
 
         <ion-content :fullscreen="true">
-            <div class="search-wrap">
-                <div class="search-row">
-                    <ion-icon :icon="searchOutline" class="search-icon" />
+            <div class="px-5 pt-3">
+                <div class="flex items-center gap-2.5 bg-neon-elevated border border-neon-border rounded-[14px] px-3.5 py-2.5 transition-colors focus-within:border-neon-accent/30">
+                    <ion-icon :icon="searchOutline" class="text-[20px] text-[#4a5568] flex-shrink-0" />
                     <input
                         v-model="query"
                         placeholder="Buscar mangás..."
-                        class="search-input"
+                        class="flex-1 bg-transparent border-none outline-none text-neon-text text-[15px] min-w-0 placeholder:text-[#4a5568]"
                         @input="filterMangas"
                     />
-                    <button v-if="query" class="clear-btn" @click="clearSearch">
+                    <button v-if="query" class="bg-transparent border-none text-[#4a5568] text-lg flex items-center cursor-pointer p-0" @click="clearSearch">
                         <ion-icon :icon="closeOutline" />
                     </button>
                 </div>
             </div>
 
-            <div class="content-pad">
-                <div class="section-header">
-                    <h2 class="section-title">Todos os Mangás</h2>
-                    <span class="count-badge" v-if="filtered.length">{{ filtered.length }}</span>
+            <div class="px-5 pt-5 pb-24">
+                <div class="flex items-center gap-2.5 mb-4">
+                    <h2 class="text-xl font-extrabold text-neon-text m-0">Todos os Mangás</h2>
+                    <span v-if="filtered.length" class="bg-neon-accent/12 border border-neon-accent/20 text-neon-accent rounded-full px-2.5 py-0.5 text-xs font-bold">
+                        {{ filtered.length }}
+                    </span>
                 </div>
 
-                <div v-if="loading" class="loading-state">
+                <div v-if="loading" class="flex justify-center py-16">
                     <ion-spinner name="crescent" color="primary" />
                 </div>
 
-                <div v-else-if="filtered.length === 0" class="empty-state">
-                    <ion-icon :icon="compassOutline" class="empty-icon" />
-                    <h3>Nenhum manga encontrado</h3>
-                    <p>{{ query ? 'Tente uma busca diferente' : 'Adicione mangás pelo Catálogo' }}</p>
-                    <ion-button router-link="/manage-mangas" class="manage-btn" fill="outline">
-                        Gerenciar Catálogo
-                    </ion-button>
+                <div v-else-if="filtered.length === 0" class="text-center py-10">
+                    <ion-icon :icon="compassOutline" class="text-[48px] text-neon-muted block mb-3.5" />
+                    <h3 class="text-lg font-bold text-neon-text m-0 mb-2">Nenhum manga encontrado</h3>
+                    <p class="text-sm text-neon-muted m-0 mb-5">{{ query ? 'Tente uma busca diferente' : 'Adicione mangás pelo Catálogo' }}</p>
+                    <ion-button router-link="/manage-mangas" fill="outline" class="btn-outline">Gerenciar Catálogo</ion-button>
                 </div>
 
-                <div v-else class="manga-grid">
+                <div v-else class="flex flex-col gap-2.5">
                     <div
                         v-for="manga in filtered"
                         :key="manga.id"
-                        class="manga-tile"
+                        class="flex items-center gap-3.5 bg-neon-surface border border-neon-border rounded-[14px] p-3 cursor-pointer transition-colors active:border-neon-accent"
                         @click="addToLibrary(manga)"
                     >
-                        <div class="tile-cover">
-                            <img v-if="manga.cover_url" :src="manga.cover_url" :alt="manga.name" class="tile-img" />
-                            <div v-else class="tile-placeholder">
+                        <div class="w-12 h-[66px] rounded-lg overflow-hidden flex-shrink-0">
+                            <img v-if="manga.cover" :src="manga.cover" :alt="manga.name" class="w-full h-full object-cover" />
+                            <div v-else class="w-full h-full bg-neon-elevated flex items-center justify-center text-neon-muted text-2xl">
                                 <ion-icon :icon="bookOutline" />
                             </div>
                         </div>
-                        <div class="tile-info">
-                            <span class="tile-name">{{ manga.name }}</span>
-                            <span class="tile-chapters" v-if="manga.total_chapters">
-                                {{ manga.total_chapters }} cap.
-                            </span>
+                        <div class="flex-1 min-w-0 flex flex-col gap-1">
+                            <span class="text-sm font-bold text-neon-text whitespace-nowrap overflow-hidden text-ellipsis">{{ manga.name }}</span>
+                            <span v-if="manga.total_chapters" class="text-xs text-neon-muted">{{ manga.total_chapters }} cap.</span>
                         </div>
-                        <div class="tile-add">
-                            <ion-icon :icon="addCircleOutline" />
-                        </div>
+                        <ion-icon :icon="addCircleOutline" class="text-neon-accent text-2xl flex-shrink-0" />
                     </div>
                 </div>
             </div>
@@ -83,26 +81,19 @@ import {
     IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
     IonButtons, IonButton, IonIcon, IonSpinner,
 } from '@ionic/vue';
-import {
-    searchOutline, closeOutline, compassOutline, bookOutline,
-    addCircleOutline, settingsOutline,
-} from 'ionicons/icons';
+import { searchOutline, closeOutline, compassOutline, bookOutline, addCircleOutline, settingsOutline } from 'ionicons/icons';
 import { mangaService, Manga } from '@/services/mangaService';
 
 export default defineComponent({
     name: 'DiscoverPage',
-    components: {
-        IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
-        IonButtons, IonButton, IonIcon, IonSpinner,
-    },
+    components: { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton, IonIcon, IonSpinner },
     data() {
         return {
             loading: false,
             mangas: [] as Manga[],
             filtered: [] as Manga[],
             query: '',
-            searchOutline, closeOutline, compassOutline, bookOutline,
-            addCircleOutline, settingsOutline,
+            searchOutline, closeOutline, compassOutline, bookOutline, addCircleOutline, settingsOutline,
         };
     },
     async ionViewWillEnter() {
@@ -121,19 +112,14 @@ export default defineComponent({
                 this.loading = false;
             }
         },
-
         filterMangas() {
             const q = this.query.toLowerCase();
-            this.filtered = q
-                ? this.mangas.filter((m) => m.name.toLowerCase().includes(q))
-                : [...this.mangas];
+            this.filtered = q ? this.mangas.filter((m) => m.name.toLowerCase().includes(q)) : [...this.mangas];
         },
-
         clearSearch() {
             this.query = '';
             this.filtered = [...this.mangas];
         },
-
         addToLibrary(manga: Manga) {
             this.$router.push({ path: '/tabs/add', query: { manga_id: manga.id } });
         },
@@ -142,72 +128,5 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.toolbar-title { font-weight: 800; font-size: 18px; }
-.title-gradient {
-    background: linear-gradient(135deg, #5b6ee1, #00e5b0);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-}
-
-.search-wrap { padding: 12px 20px 0; }
-
-.search-row {
-    display: flex; align-items: center; gap: 10px;
-    background: var(--neon-surface-elevated); border: 1px solid var(--neon-border);
-    border-radius: 14px; padding: 10px 14px; transition: border-color 0.2s;
-}
-.search-row:focus-within { border-color: rgba(0, 229, 176, 0.3); }
-
-.search-icon { color: #4a5568; font-size: 20px; flex-shrink: 0; }
-
-.search-input {
-    flex: 1; background: transparent; border: none; outline: none;
-    color: #e8eaf0; font-size: 15px; min-width: 0;
-}
-.search-input::placeholder { color: #4a5568; }
-
-.clear-btn {
-    background: transparent; border: none; color: #4a5568;
-    font-size: 18px; display: flex; align-items: center; cursor: pointer; padding: 0;
-}
-
-.content-pad { padding: 20px 20px 100px; }
-
-.section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
-.section-title { font-size: 20px; font-weight: 800; color: #e8eaf0; margin: 0; }
-.count-badge {
-    background: var(--neon-accent-dim); border: 1px solid rgba(0, 229, 176, 0.2);
-    color: var(--neon-accent); border-radius: 20px; padding: 2px 10px;
-    font-size: 12px; font-weight: 700;
-}
-
-.loading-state { display: flex; justify-content: center; padding: 60px 0; }
-
-.empty-state { text-align: center; padding: 40px 0; }
-.empty-icon { font-size: 48px; color: var(--neon-text-muted); display: block; margin-bottom: 14px; }
-.empty-state h3 { font-size: 18px; font-weight: 700; color: #e8eaf0; margin: 0 0 8px; }
-.empty-state p { font-size: 14px; color: var(--neon-text-muted); margin: 0 0 20px; }
-.manage-btn { --border-radius: 12px; --color: var(--neon-accent); --border-color: var(--neon-accent); }
-
-.manga-grid { display: flex; flex-direction: column; gap: 10px; }
-
-.manga-tile {
-    display: flex; align-items: center; gap: 14px;
-    background: var(--neon-surface); border: 1px solid var(--neon-border);
-    border-radius: 14px; padding: 12px; cursor: pointer;
-    transition: border-color 0.2s; -webkit-tap-highlight-color: transparent;
-}
-.manga-tile:active { border-color: var(--neon-accent); }
-
-.tile-cover { width: 48px; height: 66px; border-radius: 8px; overflow: hidden; flex-shrink: 0; }
-.tile-img { width: 100%; height: 100%; object-fit: cover; }
-.tile-placeholder {
-    width: 100%; height: 100%; background: var(--neon-surface-elevated);
-    display: flex; align-items: center; justify-content: center;
-    color: var(--neon-text-muted); font-size: 24px;
-}
-
-.tile-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
-.tile-name { font-size: 14px; font-weight: 700; color: #e8eaf0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.tile-chapters { font-size: 12px; color: var(--neon-text-muted); }
-.tile-add { color: var(--neon-accent); font-size: 24px; flex-shrink: 0; }
+.btn-outline { --border-radius: 12px; --color: var(--neon-accent); --border-color: var(--neon-accent); }
 </style>

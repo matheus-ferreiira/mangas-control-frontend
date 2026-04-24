@@ -1,27 +1,34 @@
 <template>
-    <div class="manga-card" @click="$emit('click')">
-        <div class="cover-wrap">
+    <div
+        class="flex items-center gap-3.5 bg-neon-surface border border-neon-border rounded-2xl p-3 mb-3 cursor-pointer transition-[border-color,transform] duration-150 active:scale-[0.98] active:border-neon-accent"
+        @click="$emit('click')"
+    >
+        <div class="flex-shrink-0 w-16 h-[88px] rounded-[10px] overflow-hidden">
             <img
-                v-if="userManga.manga?.cover_url"
-                :src="userManga.manga.cover_url"
+                v-if="userManga.manga?.cover"
+                :src="userManga.manga.cover"
                 :alt="userManga.manga?.name"
-                class="cover-img"
+                class="w-full h-full object-cover"
             />
-            <div v-else class="cover-placeholder">
+            <div v-else class="w-full h-full bg-neon-elevated flex items-center justify-center text-neon-muted text-[28px]">
                 <ion-icon :icon="bookOutline" />
             </div>
         </div>
-        <div class="info">
-            <h3 class="manga-name">{{ userManga.manga?.name || 'Unknown' }}</h3>
-            <p class="chapter-info">Chapter {{ userManga.current_chapter }}</p>
-            <div class="bottom-row">
+
+        <div class="flex-1 min-w-0">
+            <h3 class="text-[15px] font-bold text-neon-text m-0 mb-1 truncate">
+                {{ userManga.manga?.name || 'Desconhecido' }}
+            </h3>
+            <p class="text-[13px] text-neon-muted m-0 mb-2">Capítulo {{ userManga.current_chapters }}</p>
+            <div class="flex items-center gap-2 flex-wrap">
                 <status-badge :status="userManga.status" />
-                <span v-if="userManga.site" class="site-tag">{{
-                    userManga.site.name
-                }}</span>
+                <span v-if="userManga.site" class="text-[11px] text-neon-muted bg-neon-elevated rounded-md px-2 py-0.5">
+                    {{ userManga.site.name }}
+                </span>
             </div>
         </div>
-        <ion-icon :icon="chevronForwardOutline" class="chevron" />
+
+        <ion-icon :icon="chevronForwardOutline" class="text-neon-muted text-lg flex-shrink-0" />
     </div>
 </template>
 
@@ -37,103 +44,10 @@ export default defineComponent({
     components: { IonIcon, StatusBadge },
     emits: ['click'],
     props: {
-        userManga: {
-            type: Object as PropType<UserManga>,
-            required: true,
-        },
+        userManga: { type: Object as PropType<UserManga>, required: true },
     },
     data() {
         return { bookOutline, chevronForwardOutline };
     },
 });
 </script>
-
-<style scoped>
-.manga-card {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    background: var(--neon-surface);
-    border: 1px solid var(--neon-border);
-    border-radius: 16px;
-    padding: 12px;
-    margin-bottom: 12px;
-    cursor: pointer;
-    transition:
-        border-color 0.2s,
-        transform 0.15s;
-    -webkit-tap-highlight-color: transparent;
-}
-
-.manga-card:active {
-    transform: scale(0.98);
-    border-color: var(--neon-accent);
-}
-
-.cover-wrap {
-    flex-shrink: 0;
-    width: 64px;
-    height: 88px;
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-.cover-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.cover-placeholder {
-    width: 100%;
-    height: 100%;
-    background: var(--neon-surface-elevated);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--neon-text-muted);
-    font-size: 28px;
-}
-
-.info {
-    flex: 1;
-    min-width: 0;
-}
-
-.manga-name {
-    font-size: 15px;
-    font-weight: 700;
-    color: #e8eaf0;
-    margin: 0 0 4px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.chapter-info {
-    font-size: 13px;
-    color: var(--neon-text-muted);
-    margin: 0 0 8px;
-}
-
-.bottom-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.site-tag {
-    font-size: 11px;
-    color: var(--neon-text-muted);
-    background: var(--neon-surface-elevated);
-    border-radius: 6px;
-    padding: 2px 8px;
-}
-
-.chevron {
-    color: var(--neon-text-muted);
-    font-size: 18px;
-    flex-shrink: 0;
-}
-</style>

@@ -34,6 +34,9 @@ import '@ionic/vue/css/palettes/dark.always.css';
 /* Theme variables */
 import './theme/variables.css';
 
+/* Tailwind */
+import './theme/tailwind.css';
+
 const app = createApp(App).use(IonicVue).use(router);
 
 router.isReady().then(() => {

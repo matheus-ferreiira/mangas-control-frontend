@@ -2,80 +2,77 @@
     <ion-page>
         <ion-header>
             <ion-toolbar>
-                <ion-title class="toolbar-title">
-                    <span class="title-gradient">Perfil</span>
+                <ion-title>
+                    <span class="bg-gradient-to-br from-neon-blue to-neon-accent bg-clip-text text-transparent font-extrabold text-lg">Perfil</span>
                 </ion-title>
             </ion-toolbar>
         </ion-header>
 
         <ion-content :fullscreen="true">
-            <div class="content-pad">
-                <!-- Avatar + info -->
-                <div class="profile-hero">
-                    <div class="avatar-wrap">
-                        <img v-if="user?.avatar" :src="user.avatar" alt="Avatar" class="avatar-img" />
-                        <ion-icon v-else :icon="personCircleOutline" class="avatar-icon" />
+            <div class="px-5 pt-6 pb-24">
+                <!-- Avatar -->
+                <div class="flex flex-col items-center pb-7 text-center">
+                    <div class="w-[90px] h-[90px] rounded-full border-2 border-neon-accent overflow-hidden bg-neon-elevated flex items-center justify-center mb-4 shadow-[0_0_20px_rgba(0,229,176,0.25)]">
+                        <img v-if="user?.avatar" :src="user.avatar" alt="Avatar" class="w-full h-full object-cover" />
+                        <ion-icon v-else :icon="personCircleOutline" class="text-[56px] text-neon-muted" />
                     </div>
-                    <h2 class="user-name">{{ user?.name || 'Curador' }}</h2>
-                    <p class="user-email">{{ user?.email }}</p>
-                    <div class="curator-badge">
+                    <h2 class="text-[22px] font-extrabold text-neon-text m-0 mb-1">{{ user?.name || 'Curador' }}</h2>
+                    <p class="text-sm text-neon-muted m-0 mb-3.5">{{ user?.email }}</p>
+                    <div class="inline-flex items-center gap-1.5 bg-neon-accent/12 border border-neon-accent/30 rounded-full px-3.5 py-1.5 text-xs font-bold text-neon-accent">
                         <ion-icon :icon="shieldCheckmarkOutline" />
                         Arquivista Digital
                     </div>
                 </div>
 
                 <!-- Stats -->
-                <div class="stats-card">
-                    <div class="stat-item">
-                        <span class="stat-num">{{ stats.total }}</span>
-                        <span class="stat-lbl">Total</span>
+                <div class="flex items-center bg-neon-surface border border-neon-border rounded-[18px] p-5 mb-7">
+                    <div class="flex-1 flex flex-col items-center gap-1">
+                        <span class="text-[28px] font-black text-neon-text leading-none">{{ stats.total }}</span>
+                        <span class="text-[11px] font-bold uppercase tracking-[0.5px] text-neon-muted">Total</span>
                     </div>
-                    <div class="stat-sep"></div>
-                    <div class="stat-item">
-                        <span class="stat-num accent">{{ stats.reading }}</span>
-                        <span class="stat-lbl">Lendo</span>
+                    <div class="w-px h-9 bg-neon-border"></div>
+                    <div class="flex-1 flex flex-col items-center gap-1">
+                        <span class="text-[28px] font-black text-neon-accent leading-none">{{ stats.reading }}</span>
+                        <span class="text-[11px] font-bold uppercase tracking-[0.5px] text-neon-muted">Lendo</span>
                     </div>
-                    <div class="stat-sep"></div>
-                    <div class="stat-item">
-                        <span class="stat-num blue">{{ stats.completed }}</span>
-                        <span class="stat-lbl">Completo</span>
+                    <div class="w-px h-9 bg-neon-border"></div>
+                    <div class="flex-1 flex flex-col items-center gap-1">
+                        <span class="text-[28px] font-black text-[#7b8ff5] leading-none">{{ stats.completed }}</span>
+                        <span class="text-[11px] font-bold uppercase tracking-[0.5px] text-neon-muted">Completo</span>
                     </div>
                 </div>
 
-                <!-- Links -->
-                <div class="menu-section">
-                    <span class="section-label">Gerenciamento</span>
-
-                    <div class="menu-item" @click="$router.push('/manage-mangas')">
-                        <div class="menu-icon-wrap menu-teal">
+                <!-- Menu -->
+                <div class="mb-6">
+                    <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-2.5">Gerenciamento</span>
+                    <div class="bg-neon-surface border border-neon-border rounded-[14px] p-3.5 mb-2 flex items-center gap-3.5 cursor-pointer transition-colors active:border-neon-accent" @click="$router.push('/manage-mangas')">
+                        <div class="w-[38px] h-[38px] rounded-[10px] bg-neon-accent/12 text-neon-accent flex items-center justify-center text-xl flex-shrink-0">
                             <ion-icon :icon="bookOutline" />
                         </div>
-                        <span class="menu-text">Catálogo de Mangás</span>
-                        <ion-icon :icon="chevronForwardOutline" class="menu-chevron" />
+                        <span class="flex-1 text-[15px] font-semibold text-neon-text">Catálogo de Mangás</span>
+                        <ion-icon :icon="chevronForwardOutline" class="text-neon-muted text-lg" />
                     </div>
-
-                    <div class="menu-item" @click="$router.push('/tabs/sources')">
-                        <div class="menu-icon-wrap menu-blue">
+                    <div class="bg-neon-surface border border-neon-border rounded-[14px] p-3.5 flex items-center gap-3.5 cursor-pointer transition-colors active:border-neon-accent" @click="$router.push('/tabs/sources')">
+                        <div class="w-[38px] h-[38px] rounded-[10px] bg-neon-blue/12 text-[#7b8ff5] flex items-center justify-center text-xl flex-shrink-0">
                             <ion-icon :icon="cloudDownloadOutline" />
                         </div>
-                        <span class="menu-text">Gerenciar Fontes</span>
-                        <ion-icon :icon="chevronForwardOutline" class="menu-chevron" />
+                        <span class="flex-1 text-[15px] font-semibold text-neon-text">Gerenciar Fontes</span>
+                        <ion-icon :icon="chevronForwardOutline" class="text-neon-muted text-lg" />
                     </div>
                 </div>
 
-                <div class="menu-section">
-                    <span class="section-label">Conta</span>
-
-                    <div class="menu-item" @click="confirmLogout">
-                        <div class="menu-icon-wrap menu-red">
+                <div class="mb-6">
+                    <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-2.5">Conta</span>
+                    <div class="bg-neon-surface border border-neon-border rounded-[14px] p-3.5 flex items-center gap-3.5 cursor-pointer transition-colors active:border-neon-danger" @click="confirmLogout">
+                        <div class="w-[38px] h-[38px] rounded-[10px] bg-neon-danger/12 text-[#ff6b7a] flex items-center justify-center text-xl flex-shrink-0">
                             <ion-icon :icon="logOutOutline" />
                         </div>
-                        <span class="menu-text">Sair</span>
-                        <ion-icon :icon="chevronForwardOutline" class="menu-chevron" />
+                        <span class="flex-1 text-[15px] font-semibold text-neon-text">Sair</span>
+                        <ion-icon :icon="chevronForwardOutline" class="text-neon-muted text-lg" />
                     </div>
                 </div>
 
-                <p class="footer-text">© 2024 Digital Archivist Protocol</p>
+                <p class="text-center text-[11px] text-[#4a5568] mt-3">© 2025 Protocolo Arquivista Digital</p>
             </div>
         </ion-content>
     </ion-page>
@@ -84,8 +81,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import {
-    IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonIcon,
-    alertController,
+    IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonIcon, alertController,
 } from '@ionic/vue';
 import {
     personCircleOutline, shieldCheckmarkOutline, bookOutline,
@@ -106,9 +102,7 @@ export default defineComponent({
         };
     },
     computed: {
-        user() {
-            return authStore.user;
-        },
+        user() { return authStore.user; },
         stats() {
             return {
                 total: this.userMangas.length,
@@ -136,7 +130,6 @@ export default defineComponent({
             });
             await alert.present();
         },
-
         async logout() {
             try {
                 await authService.logout();
@@ -150,82 +143,3 @@ export default defineComponent({
     },
 });
 </script>
-
-<style scoped>
-.toolbar-title { font-weight: 800; font-size: 18px; }
-.title-gradient {
-    background: linear-gradient(135deg, #5b6ee1, #00e5b0);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-}
-
-.content-pad { padding: 24px 20px 100px; }
-
-.profile-hero {
-    display: flex; flex-direction: column; align-items: center;
-    padding: 20px 0 28px; text-align: center;
-}
-
-.avatar-wrap {
-    width: 90px; height: 90px; border-radius: 50%;
-    border: 2px solid var(--neon-accent); overflow: hidden;
-    background: var(--neon-surface-elevated);
-    display: flex; align-items: center; justify-content: center;
-    margin-bottom: 16px;
-    box-shadow: 0 0 20px var(--neon-accent-glow);
-}
-.avatar-img { width: 100%; height: 100%; object-fit: cover; }
-.avatar-icon { font-size: 56px; color: var(--neon-text-muted); }
-
-.user-name { font-size: 22px; font-weight: 800; color: #e8eaf0; margin: 0 0 4px; }
-.user-email { font-size: 14px; color: var(--neon-text-muted); margin: 0 0 14px; }
-
-.curator-badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: var(--neon-accent-dim); border: 1px solid rgba(0, 229, 176, 0.3);
-    border-radius: 20px; padding: 5px 14px;
-    font-size: 12px; font-weight: 700; color: var(--neon-accent);
-}
-
-.stats-card {
-    display: flex; align-items: center;
-    background: var(--neon-surface); border: 1px solid var(--neon-border);
-    border-radius: 18px; padding: 20px; margin-bottom: 28px;
-}
-
-.stat-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.stat-num { font-size: 28px; font-weight: 900; color: #e8eaf0; line-height: 1; }
-.stat-num.accent { color: var(--neon-accent); }
-.stat-num.blue { color: #7b8ff5; }
-.stat-lbl { font-size: 11px; font-weight: 700; letter-spacing: 0.5px; color: var(--neon-text-muted); }
-.stat-sep { width: 1px; height: 36px; background: var(--neon-border); }
-
-.menu-section { margin-bottom: 24px; }
-.section-label {
-    font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
-    text-transform: uppercase; color: var(--neon-text-muted);
-    margin-bottom: 10px; display: block;
-}
-
-.menu-item {
-    display: flex; align-items: center; gap: 14px;
-    background: var(--neon-surface); border: 1px solid var(--neon-border);
-    border-radius: 14px; padding: 14px; margin-bottom: 8px;
-    cursor: pointer; -webkit-tap-highlight-color: transparent;
-    transition: border-color 0.2s;
-}
-.menu-item:active { border-color: var(--neon-accent); }
-
-.menu-icon-wrap {
-    width: 38px; height: 38px; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px; flex-shrink: 0;
-}
-.menu-teal { background: rgba(0, 229, 176, 0.12); color: var(--neon-accent); }
-.menu-blue { background: rgba(91, 110, 225, 0.12); color: #7b8ff5; }
-.menu-red { background: rgba(255, 71, 87, 0.12); color: #ff6b7a; }
-
-.menu-text { flex: 1; font-size: 15px; font-weight: 600; color: #e8eaf0; }
-.menu-chevron { color: var(--neon-text-muted); font-size: 18px; }
-
-.footer-text { text-align: center; font-size: 11px; color: #4a5568; margin-top: 12px; }
-</style>

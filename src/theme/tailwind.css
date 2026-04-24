@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+@theme {
+    --color-neon-accent: #00e5b0;
+    --color-neon-surface: #131929;
+    --color-neon-elevated: #1a2035;
+    --color-neon-border: #1e2538;
+    --color-neon-muted: #6b7a99;
+    --color-neon-text: #e8eaf0;
+    --color-neon-blue: #5b6ee1;
+    --color-neon-danger: #ff4757;
+    --color-neon-warning: #ffa26b;
+    --color-neon-bg: #0a0e1a;
+}

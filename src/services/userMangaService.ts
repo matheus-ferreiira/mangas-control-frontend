@@ -5,18 +5,18 @@ export type MangaStatus =
     | 'completed'
     | 'plan_to_read'
     | 'dropped'
-    | 'on_hold';
+    | 'paused';
 
 export interface UserManga {
     id: number;
     manga_id: number;
     site_id?: number;
-    current_chapter: number;
+    current_chapters: number;
     status: MangaStatus;
     manga?: {
         id: number;
         name: string;
-        cover_url?: string;
+        cover?: string;
         total_chapters?: number;
     };
     site?: {
@@ -31,7 +31,7 @@ export const STATUS_LABELS: Record<MangaStatus, string> = {
     completed: 'Completo',
     plan_to_read: 'Quero Ler',
     dropped: 'Abandonado',
-    on_hold: 'Pausado',
+    paused: 'Pausado',
 };
 
 export const STATUS_COLORS: Record<MangaStatus, string> = {
@@ -39,7 +39,7 @@ export const STATUS_COLORS: Record<MangaStatus, string> = {
     completed: 'success',
     plan_to_read: 'medium',
     dropped: 'danger',
-    on_hold: 'warning',
+    paused: 'warning',
 };
 
 export const userMangaService = {
@@ -55,8 +55,8 @@ export const userMangaService = {
 
     async create(payload: {
         manga_id: number;
-        site_id?: number;
-        current_chapter?: number;
+        site_id: number;
+        current_chapters?: number;
         status: MangaStatus;
     }): Promise<UserManga> {
         const { data } = await api.post('/user-mangas', payload);
@@ -65,7 +65,7 @@ export const userMangaService = {
 
     async update(
         id: number,
-        payload: Partial<Pick<UserManga, 'current_chapter' | 'status' | 'site_id'>>
+        payload: Partial<Pick<UserManga, 'current_chapters' | 'status' | 'site_id'>>
     ): Promise<UserManga> {
         const { data } = await api.patch(`/user-mangas/${id}`, payload);
         return data as UserManga;

@@ -10,88 +10,83 @@
         </ion-header>
 
         <ion-content :fullscreen="true">
-            <div class="content-pad">
-                <!-- Add / Edit form -->
-                <div class="form-card">
-                    <h3 class="form-title">
+            <div class="px-5 pt-5 pb-24">
+                <!-- Form -->
+                <div class="bg-neon-surface border border-neon-border rounded-2xl p-5 mb-7">
+                    <h3 class="text-[17px] font-bold text-neon-text m-0 mb-4">
                         {{ editingId ? 'Editar Manga' : 'Adicionar ao Catálogo' }}
                     </h3>
 
-                    <div class="field-group">
-                        <span class="neon-label">Nome</span>
-                        <div class="input-row">
-                            <input v-model="form.name" placeholder="Título da série..." class="field-input" />
+                    <div class="mb-4">
+                        <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-2">Nome</span>
+                        <div class="bg-neon-elevated border border-neon-border rounded-xl transition-colors focus-within:border-neon-accent/30">
+                            <input v-model="form.name" placeholder="Título da série..." class="w-full bg-transparent border-none outline-none text-neon-text text-[15px] px-4 py-[14px] placeholder:text-[#4a5568] box-border" />
                         </div>
                     </div>
 
-                    <div class="field-group">
-                        <span class="neon-label">URL da Capa</span>
-                        <div class="input-row">
-                            <input v-model="form.cover_url" placeholder="https://..." class="field-input" />
-                        </div>
-                    </div>
-
-                    <div class="field-group">
-                        <span class="neon-label">Total de Capítulos</span>
-                        <div class="input-row">
-                            <input
-                                v-model.number="form.total_chapters"
-                                type="number"
-                                placeholder="Opcional"
-                                class="field-input"
-                                min="0"
-                            />
-                        </div>
-                    </div>
-
-                    <div class="btn-row">
-                        <ion-button
-                            class="save-btn"
-                            :disabled="saving || !form.name.trim()"
-                            @click="editingId ? updateManga() : createManga()"
-                            expand="block"
+                    <div class="mb-4">
+                        <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-2">Capa</span>
+                        <div
+                            class="w-full h-[150px] rounded-xl overflow-hidden bg-neon-elevated border border-dashed border-neon-border flex items-center justify-center cursor-pointer transition-colors active:border-neon-accent/40"
+                            @click="triggerCoverPick"
                         >
+                            <img v-if="coverPreview || form.cover" :src="coverPreview || form.cover" class="w-full h-full object-cover" alt="Capa" />
+                            <div v-else class="flex flex-col items-center gap-2 text-neon-muted text-[13px]">
+                                <ion-icon :icon="imageOutline" class="text-[36px]" />
+                                <span>Selecionar da galeria</span>
+                            </div>
+                        </div>
+                        <input ref="coverInput" type="file" accept="image/*" class="hidden" @change="onCoverSelected" />
+                    </div>
+
+                    <div class="mb-4">
+                        <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-2">Total de Capítulos</span>
+                        <div class="bg-neon-elevated border border-neon-border rounded-xl transition-colors focus-within:border-neon-accent/30">
+                            <input v-model.number="form.total_chapters" type="number" placeholder="Opcional" min="0" class="w-full bg-transparent border-none outline-none text-neon-text text-[15px] px-4 py-[14px] placeholder:text-[#4a5568] box-border" />
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-2.5 mt-1">
+                        <ion-button expand="block" class="btn-primary" :disabled="saving || !form.name.trim()" @click="editingId ? updateManga() : createManga()">
                             <ion-spinner v-if="saving" name="crescent" />
                             <span v-else>{{ editingId ? 'Atualizar' : 'Adicionar Manga' }}</span>
                         </ion-button>
-                        <ion-button v-if="editingId" class="cancel-btn" fill="solid" @click="cancelEdit" expand="block">
-                            Cancelar
-                        </ion-button>
+                        <ion-button v-if="editingId" expand="block" class="btn-cancel" @click="cancelEdit">Cancelar</ion-button>
                     </div>
                 </div>
 
                 <!-- List -->
-                <div class="section-header">
-                    <h2 class="section-title">Catálogo</h2>
-                    <span class="count-badge" v-if="mangas.length">{{ mangas.length }}</span>
+                <div class="flex items-center gap-2.5 mb-3.5">
+                    <h2 class="text-lg font-extrabold text-neon-text m-0">Catálogo</h2>
+                    <span v-if="mangas.length" class="bg-neon-accent/12 border border-neon-accent/20 text-neon-accent rounded-full px-2.5 py-0.5 text-xs font-bold">{{ mangas.length }}</span>
                 </div>
 
-                <div v-if="loading" class="loading-state">
+                <div v-if="loading" class="flex justify-center py-10">
                     <ion-spinner name="crescent" color="primary" />
                 </div>
 
-                <div v-else-if="mangas.length === 0" class="empty-state">
-                    <ion-icon :icon="bookOutline" class="empty-icon" />
-                    <p>Nenhum manga no catálogo ainda.</p>
+                <div v-else-if="mangas.length === 0" class="text-center py-8">
+                    <ion-icon :icon="bookOutline" class="text-[40px] text-neon-muted block mb-2.5" />
+                    <p class="text-sm text-neon-muted m-0">Nenhum manga no catálogo ainda.</p>
                 </div>
 
                 <div v-else>
-                    <div v-for="manga in mangas" :key="manga.id" class="manga-row">
-                        <div class="manga-cover-wrap">
-                            <img v-if="manga.cover_url" :src="manga.cover_url" class="manga-cover" />
-                            <div v-else class="manga-cover-ph">
+                    <div v-for="manga in mangas" :key="manga.id" class="flex items-center gap-3 bg-neon-surface border border-neon-border rounded-[14px] p-3 mb-2.5">
+                        <div class="w-12 h-[66px] rounded-lg overflow-hidden flex-shrink-0">
+                            <img v-if="manga.cover" :src="manga.cover" class="w-full h-full object-cover" />
+                            <div v-else class="w-full h-full bg-neon-elevated flex items-center justify-center text-neon-muted text-2xl">
                                 <ion-icon :icon="bookOutline" />
                             </div>
                         </div>
-                        <div class="manga-info">
-                            <span class="manga-name">{{ manga.name }}</span>
-                            <span class="manga-ch" v-if="manga.total_chapters">{{ manga.total_chapters }} capítulos</span>
+                        <div class="flex-1 min-w-0 flex flex-col gap-1">
+                            <span class="text-sm font-bold text-neon-text truncate">{{ manga.name }}</span>
+                            <span v-if="manga.total_chapters" class="text-xs text-neon-muted">{{ manga.total_chapters }} capítulos</span>
                         </div>
-                        <div class="manga-actions">
-                            <button class="action-btn edit-btn" @click="startEdit(manga)">
+                        <div class="flex gap-2 flex-shrink-0">
+                            <button class="w-[34px] h-[34px] rounded-[10px] bg-neon-elevated border border-neon-border flex items-center justify-center text-base text-[#7b8ff5] cursor-pointer" @click="startEdit(manga)">
                                 <ion-icon :icon="pencilOutline" />
                             </button>
-                            <button class="action-btn del-btn" @click="confirmDelete(manga)">
+                            <button class="w-[34px] h-[34px] rounded-[10px] bg-neon-elevated border border-neon-border flex items-center justify-center text-base text-neon-danger cursor-pointer" @click="confirmDelete(manga)">
                                 <ion-icon :icon="trashOutline" />
                             </button>
                         </div>
@@ -109,23 +104,22 @@ import {
     IonButtons, IonBackButton, IonButton, IonIcon, IonSpinner,
     toastController, alertController,
 } from '@ionic/vue';
-import { bookOutline, pencilOutline, trashOutline } from 'ionicons/icons';
+import { bookOutline, pencilOutline, trashOutline, imageOutline } from 'ionicons/icons';
 import { mangaService, Manga } from '@/services/mangaService';
 
 export default defineComponent({
     name: 'ManageMangasPage',
-    components: {
-        IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
-        IonButtons, IonBackButton, IonButton, IonIcon, IonSpinner,
-    },
+    components: { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonBackButton, IonButton, IonIcon, IonSpinner },
     data() {
         return {
             loading: false,
             saving: false,
             mangas: [] as Manga[],
             editingId: null as number | null,
-            form: { name: '', cover_url: '', total_chapters: null as number | null },
-            bookOutline, pencilOutline, trashOutline,
+            form: { name: '', cover: '', total_chapters: null as number | null },
+            coverFile: null as File | null,
+            coverPreview: '' as string,
+            bookOutline, pencilOutline, trashOutline, imageOutline,
         };
     },
     async ionViewWillEnter() {
@@ -148,11 +142,9 @@ export default defineComponent({
             if (!this.form.name.trim()) return;
             this.saving = true;
             try {
-                const manga = await mangaService.create({
-                    name: this.form.name.trim(),
-                    cover_url: this.form.cover_url || undefined,
-                    total_chapters: this.form.total_chapters || undefined,
-                });
+                let cover: string | undefined = this.form.cover || undefined;
+                if (this.coverFile) cover = await mangaService.uploadCover(this.coverFile);
+                const manga = await mangaService.create({ name: this.form.name.trim(), cover, total_chapters: this.form.total_chapters || undefined });
                 this.mangas.unshift(manga);
                 this.resetForm();
                 await this.showToast('Manga adicionado ao catálogo!', 'success');
@@ -165,11 +157,10 @@ export default defineComponent({
 
         startEdit(manga: Manga) {
             this.editingId = manga.id;
-            this.form = {
-                name: manga.name,
-                cover_url: manga.cover_url || '',
-                total_chapters: manga.total_chapters || null,
-            };
+            this.form = { name: manga.name, cover: manga.cover || '', total_chapters: manga.total_chapters || null };
+            this.coverFile = null;
+            if (this.coverPreview) URL.revokeObjectURL(this.coverPreview);
+            this.coverPreview = '';
             window.scrollTo({ top: 0, behavior: 'smooth' });
         },
 
@@ -182,11 +173,9 @@ export default defineComponent({
             if (!this.editingId || !this.form.name.trim()) return;
             this.saving = true;
             try {
-                const updated = await mangaService.update(this.editingId, {
-                    name: this.form.name.trim(),
-                    cover_url: this.form.cover_url || undefined,
-                    total_chapters: this.form.total_chapters || undefined,
-                });
+                let cover: string | undefined = this.form.cover || undefined;
+                if (this.coverFile) cover = await mangaService.uploadCover(this.coverFile);
+                const updated = await mangaService.update(this.editingId, { name: this.form.name.trim(), cover, total_chapters: this.form.total_chapters || undefined });
                 const idx = this.mangas.findIndex((m) => m.id === this.editingId);
                 if (idx !== -1) this.mangas[idx] = updated;
                 this.cancelEdit();
@@ -221,7 +210,22 @@ export default defineComponent({
         },
 
         resetForm() {
-            this.form = { name: '', cover_url: '', total_chapters: null };
+            this.form = { name: '', cover: '', total_chapters: null };
+            this.coverFile = null;
+            if (this.coverPreview) URL.revokeObjectURL(this.coverPreview);
+            this.coverPreview = '';
+        },
+
+        triggerCoverPick() {
+            (this.$refs.coverInput as HTMLInputElement).click();
+        },
+
+        onCoverSelected(e: Event) {
+            const file = (e.target as HTMLInputElement).files?.[0];
+            if (!file) return;
+            this.coverFile = file;
+            if (this.coverPreview) URL.revokeObjectURL(this.coverPreview);
+            this.coverPreview = URL.createObjectURL(file);
         },
 
         async showToast(message: string, color: string) {
@@ -233,78 +237,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.content-pad { padding: 20px 20px 100px; }
-
-.form-card {
-    background: var(--neon-surface); border: 1px solid var(--neon-border);
-    border-radius: 20px; padding: 20px; margin-bottom: 28px;
-}
-
-.form-title { font-size: 17px; font-weight: 700; color: #e8eaf0; margin: 0 0 16px; }
-
-.field-group { margin-bottom: 14px; }
-
-.neon-label {
-    font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
-    text-transform: uppercase; color: var(--neon-text-muted);
-    margin-bottom: 8px; display: block;
-}
-
-.input-row {
-    background: var(--neon-surface-elevated); border: 1px solid var(--neon-border);
-    border-radius: 12px; transition: border-color 0.2s;
-}
-.input-row:focus-within { border-color: rgba(0, 229, 176, 0.3); }
-
-.field-input {
-    width: 100%; background: transparent; border: none; outline: none;
-    color: #e8eaf0; font-size: 15px; padding: 13px 16px; box-sizing: border-box;
-}
-.field-input::placeholder { color: #4a5568; }
-
-.btn-row { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
-
-.save-btn { --background: var(--neon-accent); --color: #000; --border-radius: 12px; font-weight: 700; height: 48px; }
-.cancel-btn { --background: var(--neon-surface-elevated); --color: #e8eaf0; --border-radius: 12px; height: 44px; }
-
-.section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-.section-title { font-size: 18px; font-weight: 800; color: #e8eaf0; margin: 0; }
-.count-badge {
-    background: var(--neon-accent-dim); border: 1px solid rgba(0, 229, 176, 0.2);
-    color: var(--neon-accent); border-radius: 20px; padding: 2px 10px; font-size: 12px; font-weight: 700;
-}
-
-.loading-state { display: flex; justify-content: center; padding: 40px 0; }
-.empty-state { text-align: center; padding: 30px 0; }
-.empty-icon { font-size: 40px; color: var(--neon-text-muted); display: block; margin-bottom: 10px; }
-.empty-state p { font-size: 14px; color: var(--neon-text-muted); margin: 0; }
-
-.manga-row {
-    display: flex; align-items: center; gap: 12px;
-    background: var(--neon-surface); border: 1px solid var(--neon-border);
-    border-radius: 14px; padding: 12px; margin-bottom: 10px;
-}
-
-.manga-cover-wrap { width: 48px; height: 66px; border-radius: 8px; overflow: hidden; flex-shrink: 0; }
-.manga-cover { width: 100%; height: 100%; object-fit: cover; }
-.manga-cover-ph {
-    width: 100%; height: 100%; background: var(--neon-surface-elevated);
-    display: flex; align-items: center; justify-content: center;
-    color: var(--neon-text-muted); font-size: 24px;
-}
-
-.manga-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
-.manga-name { font-size: 14px; font-weight: 700; color: #e8eaf0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.manga-ch { font-size: 12px; color: var(--neon-text-muted); }
-
-.manga-actions { display: flex; gap: 8px; flex-shrink: 0; }
-
-.action-btn {
-    width: 34px; height: 34px; border-radius: 10px;
-    background: var(--neon-surface-elevated); border: 1px solid var(--neon-border);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px; cursor: pointer; -webkit-tap-highlight-color: transparent;
-}
-.edit-btn { color: #7b8ff5; }
-.del-btn { color: var(--neon-danger); }
+.btn-primary { --background: var(--neon-accent); --color: #000; --border-radius: 12px; font-weight: 700; height: 48px; }
+.btn-cancel { --background: var(--neon-surface-elevated); --color: #e8eaf0; --border-radius: 12px; height: 44px; }
 </style>

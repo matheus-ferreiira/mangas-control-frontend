@@ -2,117 +2,108 @@
     <ion-page>
         <ion-header>
             <ion-toolbar>
-                <ion-title class="toolbar-title">
-                    <span class="title-gradient">Neon Curator</span>
+                <ion-title>
+                    <span class="bg-gradient-to-br from-neon-blue to-neon-accent bg-clip-text text-transparent font-extrabold text-lg">
+                        Neon Curator
+                    </span>
                 </ion-title>
             </ion-toolbar>
         </ion-header>
 
         <ion-content :fullscreen="true">
-            <!-- Hero -->
-            <div class="hero-section">
-                <div class="badge-pill">FASE DE REGISTRO</div>
-                <h1 class="hero-title">
-                    Expanda Seus<br />
-                    <span class="title-gradient">Arquivos Digitais</span>
-                </h1>
-                <p class="hero-sub">
-                    Integre novas fontes de manga ao seu arquivo de curador.
-                    O sistema irá indexar metadados e atualizações automaticamente.
-                </p>
-            </div>
-
-            <div class="page-body">
-                <!-- Add form -->
-                <div class="form-card">
-                    <div class="field-group">
-                        <span class="neon-label">Nome do Site</span>
-                        <div class="input-row">
-                            <input v-model="form.name" placeholder="ex: Manga Vault" class="field-input" />
-                        </div>
+            <div class="pb-24">
+                <!-- Hero -->
+                <div class="px-5 pt-7">
+                    <div class="inline-block bg-neon-accent/12 border border-neon-accent/30 rounded-full px-3.5 py-1 text-[10px] font-bold tracking-[1.5px] uppercase text-neon-accent mb-3.5">
+                        FASE DE REGISTRO
                     </div>
-
-                    <div class="field-group">
-                        <span class="neon-label">URL do Site</span>
-                        <div class="input-row">
-                            <input v-model="form.url" placeholder="https://mangavault.com" type="url" class="field-input" />
-                        </div>
-                    </div>
-
-                    <ion-button
-                        expand="block"
-                        class="add-btn"
-                        :disabled="saving || !canSubmit"
-                        @click="editingId ? updateSite() : addSite()"
-                    >
-                        <ion-spinner v-if="saving" name="crescent" />
-                        <span v-else>{{ editingId ? 'Atualizar Fonte' : 'Adicionar Fonte' }}</span>
-                    </ion-button>
-
-                    <ion-button v-if="editingId" expand="block" fill="solid" class="cancel-btn" @click="cancelEdit">
-                        Cancelar
-                    </ion-button>
-
-                    <p class="form-disclaimer">
-                        Ao adicionar uma fonte, você confirma que a URL aponta para um arquivo web válido.
-                        A sincronização criptografada será iniciada imediatamente.
+                    <h1 class="text-[30px] font-black text-neon-text leading-tight m-0 mb-3">
+                        Expanda Seus<br />
+                        <span class="bg-gradient-to-br from-neon-blue to-neon-accent bg-clip-text text-transparent">Arquivos Digitais</span>
+                    </h1>
+                    <p class="text-sm text-neon-muted leading-relaxed m-0 mb-6">
+                        Integre novas fontes de manga ao seu arquivo de curador.
                     </p>
                 </div>
 
-                <!-- Trust badges -->
-                <div class="trust-row">
-                    <div class="trust-badge">
-                        <div class="trust-icon-wrap trust-green">
-                            <ion-icon :icon="shieldCheckmarkOutline" />
+                <div class="px-5">
+                    <!-- Form -->
+                    <div class="bg-neon-surface border border-neon-border rounded-2xl p-5 mb-4">
+                        <div class="mb-4">
+                            <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-2">Nome do Site</span>
+                            <div class="bg-neon-elevated border border-neon-border rounded-xl transition-colors focus-within:border-neon-accent/30">
+                                <input v-model="form.name" placeholder="ex: Manga Vault" class="w-full bg-transparent border-none outline-none text-neon-text text-[15px] px-4 py-[14px] placeholder:text-[#4a5568] box-border" />
+                            </div>
                         </div>
-                        <div class="trust-text">
-                            <span class="trust-cat">SEGURANÇA</span>
-                            <span class="trust-val">SSL Verificado</span>
+                        <div class="mb-4">
+                            <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-2">URL do Site</span>
+                            <div class="bg-neon-elevated border border-neon-border rounded-xl transition-colors focus-within:border-neon-accent/30">
+                                <input v-model="form.url" placeholder="https://mangavault.com" type="url" class="w-full bg-transparent border-none outline-none text-neon-text text-[15px] px-4 py-[14px] placeholder:text-[#4a5568] box-border" />
+                            </div>
                         </div>
-                    </div>
-                    <div class="trust-badge">
-                        <div class="trust-icon-wrap trust-blue">
-                            <ion-icon :icon="serverOutline" />
-                        </div>
-                        <div class="trust-text">
-                            <span class="trust-cat">ARMAZENAMENTO</span>
-                            <span class="trust-val">Sync em Nuvem</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sites list -->
-                <div class="sites-section">
-                    <div class="section-header">
-                        <h2 class="section-title">Fontes Cadastradas</h2>
-                        <span class="count-badge" v-if="sites.length">{{ sites.length }}</span>
+                        <ion-button expand="block" class="btn-primary mb-2.5" :disabled="saving || !canSubmit" @click="editingId ? updateSite() : addSite()">
+                            <ion-spinner v-if="saving" name="crescent" />
+                            <span v-else>{{ editingId ? 'Atualizar Fonte' : 'Adicionar Fonte' }}</span>
+                        </ion-button>
+                        <ion-button v-if="editingId" expand="block" class="btn-cancel mb-2.5" @click="cancelEdit">Cancelar</ion-button>
+                        <p class="text-[11px] text-[#4a5568] text-center mt-2 mb-0 leading-relaxed">
+                            Ao adicionar uma fonte, você confirma que a URL aponta para um arquivo web válido.
+                        </p>
                     </div>
 
-                    <div v-if="loading" class="loading-state">
+                    <!-- Trust badges -->
+                    <div class="grid grid-cols-2 gap-2.5 mb-7">
+                        <div class="bg-neon-surface border border-neon-border rounded-[14px] p-3.5 flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-[10px] bg-neon-accent/12 text-neon-accent flex items-center justify-center text-xl flex-shrink-0">
+                                <ion-icon :icon="shieldCheckmarkOutline" />
+                            </div>
+                            <div class="flex flex-col min-w-0">
+                                <span class="text-[9px] font-bold tracking-[1px] text-neon-muted uppercase">SEGURANÇA</span>
+                                <span class="text-[13px] font-bold text-neon-text">SSL Verificado</span>
+                            </div>
+                        </div>
+                        <div class="bg-neon-surface border border-neon-border rounded-[14px] p-3.5 flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-[10px] bg-neon-blue/12 text-[#7b8ff5] flex items-center justify-center text-xl flex-shrink-0">
+                                <ion-icon :icon="serverOutline" />
+                            </div>
+                            <div class="flex flex-col min-w-0">
+                                <span class="text-[9px] font-bold tracking-[1px] text-neon-muted uppercase">ARMAZENAMENTO</span>
+                                <span class="text-[13px] font-bold text-neon-text">Sync em Nuvem</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sites list -->
+                    <div class="flex items-center gap-2.5 mb-3.5">
+                        <h2 class="text-lg font-extrabold text-neon-text m-0">Fontes Cadastradas</h2>
+                        <span v-if="sites.length" class="bg-neon-accent/12 border border-neon-accent/20 text-neon-accent rounded-full px-2.5 py-0.5 text-xs font-bold">{{ sites.length }}</span>
+                    </div>
+
+                    <div v-if="loading" class="flex justify-center py-8">
                         <ion-spinner name="crescent" color="primary" />
                     </div>
 
-                    <div v-else-if="sites.length === 0" class="empty-state">
-                        <ion-icon :icon="cloudDownloadOutline" class="empty-icon" />
-                        <p>Nenhuma fonte cadastrada ainda.</p>
+                    <div v-else-if="sites.length === 0" class="text-center py-8">
+                        <ion-icon :icon="cloudDownloadOutline" class="text-[40px] text-neon-muted block mb-2.5" />
+                        <p class="text-sm text-neon-muted m-0">Nenhuma fonte cadastrada ainda.</p>
                     </div>
 
                     <div v-else>
-                        <div v-for="site in sites" :key="site.id" class="site-row">
-                            <div class="site-info">
-                                <div class="site-icon-wrap">
+                        <div v-for="site in sites" :key="site.id" class="flex items-center justify-between bg-neon-surface border border-neon-border rounded-[14px] p-3.5 mb-2.5">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <div class="w-9 h-9 rounded-[10px] bg-neon-elevated border border-neon-border flex items-center justify-center text-neon-accent text-lg flex-shrink-0">
                                     <ion-icon :icon="globeOutline" />
                                 </div>
-                                <div class="site-text">
-                                    <span class="site-name">{{ site.name }}</span>
-                                    <span class="site-url">{{ site.url }}</span>
+                                <div class="flex flex-col min-w-0">
+                                    <span class="text-sm font-bold text-neon-text truncate">{{ site.name }}</span>
+                                    <span class="text-xs text-neon-muted truncate">{{ site.url }}</span>
                                 </div>
                             </div>
-                            <div class="site-actions">
-                                <button class="action-btn edit-btn" @click="startEdit(site)">
+                            <div class="flex gap-2 flex-shrink-0 ml-2">
+                                <button class="w-[34px] h-[34px] rounded-[10px] bg-neon-elevated border border-neon-border flex items-center justify-center text-base text-[#7b8ff5] cursor-pointer" @click="startEdit(site)">
                                     <ion-icon :icon="pencilOutline" />
                                 </button>
-                                <button class="action-btn del-btn" @click="confirmDelete(site)">
+                                <button class="w-[34px] h-[34px] rounded-[10px] bg-neon-elevated border border-neon-border flex items-center justify-center text-base text-neon-danger cursor-pointer" @click="confirmDelete(site)">
                                     <ion-icon :icon="trashOutline" />
                                 </button>
                             </div>
@@ -130,18 +121,12 @@ import {
     IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
     IonButton, IonIcon, IonSpinner, toastController, alertController,
 } from '@ionic/vue';
-import {
-    shieldCheckmarkOutline, serverOutline, cloudDownloadOutline,
-    globeOutline, pencilOutline, trashOutline,
-} from 'ionicons/icons';
+import { shieldCheckmarkOutline, serverOutline, cloudDownloadOutline, globeOutline, pencilOutline, trashOutline } from 'ionicons/icons';
 import { siteService, Site } from '@/services/siteService';
 
 export default defineComponent({
     name: 'ManageSitesPage',
-    components: {
-        IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
-        IonButton, IonIcon, IonSpinner,
-    },
+    components: { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonIcon, IonSpinner },
     data() {
         return {
             loading: false,
@@ -149,14 +134,11 @@ export default defineComponent({
             sites: [] as Site[],
             editingId: null as number | null,
             form: { name: '', url: '' },
-            shieldCheckmarkOutline, serverOutline, cloudDownloadOutline,
-            globeOutline, pencilOutline, trashOutline,
+            shieldCheckmarkOutline, serverOutline, cloudDownloadOutline, globeOutline, pencilOutline, trashOutline,
         };
     },
     computed: {
-        canSubmit(): boolean {
-            return !!(this.form.name.trim() && this.form.url.trim());
-        },
+        canSubmit(): boolean { return !!(this.form.name.trim() && this.form.url.trim()); },
     },
     async ionViewWillEnter() {
         await this.loadSites();
@@ -173,7 +155,6 @@ export default defineComponent({
                 this.loading = false;
             }
         },
-
         async addSite() {
             if (!this.canSubmit) return;
             this.saving = true;
@@ -188,24 +169,19 @@ export default defineComponent({
                 this.saving = false;
             }
         },
-
         startEdit(site: Site) {
             this.editingId = site.id;
             this.form = { name: site.name, url: site.url };
         },
-
         cancelEdit() {
             this.editingId = null;
             this.form = { name: '', url: '' };
         },
-
         async updateSite() {
             if (!this.editingId || !this.canSubmit) return;
             this.saving = true;
             try {
-                const updated = await siteService.update(this.editingId, {
-                    name: this.form.name.trim(), url: this.form.url.trim(),
-                });
+                const updated = await siteService.update(this.editingId, { name: this.form.name.trim(), url: this.form.url.trim() });
                 const idx = this.sites.findIndex((s) => s.id === this.editingId);
                 if (idx !== -1) this.sites[idx] = updated;
                 this.cancelEdit();
@@ -216,7 +192,6 @@ export default defineComponent({
                 this.saving = false;
             }
         },
-
         async confirmDelete(site: Site) {
             const alert = await alertController.create({
                 header: 'Remover Fonte',
@@ -228,7 +203,6 @@ export default defineComponent({
             });
             await alert.present();
         },
-
         async deleteSite(id: number) {
             try {
                 await siteService.delete(id);
@@ -238,7 +212,6 @@ export default defineComponent({
                 await this.showToast('Falha ao remover fonte.', 'danger');
             }
         },
-
         async showToast(message: string, color: string) {
             const toast = await toastController.create({ message, duration: 2000, color, position: 'top' });
             await toast.present();
@@ -248,113 +221,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.toolbar-title { font-weight: 800; font-size: 18px; }
-.title-gradient {
-    background: linear-gradient(135deg, #5b6ee1, #00e5b0);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-}
-
-.hero-section { padding: 28px 20px 0; }
-
-.badge-pill {
-    display: inline-block;
-    background: rgba(0, 229, 176, 0.12); border: 1px solid rgba(0, 229, 176, 0.3);
-    border-radius: 20px; padding: 4px 14px;
-    font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
-    color: var(--neon-accent); margin-bottom: 14px;
-}
-
-.hero-title { font-size: 30px; font-weight: 900; color: #e8eaf0; line-height: 1.2; margin: 0 0 12px; }
-.hero-sub { font-size: 14px; color: var(--neon-text-muted); line-height: 1.6; margin: 0 0 24px; }
-
-.page-body { padding: 0 20px 100px; }
-
-.form-card {
-    background: var(--neon-surface); border: 1px solid var(--neon-border);
-    border-radius: 20px; padding: 20px; margin-bottom: 16px;
-}
-
-.field-group { margin-bottom: 16px; }
-
-.neon-label {
-    font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
-    text-transform: uppercase; color: var(--neon-text-muted);
-    margin-bottom: 8px; display: block;
-}
-
-.input-row {
-    background: var(--neon-surface-elevated); border: 1px solid var(--neon-border);
-    border-radius: 12px; transition: border-color 0.2s;
-}
-.input-row:focus-within { border-color: rgba(0, 229, 176, 0.3); }
-
-.field-input {
-    width: 100%; background: transparent; border: none; outline: none;
-    color: #e8eaf0; font-size: 15px; padding: 14px 16px; box-sizing: border-box;
-}
-.field-input::placeholder { color: #4a5568; }
-
-.add-btn { --background: var(--neon-accent); --color: #000; --border-radius: 14px; font-weight: 700; height: 52px; margin-bottom: 10px; }
-.cancel-btn { --background: var(--neon-surface-elevated); --color: #e8eaf0; --border-radius: 14px; height: 44px; margin-bottom: 10px; }
-.form-disclaimer { font-size: 11px; color: #4a5568; text-align: center; margin: 8px 0 0; line-height: 1.5; }
-
-.trust-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 28px; }
-
-.trust-badge {
-    background: var(--neon-surface); border: 1px solid var(--neon-border);
-    border-radius: 14px; padding: 14px; display: flex; align-items: center; gap: 12px;
-}
-
-.trust-icon-wrap {
-    width: 36px; height: 36px; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;
-}
-.trust-green { background: rgba(0, 229, 176, 0.12); color: var(--neon-accent); }
-.trust-blue { background: rgba(91, 110, 225, 0.12); color: #7b8ff5; }
-
-.trust-text { display: flex; flex-direction: column; min-width: 0; }
-.trust-cat { font-size: 9px; font-weight: 700; letter-spacing: 1px; color: var(--neon-text-muted); }
-.trust-val { font-size: 13px; font-weight: 700; color: #e8eaf0; }
-
-.section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-.section-title { font-size: 18px; font-weight: 800; color: #e8eaf0; margin: 0; }
-.count-badge {
-    background: var(--neon-accent-dim); border: 1px solid rgba(0, 229, 176, 0.2);
-    color: var(--neon-accent); border-radius: 20px; padding: 2px 10px; font-size: 12px; font-weight: 700;
-}
-
-.loading-state { display: flex; justify-content: center; padding: 30px 0; }
-.empty-state { text-align: center; padding: 30px 0; }
-.empty-icon { font-size: 40px; color: var(--neon-text-muted); display: block; margin-bottom: 10px; }
-.empty-state p { font-size: 14px; color: var(--neon-text-muted); margin: 0; }
-
-.site-row {
-    display: flex; align-items: center; justify-content: space-between;
-    background: var(--neon-surface); border: 1px solid var(--neon-border);
-    border-radius: 14px; padding: 14px; margin-bottom: 10px;
-}
-
-.site-info { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1; }
-
-.site-icon-wrap {
-    width: 36px; height: 36px; border-radius: 10px;
-    background: var(--neon-surface-elevated); border: 1px solid var(--neon-border);
-    display: flex; align-items: center; justify-content: center;
-    color: var(--neon-accent); font-size: 18px; flex-shrink: 0;
-}
-
-.site-text { display: flex; flex-direction: column; min-width: 0; }
-.site-name { font-size: 14px; font-weight: 700; color: #e8eaf0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.site-url { font-size: 12px; color: var(--neon-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-.site-actions { display: flex; gap: 8px; flex-shrink: 0; margin-left: 8px; }
-
-.action-btn {
-    width: 34px; height: 34px; border-radius: 10px;
-    background: var(--neon-surface-elevated); border: 1px solid var(--neon-border);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px; cursor: pointer; -webkit-tap-highlight-color: transparent;
-}
-.edit-btn { color: #7b8ff5; }
-.del-btn { color: var(--neon-danger); }
+.btn-primary { --background: var(--neon-accent); --color: #000; --border-radius: 14px; font-weight: 700; height: 52px; }
+.btn-cancel { --background: var(--neon-surface-elevated); --color: #e8eaf0; --border-radius: 14px; height: 44px; }
 </style>

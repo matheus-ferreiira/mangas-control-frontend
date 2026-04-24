@@ -1,35 +1,32 @@
 <template>
-    <ion-page class="login-page">
-        <ion-content :fullscreen="true" class="login-content">
+    <ion-page class="[--background:#0a0e1a]">
+        <ion-content :fullscreen="true" class="[--background:#0a0e1a]">
             <!-- Logo -->
-            <div class="logo-section">
-                <div class="logo-icon-wrap">
-                    <ion-icon :icon="bookSharp" class="logo-icon" />
+            <div class="flex flex-col items-center px-6 pt-16 pb-8">
+                <div class="w-[72px] h-[72px] bg-neon-accent/12 rounded-[20px] flex items-center justify-center mb-4 border border-neon-accent/20">
+                    <ion-icon :icon="bookSharp" class="text-[40px] text-neon-accent" />
                 </div>
-                <h1 class="app-name">
-                    <span class="name-neon">NEON</span>
-                    <span class="name-curator"> CURATOR</span>
+                <h1 class="text-[28px] font-black tracking-[4px] m-0 mb-2.5 leading-none">
+                    <span class="text-neon-blue">NEON</span>
+                    <span class="text-neon-accent"> CURATOR</span>
                 </h1>
-                <p class="tagline">
+                <p class="text-neon-muted text-sm text-center leading-relaxed m-0">
                     Arquivando as melhores narrativas<br />visuais do mundo.
                 </p>
             </div>
 
             <!-- Auth card -->
-            <div class="auth-card">
-                <h2 class="card-title">Bem-vindo de volta</h2>
-                <p class="card-subtitle">
-                    Entre para acessar seus arquivos digitais.
-                </p>
+            <div class="mx-5 mb-6 bg-[#131929] border border-neon-border rounded-[20px] p-7">
+                <h2 class="text-[22px] font-extrabold text-neon-text m-0 mb-1.5">Bem-vindo de volta</h2>
+                <p class="text-sm text-neon-muted m-0 mb-6">Entre para acessar seus arquivos digitais.</p>
 
-                <!-- Google -->
                 <button
-                    class="google-btn"
-                    :class="{ loading: loading }"
+                    class="w-full flex items-center justify-center gap-3 bg-[#1a2035] border border-neon-border rounded-[14px] p-4 text-neon-text text-[15px] font-semibold cursor-pointer transition-colors min-h-[52px] [&:active]:bg-[#212b45] disabled:opacity-70"
+                    :class="{ 'border-neon-accent/30': loading }"
                     :disabled="loading"
                     @click="loginWithGoogle"
                 >
-                    <ion-spinner v-if="loading" name="crescent" class="btn-spinner" />
+                    <ion-spinner v-if="loading" name="crescent" class="w-5 h-5 [--color:#00e5b0]" />
                     <template v-else>
                         <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true">
                             <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
@@ -41,28 +38,28 @@
                     </template>
                 </button>
 
-                <p class="register-link">
+                <p class="text-center text-[13px] text-neon-muted mt-5 mb-0 leading-relaxed">
                     Acesso apenas via Google.<br />
-                    <span class="muted-text">Fale com o administrador para obter acesso.</span>
+                    <span class="text-[12px] text-[#4a5568]">Fale com o administrador para obter acesso.</span>
                 </p>
             </div>
 
-            <!-- Atmospheric images -->
-            <div class="atm-section">
-                <div class="atm-img atm-left">
-                    <div class="atm-overlay"></div>
+            <!-- Atmospheric -->
+            <div class="flex gap-2 mx-5 mb-6 h-[140px]">
+                <div class="flex-1 rounded-2xl bg-gradient-to-br from-[#0d1a2d] to-[#1a0d2e] relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[rgba(10,14,26,0.8)] to-transparent"></div>
                 </div>
-                <div class="atm-img atm-right">
-                    <div class="atm-overlay"></div>
+                <div class="flex-1 rounded-2xl bg-gradient-to-br from-[#0d1a2d] to-[#0d2d1a] relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[rgba(10,14,26,0.8)] to-transparent"></div>
                 </div>
             </div>
 
             <!-- Footer -->
-            <div class="login-footer">
-                <p class="footer-copy">© 2024 DIGITAL ARCHIVIST PROTOCOL</p>
-                <div class="footer-links">
-                    <a href="#" class="footer-link">POLÍTICA DE PRIVACIDADE</a>
-                    <a href="#" class="footer-link">TERMOS DE USO</a>
+            <div class="px-6 pb-10 text-center">
+                <p class="text-[10px] text-[#4a5568] tracking-[0.5px] m-0 mb-2">© 2025 PROTOCOLO ARQUIVISTA DIGITAL</p>
+                <div class="flex justify-center gap-5">
+                    <a href="#" class="text-[10px] text-[#4a5568] no-underline tracking-[0.5px]">POLÍTICA DE PRIVACIDADE</a>
+                    <a href="#" class="text-[10px] text-[#4a5568] no-underline tracking-[0.5px]">TERMOS DE USO</a>
                 </div>
             </div>
         </ion-content>
@@ -86,22 +83,14 @@ export default defineComponent({
         loginWithGoogle() {
             const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
             if (!clientId) {
-                toastController.create({
-                    message: 'Configure VITE_GOOGLE_CLIENT_ID no arquivo .env',
-                    duration: 3000, color: 'warning', position: 'top',
-                }).then((t) => t.present());
+                toastController.create({ message: 'Configure VITE_GOOGLE_CLIENT_ID no arquivo .env', duration: 3000, color: 'warning', position: 'top' }).then((t) => t.present());
                 return;
             }
-
             const g = (window as any).google;
             if (!g) {
-                toastController.create({
-                    message: 'Google Sign-In não disponível. Recarregue a página.',
-                    duration: 2500, color: 'warning', position: 'top',
-                }).then((t) => t.present());
+                toastController.create({ message: 'Google Sign-In não disponível. Recarregue a página.', duration: 2500, color: 'warning', position: 'top' }).then((t) => t.present());
                 return;
             }
-
             g.accounts.id.initialize({
                 client_id: clientId,
                 callback: async (response: { credential: string }) => {
@@ -111,10 +100,7 @@ export default defineComponent({
                         authStore.setAuth(res.token, res.user);
                         this.$router.replace('/tabs/library');
                     } catch {
-                        const toast = await toastController.create({
-                            message: 'Falha no login. Verifique suas credenciais.',
-                            duration: 2500, color: 'danger', position: 'top',
-                        });
+                        const toast = await toastController.create({ message: 'Falha no login. Verifique suas credenciais.', duration: 2500, color: 'danger', position: 'top' });
                         await toast.present();
                     } finally {
                         this.loading = false;
@@ -122,198 +108,14 @@ export default defineComponent({
                 },
                 use_fedcm_for_prompt: false,
             });
-
             this.loading = true;
             g.accounts.id.prompt((notification: any) => {
                 if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
                     this.loading = false;
-                    toastController.create({
-                        message: 'Pop-up bloqueado. Verifique as configurações do navegador.',
-                        duration: 3000, color: 'warning', position: 'top',
-                    }).then((t) => t.present());
+                    toastController.create({ message: 'Pop-up bloqueado. Verifique as configurações do navegador.', duration: 3000, color: 'warning', position: 'top' }).then((t) => t.present());
                 }
             });
         },
     },
 });
 </script>
-
-<style scoped>
-.login-page,
-.login-content {
-    --background: #0a0e1a;
-}
-
-/* Logo */
-.logo-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 60px 24px 32px;
-}
-
-.logo-icon-wrap {
-    width: 72px;
-    height: 72px;
-    background: var(--neon-accent-dim);
-    border-radius: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 16px;
-    border: 1px solid rgba(0, 229, 176, 0.2);
-}
-
-.logo-icon {
-    font-size: 40px;
-    color: var(--neon-accent);
-}
-
-.app-name {
-    font-size: 28px;
-    font-weight: 900;
-    letter-spacing: 4px;
-    margin: 0 0 10px;
-    line-height: 1;
-}
-
-.name-neon { color: #5b6ee1; }
-.name-curator { color: #00e5b0; }
-
-.tagline {
-    color: #8892a4;
-    font-size: 14px;
-    text-align: center;
-    line-height: 1.5;
-    margin: 0;
-}
-
-/* Auth card */
-.auth-card {
-    background: #131929;
-    border: 1px solid #1e2538;
-    border-radius: 20px;
-    margin: 0 20px 24px;
-    padding: 28px 24px;
-}
-
-.card-title {
-    font-size: 22px;
-    font-weight: 800;
-    color: #e8eaf0;
-    margin: 0 0 6px;
-}
-
-.card-subtitle {
-    font-size: 14px;
-    color: #6b7a99;
-    margin: 0 0 24px;
-}
-
-/* Google button */
-.google-btn {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    background: #1a2035;
-    border: 1px solid #1e2538;
-    border-radius: 14px;
-    padding: 16px;
-    color: #e8eaf0;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s, border-color 0.2s;
-    -webkit-tap-highlight-color: transparent;
-    min-height: 52px;
-}
-
-.google-btn:not(:disabled):active {
-    background: #212b45;
-}
-
-.google-btn:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-}
-
-.google-btn.loading {
-    border-color: rgba(0, 229, 176, 0.3);
-}
-
-.btn-spinner {
-    width: 20px;
-    height: 20px;
-    --color: #00e5b0;
-}
-
-.register-link {
-    text-align: center;
-    font-size: 13px;
-    color: #6b7a99;
-    margin: 20px 0 0;
-    line-height: 1.5;
-}
-
-.muted-text {
-    font-size: 12px;
-    color: #4a5568;
-}
-
-/* Atmospheric */
-.atm-section {
-    display: flex;
-    gap: 8px;
-    margin: 0 20px 24px;
-    height: 140px;
-}
-
-.atm-img {
-    flex: 1;
-    border-radius: 16px;
-    overflow: hidden;
-    position: relative;
-}
-
-.atm-left {
-    background: linear-gradient(135deg, #0d1a2d 0%, #1a0d2e 100%);
-}
-
-.atm-right {
-    background: linear-gradient(135deg, #0d1a2d 0%, #0d2d1a 100%);
-}
-
-.atm-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, rgba(10, 14, 26, 0.8) 0%, transparent 50%);
-}
-
-/* Footer */
-.login-footer {
-    padding: 0 24px 40px;
-    text-align: center;
-}
-
-.footer-copy {
-    font-size: 10px;
-    color: #4a5568;
-    letter-spacing: 0.5px;
-    margin: 0 0 8px;
-}
-
-.footer-links {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-}
-
-.footer-link {
-    font-size: 10px;
-    color: #4a5568;
-    text-decoration: none;
-    letter-spacing: 0.5px;
-}
-</style>
