@@ -207,7 +207,7 @@ export default defineComponent({
         },
         statuses() {
             const type = this.selectedContent?.type ?? 'manga';
-            return Object.entries(STATUS_LABELS).map(([value]) => ({
+            return Object.entries(STATUS_LABELS).map(([value, _]) => ({
                 value: value as ContentStatus,
                 label: getStatusLabel(value as ContentStatus, type),
             }));
