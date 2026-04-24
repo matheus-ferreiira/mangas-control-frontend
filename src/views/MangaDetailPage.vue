@@ -152,6 +152,7 @@
                         <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-3">Fonte de Leitura</span>
                         <IonSelect
                             v-model="selectedSiteId"
+                            :compareWith="(o1, o2) => Number(o1) === Number(o2)"
                             placeholder="Sem fonte"
                             fill="outline"
                             interface="action-sheet"
@@ -250,7 +251,7 @@ export default defineComponent({
                 const [item, sites] = await Promise.all([userContentService.getOne(id), siteService.getAll()]);
                 this.item = item;
                 this.sites = Array.isArray(sites) ? sites : (sites as any)?.data ?? [];
-                this.selectedSiteId = item.site_id ?? '';
+                this.selectedSiteId = item?.site?.id ? String(item.site.id) : '';
             } catch {
                 const toast = await toastController.create({ message: 'Falha ao carregar.', duration: 2000, color: 'danger', position: 'top' });
                 await toast.present();
