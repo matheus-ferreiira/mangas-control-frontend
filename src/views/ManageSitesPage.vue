@@ -1,16 +1,16 @@
 <template>
-    <ion-page>
-        <ion-header>
-            <ion-toolbar>
-                <ion-title>
+    <IonPage>
+        <IonHeader>
+            <IonToolbar>
+                <IonTitle>
                     <span class="bg-gradient-to-br from-neon-blue to-neon-accent bg-clip-text text-transparent font-extrabold text-lg">
                         Neon Curator
                     </span>
-                </ion-title>
-            </ion-toolbar>
-        </ion-header>
+                </IonTitle>
+            </IonToolbar>
+        </IonHeader>
 
-        <ion-content :fullscreen="true">
+        <IonContent :fullscreen="true">
             <div class="pb-24">
                 <!-- Hero -->
                 <div class="px-5 pt-7">
@@ -31,21 +31,29 @@
                     <div class="bg-neon-surface border border-neon-border rounded-2xl p-5 mb-4">
                         <div class="mb-4">
                             <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-2">Nome do Site</span>
-                            <div class="bg-neon-elevated border border-neon-border rounded-xl transition-colors focus-within:border-neon-accent/30">
-                                <input v-model="form.name" placeholder="ex: Manga Vault" class="w-full bg-transparent border-none outline-none text-neon-text text-[15px] px-4 py-[14px] placeholder:text-[#4a5568] box-border" />
-                            </div>
+                            <IonInput
+                                v-model="form.name"
+                                placeholder="ex: Manga Vault"
+                                fill="outline"
+                                class="neon-input"
+                            />
                         </div>
                         <div class="mb-4">
                             <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-2">URL do Site</span>
-                            <div class="bg-neon-elevated border border-neon-border rounded-xl transition-colors focus-within:border-neon-accent/30">
-                                <input v-model="form.url" placeholder="https://mangavault.com" type="url" class="w-full bg-transparent border-none outline-none text-neon-text text-[15px] px-4 py-[14px] placeholder:text-[#4a5568] box-border" />
-                            </div>
+                            <IonInput
+                                v-model="form.url"
+                                placeholder="https://mangavault.com"
+                                type="url"
+                                inputmode="url"
+                                fill="outline"
+                                class="neon-input"
+                            />
                         </div>
-                        <ion-button expand="block" class="btn-primary mb-2.5" :disabled="saving || !canSubmit" @click="editingId ? updateSite() : addSite()">
-                            <ion-spinner v-if="saving" name="crescent" />
+                        <IonButton expand="block" class="btn-primary mb-2.5" :disabled="saving || !canSubmit" @click="editingId ? updateSite() : addSite()">
+                            <IonSpinner v-if="saving" name="crescent" />
                             <span v-else>{{ editingId ? 'Atualizar Fonte' : 'Adicionar Fonte' }}</span>
-                        </ion-button>
-                        <ion-button v-if="editingId" expand="block" class="btn-cancel mb-2.5" @click="cancelEdit">Cancelar</ion-button>
+                        </IonButton>
+                        <IonButton v-if="editingId" expand="block" class="btn-cancel mb-2.5" @click="cancelEdit">Cancelar</IonButton>
                         <p class="text-[11px] text-[#4a5568] text-center mt-2 mb-0 leading-relaxed">
                             Ao adicionar uma fonte, você confirma que a URL aponta para um arquivo web válido.
                         </p>
@@ -55,7 +63,7 @@
                     <div class="grid grid-cols-2 gap-2.5 mb-7">
                         <div class="bg-neon-surface border border-neon-border rounded-[14px] p-3.5 flex items-center gap-3">
                             <div class="w-9 h-9 rounded-[10px] bg-neon-accent/12 text-neon-accent flex items-center justify-center text-xl flex-shrink-0">
-                                <ion-icon :icon="shieldCheckmarkOutline" />
+                                <IonIcon :icon="shieldCheckmarkOutline" />
                             </div>
                             <div class="flex flex-col min-w-0">
                                 <span class="text-[9px] font-bold tracking-[1px] text-neon-muted uppercase">SEGURANÇA</span>
@@ -64,7 +72,7 @@
                         </div>
                         <div class="bg-neon-surface border border-neon-border rounded-[14px] p-3.5 flex items-center gap-3">
                             <div class="w-9 h-9 rounded-[10px] bg-neon-blue/12 text-[#7b8ff5] flex items-center justify-center text-xl flex-shrink-0">
-                                <ion-icon :icon="serverOutline" />
+                                <IonIcon :icon="serverOutline" />
                             </div>
                             <div class="flex flex-col min-w-0">
                                 <span class="text-[9px] font-bold tracking-[1px] text-neon-muted uppercase">ARMAZENAMENTO</span>
@@ -80,11 +88,11 @@
                     </div>
 
                     <div v-if="loading" class="flex justify-center py-8">
-                        <ion-spinner name="crescent" color="primary" />
+                        <IonSpinner name="crescent" color="primary" />
                     </div>
 
                     <div v-else-if="sites.length === 0" class="text-center py-8">
-                        <ion-icon :icon="cloudDownloadOutline" class="text-[40px] text-neon-muted block mb-2.5" />
+                        <IonIcon :icon="cloudDownloadOutline" class="text-[40px] text-neon-muted block mb-2.5" />
                         <p class="text-sm text-neon-muted m-0">Nenhuma fonte cadastrada ainda.</p>
                     </div>
 
@@ -92,7 +100,7 @@
                         <div v-for="site in sites" :key="site.id" class="flex items-center justify-between bg-neon-surface border border-neon-border rounded-[14px] p-3.5 mb-2.5">
                             <div class="flex items-center gap-3 min-w-0 flex-1">
                                 <div class="w-9 h-9 rounded-[10px] bg-neon-elevated border border-neon-border flex items-center justify-center text-neon-accent text-lg flex-shrink-0">
-                                    <ion-icon :icon="globeOutline" />
+                                    <IonIcon :icon="globeOutline" />
                                 </div>
                                 <div class="flex flex-col min-w-0">
                                     <span class="text-sm font-bold text-neon-text truncate">{{ site.name }}</span>
@@ -101,32 +109,32 @@
                             </div>
                             <div class="flex gap-2 flex-shrink-0 ml-2">
                                 <button class="w-[34px] h-[34px] rounded-[10px] bg-neon-elevated border border-neon-border flex items-center justify-center text-base text-[#7b8ff5] cursor-pointer" @click="startEdit(site)">
-                                    <ion-icon :icon="pencilOutline" />
+                                    <IonIcon :icon="pencilOutline" />
                                 </button>
                                 <button class="w-[34px] h-[34px] rounded-[10px] bg-neon-elevated border border-neon-border flex items-center justify-center text-base text-neon-danger cursor-pointer" @click="confirmDelete(site)">
-                                    <ion-icon :icon="trashOutline" />
+                                    <IonIcon :icon="trashOutline" />
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </ion-content>
-    </ion-page>
+        </IonContent>
+    </IonPage>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 import {
     IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
-    IonButton, IonIcon, IonSpinner, toastController, alertController,
+    IonButton, IonIcon, IonSpinner, IonInput, toastController, alertController,
 } from '@ionic/vue';
 import { shieldCheckmarkOutline, serverOutline, cloudDownloadOutline, globeOutline, pencilOutline, trashOutline } from 'ionicons/icons';
 import { siteService, Site } from '@/services/siteService';
 
 export default defineComponent({
     name: 'ManageSitesPage',
-    components: { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonIcon, IonSpinner },
+    components: { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonIcon, IonSpinner, IonInput },
     data() {
         return {
             loading: false,
@@ -222,5 +230,18 @@ export default defineComponent({
 
 <style scoped>
 .btn-primary { --background: var(--neon-accent); --color: #000; --border-radius: 14px; font-weight: 700; height: 52px; }
-.btn-cancel { --background: var(--neon-surface-elevated); --color: #e8eaf0; --border-radius: 14px; height: 44px; }
+.btn-cancel { --background: #1a2035; --color: #e8eaf0; --border-radius: 14px; height: 44px; }
+
+.neon-input {
+    --background: #1a2035;
+    --color: #e8eaf0;
+    --placeholder-color: #4a5568;
+    --border-color: #1e2538;
+    --border-radius: 12px;
+    --highlight-color-focused: #00e5b0;
+    --padding-start: 16px;
+    --padding-end: 16px;
+    min-height: 52px;
+    width: 100%;
+}
 </style>

@@ -4,22 +4,27 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
-import { MangaStatus, STATUS_LABELS } from '@/services/userMangaService';
+import { ContentStatus, getStatusLabel } from '@/services/userContentService';
+import { ContentType } from '@/services/contentService';
 
 export default defineComponent({
     name: 'StatusBadge',
     props: {
         status: {
-            type: String as PropType<MangaStatus>,
+            type: String as PropType<ContentStatus>,
             required: true,
+        },
+        type: {
+            type: String as PropType<ContentType>,
+            default: 'manga',
         },
     },
     computed: {
         label(): string {
-            return STATUS_LABELS[this.status] || this.status;
+            return getStatusLabel(this.status, this.type);
         },
         statusClass(): string {
-            return `status-${this.status.replace('_', '-')}`;
+            return `status-${this.status.replace(/_/g, '-')}`;
         },
     },
 });
@@ -27,13 +32,15 @@ export default defineComponent({
 
 <style scoped>
 .status-badge {
-    display: inline-block;
-    padding: 3px 10px;
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
     border-radius: 20px;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.8px;
     text-transform: uppercase;
+    white-space: nowrap;
 }
 
 .status-reading {
@@ -60,7 +67,7 @@ export default defineComponent({
     border: 1px solid rgba(255, 71, 87, 0.3);
 }
 
-.status-on-hold {
+.status-paused {
     background: rgba(255, 162, 107, 0.15);
     color: #ffa26b;
     border: 1px solid rgba(255, 162, 107, 0.3);
