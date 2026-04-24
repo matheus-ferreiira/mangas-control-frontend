@@ -1,58 +1,84 @@
 <template>
     <div
-        class="flex items-center gap-3.5 bg-neon-surface border border-neon-border rounded-2xl p-3 mb-3 cursor-pointer transition-[border-color,transform] duration-150 active:scale-[0.98] active:border-neon-accent"
+        class="relative overflow-hidden bg-neon-card border border-neon-border rounded-xl mb-2.5 cursor-pointer transition-[border-color] duration-150 active:border-neon-accent"
         @click="$emit('click')"
     >
-        <!-- Cover -->
-        <div class="flex-shrink-0 w-16 h-[88px] rounded-[10px] overflow-hidden relative">
-            <img
-                v-if="item.content?.cover"
-                :src="item.content.cover"
-                :alt="item.content?.name"
-                class="w-full h-full object-cover"
-            />
-            <div v-else class="w-full h-full bg-neon-elevated flex items-center justify-center text-neon-muted text-[28px]">
-                <IonIcon :icon="typeIcon" />
+        <!-- Left colored status border -->
+        <div class="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-xl" :style="{ background: statusColor }"></div>
+
+        <div class="flex gap-2.5 p-3 pl-[14px]">
+            <!-- Cover -->
+            <div class="flex-shrink-0 w-11 h-[62px] rounded-md overflow-hidden">
+                <img
+                    v-if="item.content?.cover"
+                    :src="item.content.cover"
+                    :alt="item.content?.name"
+                    class="w-full h-full object-cover"
+                />
+                <div v-else class="w-full h-full bg-neon-elevated flex items-center justify-center text-neon-muted text-xl">
+                    <IonIcon :icon="typeIcon" />
+                </div>
             </div>
+
+            <!-- Info -->
+            <div class="flex-1 min-w-0">
+                <!-- Badges row -->
+                <div class="flex items-center gap-1.5 mb-[5px] flex-wrap">
+                    <span class="text-[9px] font-bold tracking-[0.08em] uppercase px-1.5 py-0.5 rounded" :class="typeColorClass">
+                        {{ typeLabel }}
+                    </span>
+                    <StatusBadge :status="item.status" :type="item.content?.type ?? 'manga'" />
+                    <span v-if="isOngoing" class="text-[9px] font-bold text-amber-400 bg-amber-400/15 px-1.5 py-0.5 rounded">
+                        EM ANDAMENTO
+                    </span>
+                </div>
+
+                <!-- Name -->
+                <div class="text-sm font-bold text-neon-text truncate mb-1">
+                    {{ item.content?.name || 'Desconhecido' }}
+                </div>
+
+                <!-- Progress + rating -->
+                <div class="text-[11px] text-neon-muted mb-1.5">
+                    <template v-if="isOngoing">
+                        {{ item.current_units }} {{ unitShort }} lidos
+                    </template>
+                    <template v-else>
+                        {{ item.current_units }} / {{ item.content?.total_units }} {{ unitShort }}
+                    </template>
+                    <span v-if="item.rating != null" class="ml-2 text-amber-400">★ {{ item.rating }}</span>
+                </div>
+
+                <!-- Progress bar -->
+                <div class="h-[3px] bg-white/[0.07] rounded overflow-hidden">
+                    <div
+                        v-if="isOngoing"
+                        class="shimmer-bar h-full w-[40%] rounded"
+                        :style="{ background: `linear-gradient(90deg, transparent, ${statusColor}, transparent)` }"
+                    ></div>
+                    <div
+                        v-else
+                        class="h-full rounded transition-[width] duration-300"
+                        :style="{ width: progressPct + '%', background: statusColor }"
+                    ></div>
+                </div>
+            </div>
+
+            <!-- +1 button -->
+            <button
+                class="w-8 h-8 rounded-full flex-shrink-0 self-center flex items-center justify-center text-base font-bold border-none cursor-pointer transition-all duration-200"
+                :class="plusActive ? 'bg-neon-accent text-black scale-[1.2]' : 'bg-neon-elevated text-neon-accent'"
+                @click.stop="handlePlus"
+            >+</button>
         </div>
-
-        <!-- Info -->
-        <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-1.5 mb-1">
-                <span class="text-[9px] font-bold tracking-[1px] uppercase px-1.5 py-0.5 rounded" :class="typeColorClass">
-                    {{ typeLabel }}
-                </span>
-            </div>
-
-            <h3 class="text-[15px] font-bold text-neon-text m-0 mb-1 truncate">
-                {{ item.content?.name || 'Desconhecido' }}
-            </h3>
-
-            <p class="text-[13px] text-neon-muted m-0 mb-2">
-                {{ unitShort }} {{ item.current_units }}
-                <span v-if="item.content?.total_units" class="opacity-50"> / {{ item.content.total_units }}</span>
-            </p>
-
-            <div class="flex items-center gap-2 flex-wrap">
-                <StatusBadge :status="item.status" :type="item.content?.type ?? 'manga'" />
-                <span v-if="item.site" class="text-[11px] text-neon-muted bg-neon-elevated rounded-md px-2 py-0.5">
-                    {{ item.site.name }}
-                </span>
-                <span v-if="item.rating != null" class="text-[11px] text-yellow-400 bg-neon-elevated rounded-md px-2 py-0.5">
-                    ★ {{ item.rating }}
-                </span>
-            </div>
-        </div>
-
-        <IonIcon :icon="chevronForwardOutline" class="text-neon-muted text-lg flex-shrink-0" />
     </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
 import { IonIcon } from '@ionic/vue';
-import { bookOutline, tvOutline, libraryOutline, chevronForwardOutline } from 'ionicons/icons';
-import { UserContent } from '@/services/userContentService';
+import { bookOutline, tvOutline, libraryOutline } from 'ionicons/icons';
+import { UserContent, ContentStatus } from '@/services/userContentService';
 import { CONTENT_TYPE_LABELS, CONTENT_TYPE_COLORS, UNIT_LABEL, ContentType } from '@/services/contentService';
 import StatusBadge from './StatusBadge.vue';
 
@@ -62,12 +88,23 @@ const TYPE_ICONS: Record<ContentType, string> = {
     novel: libraryOutline,
 };
 
+const STATUS_COLORS: Record<ContentStatus, string> = {
+    reading: '#3b82f6',
+    completed: '#10b981',
+    paused: '#f59e0b',
+    dropped: '#ef4444',
+    plan_to_read: '#8b5cf6',
+};
+
 export default defineComponent({
     name: 'ContentCard',
     components: { IonIcon, StatusBadge },
-    emits: ['click'],
+    emits: ['click', 'plusOne'],
     props: {
         item: { type: Object as PropType<UserContent>, required: true },
+    },
+    data() {
+        return { plusActive: false };
     },
     computed: {
         contentType(): ContentType {
@@ -85,9 +122,25 @@ export default defineComponent({
         unitShort(): string {
             return UNIT_LABEL[this.contentType].short;
         },
+        isOngoing(): boolean {
+            return !this.item.content?.total_units;
+        },
+        statusColor(): string {
+            return STATUS_COLORS[this.item.status] ?? '#5a6480';
+        },
+        progressPct(): number {
+            const total = this.item.content?.total_units;
+            if (!total) return 0;
+            return Math.min((this.item.current_units / total) * 100, 100);
+        },
     },
-    data() {
-        return { chevronForwardOutline };
+    methods: {
+        handlePlus() {
+            if (this.plusActive) return;
+            this.$emit('plusOne', this.item.id);
+            this.plusActive = true;
+            setTimeout(() => { this.plusActive = false; }, 600);
+        },
     },
 });
 </script>

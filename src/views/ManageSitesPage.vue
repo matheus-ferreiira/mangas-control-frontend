@@ -1,36 +1,19 @@
 <template>
     <IonPage>
-        <IonHeader>
-            <IonToolbar>
-                <IonTitle>
-                    <span class="bg-gradient-to-br from-neon-blue to-neon-accent bg-clip-text text-transparent font-extrabold text-lg">
-                        Neon Curator
-                    </span>
-                </IonTitle>
-            </IonToolbar>
-        </IonHeader>
-
         <IonContent :fullscreen="true">
             <div class="pb-24">
-                <!-- Hero -->
-                <div class="px-5 pt-7">
-                    <div class="inline-block bg-neon-accent/12 border border-neon-accent/30 rounded-full px-3.5 py-1 text-[10px] font-bold tracking-[1.5px] uppercase text-neon-accent mb-3.5">
-                        FASE DE REGISTRO
-                    </div>
-                    <h1 class="text-[30px] font-black text-neon-text leading-tight m-0 mb-3">
-                        Expanda Seus<br />
-                        <span class="bg-gradient-to-br from-neon-blue to-neon-accent bg-clip-text text-transparent">Arquivos Digitais</span>
-                    </h1>
-                    <p class="text-sm text-neon-muted leading-relaxed m-0 mb-6">
-                        Integre novas fontes de manga ao seu arquivo de curador.
-                    </p>
+                <div class="px-4 pt-4 pb-3">
+                    <div class="text-[20px] font-extrabold text-neon-text tracking-[-0.02em] mb-1">Fontes</div>
+                    <div class="text-[12px] text-neon-muted">Sites onde você lê seus conteúdos</div>
                 </div>
 
-                <div class="px-5">
-                    <!-- Form -->
-                    <div class="bg-neon-surface border border-neon-border rounded-2xl p-5 mb-4">
-                        <div class="mb-4">
-                            <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-2">Nome do Site</span>
+                <div class="px-4">
+                    <!-- Add form -->
+                    <div class="bg-neon-surface border border-neon-border rounded-xl p-3.5 mb-5">
+                        <div class="text-[13px] font-bold text-neon-text mb-3">Nova Fonte</div>
+
+                        <div class="mb-2.5">
+                            <div class="text-[10px] font-bold uppercase tracking-[0.08em] text-neon-muted mb-1.5">Nome do site</div>
                             <IonInput
                                 v-model="form.name"
                                 placeholder="ex: Manga Vault"
@@ -38,53 +21,32 @@
                                 class="neon-input"
                             />
                         </div>
-                        <div class="mb-4">
-                            <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-2">URL do Site</span>
+                        <div class="mb-3">
+                            <div class="text-[10px] font-bold uppercase tracking-[0.08em] text-neon-muted mb-1.5">URL do site</div>
                             <IonInput
                                 v-model="form.url"
-                                placeholder="https://mangavault.com"
+                                placeholder="https://.."
                                 type="url"
                                 inputmode="url"
                                 fill="outline"
                                 class="neon-input"
                             />
                         </div>
-                        <IonButton expand="block" class="btn-primary mb-2.5" :disabled="saving || !canSubmit" @click="editingId ? updateSite() : addSite()">
+
+                        <IonButton expand="block" class="btn-primary mb-2" :disabled="saving || !canSubmit" @click="editingId ? updateSite() : addSite()">
                             <IonSpinner v-if="saving" name="crescent" />
                             <span v-else>{{ editingId ? 'Atualizar Fonte' : 'Adicionar Fonte' }}</span>
                         </IonButton>
-                        <IonButton v-if="editingId" expand="block" class="btn-cancel mb-2.5" @click="cancelEdit">Cancelar</IonButton>
-                        <p class="text-[11px] text-[#4a5568] text-center mt-2 mb-0 leading-relaxed">
-                            Ao adicionar uma fonte, você confirma que a URL aponta para um arquivo web válido.
-                        </p>
-                    </div>
+                        <IonButton v-if="editingId" expand="block" class="btn-cancel" @click="cancelEdit">Cancelar</IonButton>
 
-                    <!-- Trust badges -->
-                    <div class="grid grid-cols-2 gap-2.5 mb-7">
-                        <div class="bg-neon-surface border border-neon-border rounded-[14px] p-3.5 flex items-center gap-3">
-                            <div class="w-9 h-9 rounded-[10px] bg-neon-accent/12 text-neon-accent flex items-center justify-center text-xl flex-shrink-0">
-                                <IonIcon :icon="shieldCheckmarkOutline" />
-                            </div>
-                            <div class="flex flex-col min-w-0">
-                                <span class="text-[9px] font-bold tracking-[1px] text-neon-muted uppercase">SEGURANÇA</span>
-                                <span class="text-[13px] font-bold text-neon-text">SSL Verificado</span>
-                            </div>
-                        </div>
-                        <div class="bg-neon-surface border border-neon-border rounded-[14px] p-3.5 flex items-center gap-3">
-                            <div class="w-9 h-9 rounded-[10px] bg-neon-blue/12 text-[#7b8ff5] flex items-center justify-center text-xl flex-shrink-0">
-                                <IonIcon :icon="serverOutline" />
-                            </div>
-                            <div class="flex flex-col min-w-0">
-                                <span class="text-[9px] font-bold tracking-[1px] text-neon-muted uppercase">ARMAZENAMENTO</span>
-                                <span class="text-[13px] font-bold text-neon-text">Sync em Nuvem</span>
-                            </div>
+                        <div class="text-center mt-2 text-[10px] text-neon-muted">
+                            🔒 SSL verificado · ☁️ Sync em nuvem
                         </div>
                     </div>
 
                     <!-- Sites list -->
-                    <div class="flex items-center gap-2.5 mb-3.5">
-                        <h2 class="text-lg font-extrabold text-neon-text m-0">Fontes Cadastradas</h2>
-                        <span v-if="sites.length" class="bg-neon-accent/12 border border-neon-accent/20 text-neon-accent rounded-full px-2.5 py-0.5 text-xs font-bold">{{ sites.length }}</span>
+                    <div class="text-[10px] font-bold uppercase tracking-[0.08em] text-neon-muted mb-2.5">
+                        Fontes Cadastradas · {{ sites.length }}
                     </div>
 
                     <div v-if="loading" class="flex justify-center py-8">
@@ -97,21 +59,31 @@
                     </div>
 
                     <div v-else>
-                        <div v-for="site in sites" :key="site.id" class="flex items-center justify-between bg-neon-surface border border-neon-border rounded-[14px] p-3.5 mb-2.5">
-                            <div class="flex items-center gap-3 min-w-0 flex-1">
-                                <div class="w-9 h-9 rounded-[10px] bg-neon-elevated border border-neon-border flex items-center justify-center text-neon-accent text-lg flex-shrink-0">
-                                    <IonIcon :icon="globeOutline" />
-                                </div>
-                                <div class="flex flex-col min-w-0">
-                                    <span class="text-sm font-bold text-neon-text truncate">{{ site.name }}</span>
-                                    <span class="text-xs text-neon-muted truncate">{{ site.url }}</span>
-                                </div>
+                        <div
+                            v-for="site in sites"
+                            :key="site.id"
+                            class="flex items-center gap-3 bg-neon-card border border-neon-border rounded-[10px] p-3 mb-2"
+                        >
+                            <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background: rgba(0,212,170,0.12); color: #00d4aa">
+                                <IonIcon :icon="globeOutline" class="text-base" />
                             </div>
-                            <div class="flex gap-2 flex-shrink-0 ml-2">
-                                <button class="w-[34px] h-[34px] rounded-[10px] bg-neon-elevated border border-neon-border flex items-center justify-center text-base text-[#7b8ff5] cursor-pointer" @click="startEdit(site)">
+                            <div class="flex-1 min-w-0">
+                                <div class="text-[13px] font-bold text-neon-text">{{ site.name }}</div>
+                                <div class="text-[11px] text-neon-muted truncate">{{ site.url }}</div>
+                            </div>
+                            <div class="flex gap-1.5 flex-shrink-0">
+                                <button
+                                    class="w-7 h-7 rounded-md border border-neon-border bg-transparent flex items-center justify-center text-sm cursor-pointer"
+                                    style="color: #8b5cf6"
+                                    @click="startEdit(site)"
+                                >
                                     <IonIcon :icon="pencilOutline" />
                                 </button>
-                                <button class="w-[34px] h-[34px] rounded-[10px] bg-neon-elevated border border-neon-border flex items-center justify-center text-base text-neon-danger cursor-pointer" @click="confirmDelete(site)">
+                                <button
+                                    class="w-7 h-7 rounded-md bg-transparent flex items-center justify-center text-sm cursor-pointer"
+                                    style="border: 1px solid rgba(239,68,68,0.3); color: #ef4444"
+                                    @click="confirmDelete(site)"
+                                >
                                     <IonIcon :icon="trashOutline" />
                                 </button>
                             </div>
@@ -126,15 +98,15 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import {
-    IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
+    IonPage, IonContent,
     IonButton, IonIcon, IonSpinner, IonInput, toastController, alertController,
 } from '@ionic/vue';
-import { shieldCheckmarkOutline, serverOutline, cloudDownloadOutline, globeOutline, pencilOutline, trashOutline } from 'ionicons/icons';
+import { cloudDownloadOutline, globeOutline, pencilOutline, trashOutline } from 'ionicons/icons';
 import { siteService, Site } from '@/services/siteService';
 
 export default defineComponent({
     name: 'ManageSitesPage',
-    components: { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonIcon, IonSpinner, IonInput },
+    components: { IonPage, IonContent, IonButton, IonIcon, IonSpinner, IonInput },
     data() {
         return {
             loading: false,
@@ -142,7 +114,7 @@ export default defineComponent({
             sites: [] as Site[],
             editingId: null as number | null,
             form: { name: '', url: '' },
-            shieldCheckmarkOutline, serverOutline, cloudDownloadOutline, globeOutline, pencilOutline, trashOutline,
+            cloudDownloadOutline, globeOutline, pencilOutline, trashOutline,
         };
     },
     computed: {
@@ -203,7 +175,7 @@ export default defineComponent({
         async confirmDelete(site: Site) {
             const alert = await alertController.create({
                 header: 'Remover Fonte',
-                message: `Remover "${site.name}" do arquivo?`,
+                message: `Remover "${site.name}"?`,
                 buttons: [
                     { text: 'Cancelar', role: 'cancel' },
                     { text: 'Remover', role: 'destructive', handler: () => this.deleteSite(site.id) },
@@ -229,19 +201,19 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.btn-primary { --background: var(--neon-accent); --color: #000; --border-radius: 14px; font-weight: 700; height: 52px; }
-.btn-cancel { --background: #1a2035; --color: #e8eaf0; --border-radius: 14px; height: 44px; }
+.btn-primary { --background: var(--neon-accent); --color: #000; --border-radius: 12px; font-weight: 700; height: 48px; }
+.btn-cancel { --background: #1a2035; --color: #f0f4ff; --border-radius: 12px; height: 44px; }
 
 .neon-input {
     --background: #1a2035;
-    --color: #e8eaf0;
-    --placeholder-color: #4a5568;
-    --border-color: #1e2538;
-    --border-radius: 12px;
-    --highlight-color-focused: #00e5b0;
-    --padding-start: 16px;
-    --padding-end: 16px;
-    min-height: 52px;
+    --color: #f0f4ff;
+    --placeholder-color: #4a5570;
+    --border-color: #222840;
+    --border-radius: 10px;
+    --highlight-color-focused: #00d4aa;
+    --padding-start: 14px;
+    --padding-end: 14px;
+    min-height: 48px;
     width: 100%;
 }
 </style>

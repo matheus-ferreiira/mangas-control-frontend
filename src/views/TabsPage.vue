@@ -13,8 +13,10 @@
                     <ion-label>Descobrir</ion-label>
                 </ion-tab-button>
 
-                <ion-tab-button tab="add" href="/tabs/add" class="tab-add">
-                    <ion-icon :icon="addCircle" class="add-icon" />
+                <ion-tab-button tab="add" href="/tabs/add" class="tab-fab">
+                    <div class="fab-circle">
+                        <ion-icon :icon="addOutline" class="fab-icon" />
+                    </div>
                     <ion-label>Adicionar</ion-label>
                 </ion-tab-button>
 
@@ -38,24 +40,47 @@ import {
     IonPage, IonTabs, IonTabBar, IonTabButton,
     IonLabel, IonIcon, IonRouterOutlet,
 } from '@ionic/vue';
-import { libraryOutline, compassOutline, addCircle, cloudDownloadOutline, personOutline } from 'ionicons/icons';
+import { libraryOutline, compassOutline, addOutline, cloudDownloadOutline, personOutline } from 'ionicons/icons';
 
 export default defineComponent({
     name: 'TabsPage',
     components: { IonPage, IonTabs, IonTabBar, IonTabButton, IonLabel, IonIcon, IonRouterOutlet },
     data() {
-        return { libraryOutline, compassOutline, addCircle, cloudDownloadOutline, personOutline };
+        return { libraryOutline, compassOutline, addOutline, cloudDownloadOutline, personOutline };
     },
 });
 </script>
 
 <style scoped>
-.tab-add .add-icon {
-    font-size: 32px;
-    color: var(--neon-accent);
-    filter: drop-shadow(0 0 8px var(--neon-accent-glow));
+.tab-fab {
+    --color: transparent;
+    --color-selected: transparent;
+    position: relative;
 }
-.tab-add ion-label {
+
+.tab-fab ion-label {
     color: var(--neon-accent) !important;
+    font-size: 10px;
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+.fab-circle {
+    width: 46px;
+    height: 46px;
+    border-radius: 23px;
+    background: linear-gradient(135deg, #00d4aa, #00b894);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: -14px;
+    box-shadow: 0 4px 16px rgba(0, 212, 170, 0.4);
+    flex-shrink: 0;
+}
+
+.fab-icon {
+    font-size: 22px;
+    color: #000;
+    font-weight: 900;
 }
 </style>

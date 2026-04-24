@@ -1,56 +1,53 @@
 <template>
     <IonPage>
-        <IonHeader>
-            <IonToolbar>
-                <IonTitle>
-                    <span class="bg-gradient-to-br from-neon-blue to-neon-accent bg-clip-text text-transparent font-extrabold text-lg">
-                        Descobrir
-                    </span>
-                </IonTitle>
-                <IonButtons slot="end">
-                    <IonButton fill="clear" router-link="/manage-contents">
-                        <IonIcon slot="icon-only" :icon="settingsOutline" color="light" />
-                    </IonButton>
-                </IonButtons>
-            </IonToolbar>
-        </IonHeader>
-
         <IonContent :fullscreen="true">
-            <!-- Search bar -->
-            <div class="px-5 pt-3">
-                <IonInput
-                    v-model="query"
-                    placeholder="Buscar no acervo..."
-                    fill="outline"
-                    class="search-input"
-                    @ionInput="filterContents"
-                >
-                    <IonIcon slot="start" :icon="searchOutline" class="text-[#4a5568]" />
-                    <IonIcon v-if="query" slot="end" :icon="closeOutline" class="text-[#4a5568] cursor-pointer" @click="clearSearch" />
-                </IonInput>
-            </div>
+            <div class="px-4 pt-4 pb-24">
+                <!-- Header -->
+                <div class="flex items-center justify-between mb-3">
+                    <h2 class="text-[20px] font-extrabold text-neon-text m-0 tracking-[-0.02em]">Descobrir</h2>
+                    <button
+                        class="w-8 h-8 rounded-lg border border-neon-border bg-transparent flex items-center justify-center cursor-pointer"
+                        @click="$router.push('/manage-contents')"
+                    >
+                        <IonIcon :icon="settingsOutline" class="text-neon-muted text-base" />
+                    </button>
+                </div>
 
-            <div class="px-5 pt-4 pb-24">
-                <!-- Type filter chips -->
-                <div class="flex gap-2 overflow-x-auto pb-2 mb-4 no-scrollbar">
+                <!-- Search bar -->
+                <div class="relative mb-2.5">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-neon-muted text-sm pointer-events-none">🔍</span>
+                    <input
+                        v-model="query"
+                        placeholder="Buscar no acervo..."
+                        class="w-full pl-8 pr-9 py-[9px] rounded-[10px] border border-neon-border bg-neon-surface text-neon-text text-[13px] outline-none placeholder:text-neon-muted"
+                        @input="filterContents"
+                    />
+                    <button
+                        v-if="query"
+                        class="absolute right-2.5 top-1/2 -translate-y-1/2 text-neon-muted text-lg leading-none bg-transparent border-none cursor-pointer p-0"
+                        @click="clearSearch"
+                    >×</button>
+                </div>
+
+                <!-- Type pills -->
+                <div class="flex gap-1.5 overflow-x-auto pb-1.5 mb-3 no-scrollbar">
                     <button
                         v-for="opt in typeOptions"
                         :key="opt.value ?? 'all'"
-                        class="flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all border"
+                        class="flex-shrink-0 px-3.5 py-[5px] rounded-full text-[11px] font-bold transition-all border"
                         :class="activeType === opt.value
                             ? 'bg-neon-accent text-black border-neon-accent'
-                            : 'bg-neon-elevated border-neon-border text-neon-muted'"
+                            : 'bg-transparent border-neon-border text-neon-subtle'"
                         @click="setType(opt.value)"
                     >
                         {{ opt.label }}
                     </button>
                 </div>
 
-                <!-- Count -->
-                <div class="flex items-center gap-2.5 mb-4">
-                    <h2 class="text-xl font-extrabold text-neon-text m-0">Acervo</h2>
-                    <span v-if="filtered.length" class="bg-neon-accent/12 border border-neon-accent/20 text-neon-accent rounded-full px-2.5 py-0.5 text-xs font-bold">
-                        {{ filtered.length }}
+                <!-- Counter -->
+                <div class="pb-1.5 mb-1.5">
+                    <span class="text-[11px] font-semibold text-neon-muted">
+                        Acervo · {{ filtered.length }} conteúdos
                     </span>
                 </div>
 
@@ -59,7 +56,7 @@
                     <IonSpinner name="crescent" color="primary" />
                 </div>
 
-                <!-- Empty catalog -->
+                <!-- Empty -->
                 <div v-else-if="filtered.length === 0" class="text-center py-10">
                     <IonIcon :icon="compassOutline" class="text-[48px] text-neon-muted block mb-3.5" />
                     <h3 class="text-lg font-bold text-neon-text m-0 mb-2">Nenhum resultado</h3>
@@ -70,31 +67,51 @@
                 </div>
 
                 <!-- List -->
-                <div v-else class="flex flex-col gap-2.5">
+                <div v-else class="flex flex-col gap-2">
                     <div
                         v-for="content in filtered"
                         :key="content.id"
-                        class="flex items-center gap-3.5 bg-neon-surface border border-neon-border rounded-[14px] p-3 cursor-pointer transition-colors active:border-neon-accent"
-                        @click="addToLibrary(content)"
+                        class="bg-neon-card border border-neon-border rounded-xl overflow-hidden"
                     >
-                        <div class="w-12 h-[66px] rounded-lg overflow-hidden flex-shrink-0">
-                            <img v-if="content.cover" :src="content.cover" :alt="content.name" class="w-full h-full object-cover" />
-                            <div v-else class="w-full h-full bg-neon-elevated flex items-center justify-center text-neon-muted text-2xl">
-                                <IonIcon :icon="typeIcon(content.type)" />
+                        <!-- Main row -->
+                        <div
+                            class="flex items-center gap-2.5 p-3 cursor-pointer"
+                            @click="addToLibrary(content)"
+                        >
+                            <div class="w-10 h-[56px] rounded-md overflow-hidden flex-shrink-0">
+                                <img v-if="content.cover" :src="content.cover" :alt="content.name" class="w-full h-full object-cover" />
+                                <div v-else class="w-full h-full bg-neon-elevated flex items-center justify-center text-neon-muted text-xl">
+                                    <IonIcon :icon="typeIcon(content.type)" />
+                                </div>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="mb-1">
+                                    <span class="text-[9px] font-bold tracking-[0.08em] uppercase px-1.5 py-0.5 rounded" :class="typeColorClass(content.type)">
+                                        {{ typeLabel(content.type) }}
+                                    </span>
+                                </div>
+                                <div class="text-sm font-bold text-neon-text truncate">{{ content.name }}</div>
+                                <div class="text-[11px] text-neon-muted">
+                                    {{ content.total_units ? `${content.total_units} ${unitLabel(content.type)}` : 'Em andamento' }}
+                                </div>
+                            </div>
+                            <!-- Add button -->
+                            <div class="flex gap-1.5 flex-shrink-0">
+                                <button
+                                    class="w-7 h-7 rounded-lg border border-neon-border bg-transparent text-neon-muted flex items-center justify-center text-sm cursor-pointer"
+                                    @click.stop="$router.push('/manage-contents')"
+                                >
+                                    <IonIcon :icon="pencilOutline" />
+                                </button>
+                                <button
+                                    class="w-7 h-7 rounded-lg border flex items-center justify-center text-sm cursor-pointer transition-all duration-200"
+                                    :class="'border-neon-border bg-transparent text-neon-muted hover:border-neon-accent hover:text-neon-accent'"
+                                    @click.stop="addToLibrary(content)"
+                                >
+                                    <IonIcon :icon="addCircleOutline" />
+                                </button>
                             </div>
                         </div>
-                        <div class="flex-1 min-w-0">
-                            <div class="flex items-center gap-1.5 mb-0.5">
-                                <span class="text-[9px] font-bold tracking-[1px] uppercase px-1.5 py-0.5 rounded" :class="typeColorClass(content.type)">
-                                    {{ typeLabel(content.type) }}
-                                </span>
-                            </div>
-                            <span class="block text-sm font-bold text-neon-text truncate">{{ content.name }}</span>
-                            <span v-if="content.total_units" class="text-xs text-neon-muted">
-                                {{ content.total_units }} {{ unitLabel(content.type) }}
-                            </span>
-                        </div>
-                        <IonIcon :icon="addCircleOutline" class="text-neon-accent text-2xl flex-shrink-0" />
                     </div>
                 </div>
             </div>
@@ -105,10 +122,9 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import {
-    IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
-    IonButtons, IonButton, IonIcon, IonSpinner, IonInput,
+    IonPage, IonContent, IonButton, IonIcon, IonSpinner,
 } from '@ionic/vue';
-import { searchOutline, closeOutline, compassOutline, bookOutline, tvOutline, libraryOutline, addCircleOutline, settingsOutline } from 'ionicons/icons';
+import { compassOutline, bookOutline, tvOutline, libraryOutline, addCircleOutline, settingsOutline, pencilOutline } from 'ionicons/icons';
 import { contentService, Content, ContentType, CONTENT_TYPE_LABELS, CONTENT_TYPE_COLORS, UNIT_LABEL } from '@/services/contentService';
 
 const TYPE_ICONS: Record<ContentType, string> = {
@@ -119,7 +135,7 @@ const TYPE_ICONS: Record<ContentType, string> = {
 
 export default defineComponent({
     name: 'DiscoverPage',
-    components: { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonButton, IonIcon, IonSpinner, IonInput },
+    components: { IonPage, IonContent, IonButton, IonIcon, IonSpinner },
     data() {
         return {
             loading: false,
@@ -131,7 +147,7 @@ export default defineComponent({
                 { label: 'Todos', value: null as ContentType | null },
                 ...Object.entries(CONTENT_TYPE_LABELS).map(([value, label]) => ({ label, value: value as ContentType })),
             ],
-            searchOutline, closeOutline, compassOutline, addCircleOutline, settingsOutline,
+            compassOutline, addCircleOutline, settingsOutline, pencilOutline,
         };
     },
     async ionViewWillEnter() {
@@ -200,18 +216,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.search-input {
-    --background: #1a2035;
-    --color: #e8eaf0;
-    --placeholder-color: #4a5568;
-    --border-color: #1e2538;
-    --border-radius: 14px;
-    --highlight-color-focused: #00e5b0;
-    --padding-start: 12px;
-    --padding-end: 12px;
-    min-height: 48px;
-    width: 100%;
-}
 .btn-outline { --border-radius: 12px; --color: var(--neon-accent); --border-color: var(--neon-accent); }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

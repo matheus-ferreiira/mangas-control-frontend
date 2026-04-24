@@ -1,167 +1,156 @@
 <template>
     <IonPage>
-        <IonHeader>
-            <IonToolbar>
-                <IonButtons slot="start">
-                    <IonBackButton default-href="/tabs/library" text="" />
-                </IonButtons>
-                <IonTitle>Detalhes</IonTitle>
-                <IonButtons slot="end">
-                    <IonButton fill="clear" @click="confirmDelete">
-                        <IonIcon slot="icon-only" :icon="trashOutline" color="danger" />
-                    </IonButton>
-                </IonButtons>
-            </IonToolbar>
-        </IonHeader>
-
         <IonContent :fullscreen="true">
             <div v-if="loading" class="flex justify-center py-20">
                 <IonSpinner name="crescent" color="primary" />
             </div>
 
             <div v-else-if="item">
-                <!-- Hero -->
-                <div class="relative w-full h-[280px]">
+                <!-- Hero cover -->
+                <div class="relative w-full h-[210px] flex-shrink-0">
                     <img v-if="item.content?.cover" :src="item.content.cover" class="w-full h-full object-cover" alt="Capa" />
-                    <div v-else class="w-full h-full bg-gradient-to-br from-[#0d1a2d] to-[#1a0d2e] flex items-center justify-center text-[80px] text-[#2a3550]">
-                        <IonIcon :icon="typeIcon" />
+                    <div v-else class="w-full h-full flex items-center justify-center text-[80px]"
+                        :style="{ background: 'linear-gradient(135deg, #141825, #1a2035)' }">
+                        <IonIcon :icon="typeIcon" class="text-neon-border" />
                     </div>
-                    <div class="absolute bottom-0 left-0 right-0 px-5 pb-5 bg-gradient-to-t from-[rgba(10,14,26,1)] to-transparent">
-                        <div class="flex items-center gap-2 mb-2">
+                    <!-- Gradient overlay -->
+                    <div class="absolute inset-0" style="background: linear-gradient(to bottom, rgba(11,15,26,0.3) 0%, rgba(11,15,26,0.98) 100%)"></div>
+                    <!-- Back button -->
+                    <button
+                        class="absolute top-3 left-3 w-[34px] h-[34px] rounded-full flex items-center justify-center border border-neon-border cursor-pointer text-neon-text text-lg"
+                        style="background: rgba(0,0,0,0.55)"
+                        @click="$router.back()"
+                    >‹</button>
+                    <!-- Content info -->
+                    <div class="absolute bottom-3.5 left-4 right-4">
+                        <div class="flex items-center gap-1.5 mb-1.5">
                             <span class="text-[10px] font-bold tracking-[1.5px] uppercase px-2 py-0.5 rounded" :class="typeColorClass">
                                 {{ typeLabel }}
                             </span>
-                            <StatusBadge :status="item.status" :type="item.content?.type ?? 'manga'" />
+                            <span v-if="isOngoing" class="text-[9px] font-bold text-amber-400 bg-amber-400/15 px-1.5 py-0.5 rounded uppercase">
+                                Em andamento
+                            </span>
                         </div>
-                        <h1 class="text-2xl font-extrabold text-neon-text mb-0 leading-tight">{{ item.content?.name }}</h1>
+                        <h1 class="text-[21px] font-extrabold text-neon-text m-0 leading-tight">{{ item.content?.name }}</h1>
                     </div>
                 </div>
 
-                <div class="px-5 pt-5 pb-24">
-                    <!-- Stats -->
-                    <div class="flex items-center bg-neon-surface border border-neon-border rounded-2xl p-4 mb-6">
-                        <div class="flex-1 flex flex-col items-center gap-1">
-                            <span class="text-[11px] font-bold uppercase tracking-[1px] text-neon-muted">Atual</span>
-                            <span class="text-[15px] font-bold text-neon-text">{{ unitShort }} {{ item.current_units }}</span>
-                        </div>
-                        <div class="w-px h-8 bg-neon-border"></div>
-                        <div class="flex-1 flex flex-col items-center gap-1">
-                            <span class="text-[11px] font-bold uppercase tracking-[1px] text-neon-muted">Total</span>
-                            <span class="text-[15px] font-bold text-neon-text">
-                                {{ item.content?.total_units ? `${unitShort} ${item.content.total_units}` : '—' }}
-                            </span>
-                        </div>
-                        <div class="w-px h-8 bg-neon-border"></div>
-                        <div class="flex-1 flex flex-col items-center gap-1 min-w-0 px-1">
-                            <span class="text-[11px] font-bold uppercase tracking-[1px] text-neon-muted">Nota</span>
-                            <span class="text-[15px] font-bold text-neon-text">
-                                {{ item.rating != null ? `★ ${item.rating}` : '—' }}
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- Progress controls -->
-                    <div class="mb-6">
-                        <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-3">
-                            Progresso ({{ unitPlural }})
-                        </span>
-                        <div class="flex items-center gap-4 bg-neon-surface border border-neon-border rounded-2xl p-4">
-                            <button
-                                class="w-12 h-12 rounded-xl bg-neon-elevated border border-neon-border text-neon-text text-[22px] flex items-center justify-center cursor-pointer transition-colors active:bg-[#212b45] disabled:opacity-40"
-                                @click="decrement"
-                                :disabled="saving || item.current_units <= 0"
-                            >
-                                <IonIcon :icon="removeOutline" />
-                            </button>
-                            <div class="flex-1 flex flex-col items-center">
-                                <input
-                                    v-if="editingUnits"
-                                    v-model.number="unitsInput"
-                                    type="number"
-                                    class="text-[36px] font-extrabold text-neon-text bg-transparent border-b-2 border-neon-accent outline-none w-24 text-center leading-none"
-                                    @blur="saveUnits"
-                                    @keyup.enter="saveUnits"
-                                    ref="unitsField"
-                                    min="0"
-                                />
-                                <span
-                                    v-else
-                                    class="text-[36px] font-extrabold text-neon-text cursor-pointer leading-none"
-                                    @click="startEditUnits"
-                                >
-                                    {{ item.current_units }}
-                                </span>
-                                <span class="text-[11px] text-neon-muted mt-1">Toque para editar</span>
-                            </div>
-                            <button
-                                class="w-12 h-12 rounded-xl bg-neon-accent/12 border border-neon-accent/30 text-neon-accent text-[22px] flex items-center justify-center cursor-pointer transition-colors active:bg-neon-accent/20 disabled:opacity-40"
-                                @click="increment"
-                                :disabled="saving"
-                            >
-                                <IonIcon :icon="addOutline" />
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Status -->
-                    <div class="mb-6">
-                        <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-3">Status</span>
-                        <div class="grid grid-cols-2 gap-3">
-                            <button
-                                v-for="s in statuses"
-                                :key="s.value"
-                                class="py-4 px-3 rounded-2xl border text-sm font-semibold cursor-pointer transition-all text-center leading-snug"
-                                :class="item.status === s.value
-                                    ? 'bg-neon-accent/15 border-neon-accent/50 text-neon-accent font-bold'
-                                    : 'bg-neon-surface border-neon-border text-neon-muted'"
-                                @click="changeStatus(s.value)"
-                            >
-                                {{ s.label }}
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Rating -->
-                    <div class="mb-6">
-                        <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-3">Avaliação (0–10)</span>
-                        <div class="bg-neon-surface border border-neon-border rounded-2xl p-4">
-                            <div class="flex items-center gap-3 mb-3">
-                                <span class="text-xs text-neon-muted w-4 text-center">0</span>
-                                <IonRange
-                                    :value="item.rating ?? 0"
-                                    :min="0"
-                                    :max="10"
-                                    :step="0.5"
-                                    color="primary"
-                                    class="flex-1 rating-range"
-                                    @ionChange="changeRating(($event as CustomEvent).detail.value)"
-                                />
-                                <span class="text-xs text-neon-muted w-4 text-center">10</span>
-                            </div>
-                            <div class="text-center">
-                                <span class="text-[28px] font-extrabold text-neon-accent">
-                                    {{ item.rating != null ? item.rating : '—' }}
-                                </span>
-                                <span v-if="item.rating != null" class="text-neon-muted text-sm ml-1">/ 10</span>
+                <div class="px-4 pt-3.5 pb-24">
+                    <!-- Stats pills -->
+                    <div class="flex gap-2 mb-4">
+                        <div class="flex-1 bg-neon-surface rounded-[10px] p-[9px] border border-neon-border text-center">
+                            <div class="text-base font-extrabold text-neon-accent">{{ item.content?.total_units ?? '?' }}</div>
+                            <div class="text-[9px] font-semibold uppercase tracking-[0.05em] text-neon-muted mt-0.5">
+                                {{ contentType === 'anime' ? 'Episódios' : 'Capítulos' }}
                             </div>
                         </div>
+                        <div class="flex-1 bg-neon-surface rounded-[10px] p-[9px] border border-neon-border text-center">
+                            <div class="text-base font-extrabold text-neon-accent">{{ typeLabel }}</div>
+                            <div class="text-[9px] font-semibold uppercase tracking-[0.05em] text-neon-muted mt-0.5">Tipo</div>
+                        </div>
+                        <div class="flex-1 bg-neon-surface rounded-[10px] p-[9px] border text-center" :style="{ borderColor: statusColor + '44' }">
+                            <div class="text-base font-extrabold" :style="{ color: statusColor }">{{ item.current_units }}</div>
+                            <div class="text-[9px] font-semibold uppercase tracking-[0.05em] text-neon-muted mt-0.5">Progresso</div>
+                        </div>
                     </div>
 
-                    <!-- Site -->
-                    <div class="mb-6" v-if="sites.length">
-                        <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-3">Fonte de Leitura</span>
-                        <IonSelect
-                            v-model="selectedSiteId"
-                            :compareWith="(o1, o2) => Number(o1) === Number(o2)"
-                            placeholder="Sem fonte"
-                            fill="outline"
-                            interface="action-sheet"
-                            class="neon-select"
-                            @ionChange="changeSite"
-                        >
-                            <IonSelectOption value="">Sem fonte</IonSelectOption>
-                            <IonSelectOption v-for="site in sites" :key="site.id" :value="site.id">{{ site.name }}</IonSelectOption>
-                        </IonSelect>
+                    <!-- My record panel -->
+                    <div class="bg-neon-surface border border-neon-border rounded-xl p-3.5 mb-4">
+                        <div class="text-[13px] font-extrabold text-neon-text mb-3">📖 Meu registro</div>
+
+                        <!-- Status -->
+                        <div class="mb-3">
+                            <div class="text-[10px] font-bold uppercase tracking-[0.08em] text-neon-muted mb-1.5">Status</div>
+                            <div class="flex flex-wrap gap-1.5">
+                                <button
+                                    v-for="s in statuses"
+                                    :key="s.value"
+                                    class="px-2.5 py-1 rounded-full text-[10px] font-bold border cursor-pointer transition-all duration-150 font-sans"
+                                    :class="item.status === s.value ? 'border-transparent text-white' : 'bg-transparent border-neon-border text-neon-muted'"
+                                    :style="item.status === s.value ? { background: getStatusColor(s.value) } : {}"
+                                    @click="changeStatus(s.value)"
+                                >{{ s.label }}</button>
+                            </div>
+                        </div>
+
+                        <!-- Progress controls -->
+                        <div class="mb-3">
+                            <div class="text-[10px] font-bold uppercase tracking-[0.08em] text-neon-muted mb-1.5">
+                                {{ contentType === 'anime' ? 'Episódio atual' : 'Capítulo atual' }}
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button
+                                    class="w-[34px] h-[34px] rounded-lg border border-neon-border bg-transparent text-neon-text flex items-center justify-center text-lg font-bold cursor-pointer flex-shrink-0 disabled:opacity-40"
+                                    :disabled="saving || item.current_units <= 0"
+                                    @click="decrement"
+                                >−</button>
+                                <div class="flex-1 text-center">
+                                    <input
+                                        v-if="editingUnits"
+                                        v-model.number="unitsInput"
+                                        type="number"
+                                        class="text-[32px] font-extrabold text-neon-text bg-transparent border-b-2 border-neon-accent outline-none w-20 text-center leading-none"
+                                        @blur="saveUnits"
+                                        @keyup.enter="saveUnits"
+                                        ref="unitsField"
+                                        min="0"
+                                    />
+                                    <span
+                                        v-else
+                                        class="text-[32px] font-extrabold text-neon-text cursor-pointer leading-none"
+                                        @click="startEditUnits"
+                                    >{{ item.current_units }}</span>
+                                </div>
+                                <button
+                                    class="w-[34px] h-[34px] rounded-lg border-none flex items-center justify-center text-lg font-bold cursor-pointer flex-shrink-0 disabled:opacity-40"
+                                    style="background: #00d4aa; color: #000"
+                                    :disabled="saving"
+                                    @click="increment"
+                                >+</button>
+                            </div>
+                            <!-- Progress bar -->
+                            <div v-if="!isOngoing" class="mt-2">
+                                <div class="h-[3px] bg-white/[0.07] rounded overflow-hidden">
+                                    <div class="h-full rounded transition-[width] duration-300" :style="{ width: progressPct + '%', background: statusColor }"></div>
+                                </div>
+                                <div class="text-[10px] text-neon-muted mt-1">
+                                    {{ item.current_units }} / {{ item.content?.total_units }} {{ unitShort }} · {{ progressPct }}%
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Rating grid -->
+                        <div class="mb-3">
+                            <div class="text-[10px] font-bold uppercase tracking-[0.08em] text-neon-muted mb-1.5">Avaliação (0–10)</div>
+                            <div class="flex flex-wrap gap-1.5">
+                                <button
+                                    v-for="n in ratingOptions"
+                                    :key="n"
+                                    class="w-7 h-7 rounded-md border text-[11px] font-bold cursor-pointer transition-all font-sans"
+                                    :class="item.rating === n
+                                        ? 'border-transparent bg-amber-400 text-black'
+                                        : 'border-neon-border bg-transparent text-neon-muted'"
+                                    @click="changeRating(item.rating === n ? null : n)"
+                                >{{ n }}</button>
+                            </div>
+                        </div>
+
+                        <!-- Site -->
+                        <div v-if="sites.length">
+                            <div class="text-[10px] font-bold uppercase tracking-[0.08em] text-neon-muted mb-1.5">Site de leitura</div>
+                            <IonSelect
+                                v-model="selectedSiteId"
+                                :compareWith="(o1, o2) => Number(o1) === Number(o2)"
+                                placeholder="Sem fonte"
+                                fill="outline"
+                                interface="action-sheet"
+                                class="neon-select"
+                                @ionChange="changeSite"
+                            >
+                                <IonSelectOption value="">Sem fonte</IonSelectOption>
+                                <IonSelectOption v-for="site in sites" :key="site.id" :value="site.id">{{ site.name }}</IonSelectOption>
+                            </IonSelect>
+                        </div>
                     </div>
 
                     <!-- Delete -->
@@ -180,15 +169,14 @@
 <script lang="ts">
 import { defineComponent, nextTick } from 'vue';
 import {
-    IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
-    IonBackButton, IonButton, IonIcon, IonSpinner, IonLoading, IonSelect, IonSelectOption, IonRange,
+    IonPage, IonContent, IonIcon, IonSpinner, IonLoading,
+    IonButton, IonSelect, IonSelectOption,
     toastController, alertController,
 } from '@ionic/vue';
-import { bookOutline, tvOutline, libraryOutline, addOutline, removeOutline, trashOutline } from 'ionicons/icons';
+import { bookOutline, tvOutline, libraryOutline, trashOutline } from 'ionicons/icons';
 import { userContentService, UserContent, ContentStatus, STATUS_LABELS, getStatusLabel } from '@/services/userContentService';
 import { siteService, Site } from '@/services/siteService';
 import { ContentType, CONTENT_TYPE_LABELS, CONTENT_TYPE_COLORS, UNIT_LABEL } from '@/services/contentService';
-import StatusBadge from '@/components/StatusBadge.vue';
 
 const TYPE_ICONS: Record<ContentType, string> = {
     manga: bookOutline,
@@ -196,11 +184,19 @@ const TYPE_ICONS: Record<ContentType, string> = {
     novel: libraryOutline,
 };
 
+const STATUS_COLORS: Record<ContentStatus, string> = {
+    reading: '#3b82f6',
+    completed: '#10b981',
+    paused: '#f59e0b',
+    dropped: '#ef4444',
+    plan_to_read: '#8b5cf6',
+};
+
 export default defineComponent({
     name: 'MangaDetailPage',
     components: {
-        IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
-        IonBackButton, IonButton, IonIcon, IonSpinner, IonLoading, IonSelect, IonSelectOption, IonRange, StatusBadge,
+        IonPage, IonContent, IonIcon, IonSpinner, IonLoading,
+        IonButton, IonSelect, IonSelectOption,
     },
     data() {
         return {
@@ -211,7 +207,8 @@ export default defineComponent({
             editingUnits: false,
             unitsInput: 0,
             selectedSiteId: '' as string | number,
-            addOutline, removeOutline, trashOutline,
+            ratingOptions: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            trashOutline,
         };
     },
     computed: {
@@ -230,8 +227,17 @@ export default defineComponent({
         unitShort(): string {
             return UNIT_LABEL[this.contentType].short;
         },
-        unitPlural(): string {
-            return UNIT_LABEL[this.contentType].plural;
+        isOngoing(): boolean {
+            return !this.item?.content?.total_units;
+        },
+        statusColor(): string {
+            return this.item ? (STATUS_COLORS[this.item.status] ?? '#5a6480') : '#5a6480';
+        },
+        progressPct(): number {
+            const total = this.item?.content?.total_units;
+            const current = this.item?.current_units ?? 0;
+            if (!total) return 0;
+            return Math.round((current / total) * 100);
         },
         statuses() {
             return Object.entries(STATUS_LABELS).map(([value]) => ({
@@ -265,6 +271,10 @@ export default defineComponent({
             if (updated.content === undefined && this.item?.content) updated.content = this.item.content;
             if (updated.site === undefined && this.item?.site) updated.site = this.item.site;
             this.item = updated;
+        },
+
+        getStatusColor(status: ContentStatus): string {
+            return STATUS_COLORS[status] ?? '#5a6480';
         },
 
         async increment() {
@@ -325,11 +335,11 @@ export default defineComponent({
             }
         },
 
-        async changeRating(value: number) {
+        async changeRating(value: number | null) {
             if (!this.item) return;
             this.saving = true;
             try {
-                this.patchItem(await userContentService.update(this.item.id, { rating: value }));
+                this.patchItem(await userContentService.update(this.item.id, { rating: value ?? undefined }));
             } catch {
                 await this.showError('Falha ao salvar avaliação.');
             } finally {
@@ -391,22 +401,14 @@ export default defineComponent({
 
 .neon-select {
     --background: #1a2035;
-    --color: #e8eaf0;
-    --placeholder-color: #4a5568;
-    --border-color: #1e2538;
-    --border-radius: 12px;
-    --highlight-color-focused: #00e5b0;
-    --padding-start: 16px;
-    --padding-end: 16px;
-    min-height: 52px;
+    --color: #f0f4ff;
+    --placeholder-color: #4a5570;
+    --border-color: #222840;
+    --border-radius: 10px;
+    --highlight-color-focused: #00d4aa;
+    --padding-start: 14px;
+    --padding-end: 14px;
+    min-height: 48px;
     width: 100%;
-}
-
-.rating-range {
-    --bar-background: #1e2538;
-    --bar-background-active: #00e5b0;
-    --knob-background: #00e5b0;
-    --pin-background: #00e5b0;
-    --pin-color: #000;
 }
 </style>
