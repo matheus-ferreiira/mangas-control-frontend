@@ -10,7 +10,7 @@ const STATIC_ASSETS = [
 ];
 
 // Instalar o service worker
-self.addEventListener('install', (event: any) => {
+self.addEventListener('install', (event) => {
     console.log('Service Worker instalando...');
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
@@ -25,7 +25,7 @@ self.addEventListener('install', (event: any) => {
 });
 
 // Ativar o service worker e limpar caches antigos
-self.addEventListener('activate', (event: any) => {
+self.addEventListener('activate', (event) => {
     console.log('Service Worker ativando...');
     event.waitUntil(
         caches.keys().then((cacheNames) => {
@@ -44,7 +44,7 @@ self.addEventListener('activate', (event: any) => {
 });
 
 // Estratégia de cache: Network first, fall back to cache
-self.addEventListener('fetch', (event: any) => {
+self.addEventListener('fetch', (event) => {
     const { request } = event;
     const url = new URL(request.url);
 

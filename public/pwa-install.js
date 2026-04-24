@@ -19,7 +19,7 @@ if (document.readyState === 'loading') {
 }
 
 // Detectar a possibilidade de instalação
-let deferredPrompt: any = null;
+let deferredPrompt = null;
 
 window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
@@ -35,7 +35,7 @@ window.addEventListener('appinstalled', () => {
 });
 
 // Expor função global para instalar
-(window as any).installPWA = async () => {
+window.installPWA = async () => {
     if (deferredPrompt) {
         deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
