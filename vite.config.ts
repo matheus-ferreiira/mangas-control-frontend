@@ -15,10 +15,10 @@ export default defineConfig({
         tailwindcss(),
         VitePWA({
             registerType: 'autoUpdate',
+            injectRegister: 'auto',
             manifest: {
                 name: 'Neon Curator',
                 short_name: 'Neon Curator',
-                description: 'Gerencie sua coleção de mangás, animes e novels',
                 theme_color: '#000000',
                 background_color: '#000000',
                 display: 'standalone',
@@ -34,47 +34,8 @@ export default defineConfig({
                         type: 'image/png',
                     },
                 ],
-            },
-            workbox: {
-                skipWaiting: true,
-                clientsClaim: true,
-                runtimeCaching: [
-                    {
-                        urlPattern: /^https:\/\/.*\.(js|css|html)$/,
-                        handler: 'StaleWhileRevalidate',
-                        options: {
-                            cacheName: 'assets-cache',
-                            expiration: {
-                                maxEntries: 50,
-                                maxAgeSeconds: 30 * 24 * 60 * 60,
-                            },
-                        },
-                    },
-                    {
-                        urlPattern: /^https:\/\/.*\.(png|jpg|jpeg|svg|gif|webp)$/,
-                        handler: 'CacheFirst',
-                        options: {
-                            cacheName: 'images-cache',
-                            expiration: {
-                                maxEntries: 100,
-                                maxAgeSeconds: 30 * 24 * 60 * 60,
-                            },
-                        },
-                    },
-                    {
-                        urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/i,
-                        handler: 'CacheFirst',
-                        options: {
-                            cacheName: 'google-fonts-cache',
-                            expiration: {
-                                maxEntries: 20,
-                                maxAgeSeconds: 30 * 24 * 60 * 60,
-                            },
-                        },
-                    },
-                ],
-            },
-        }),
+            }
+        })
     ],
     resolve: {
         alias: {
