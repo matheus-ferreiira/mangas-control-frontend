@@ -65,18 +65,21 @@
             </div>
 
             <!-- +1 button -->
-            <button
-                class="w-8 h-8 rounded-full flex-shrink-0 self-center flex items-center justify-center text-base font-bold border-none cursor-pointer transition-all duration-200"
-                :class="plusActive ? 'bg-neon-accent text-black scale-[1.2]' : 'bg-neon-elevated text-neon-accent'"
+            <IonButton
+                fill="solid"
+                class="plus-btn"
+                :style="plusActive
+                    ? { '--background': '#00d4aa', '--color': '#000', transform: 'scale(1.2)' }
+                    : { '--background': '#1a2035', '--color': '#00d4aa' }"
                 @click.stop="handlePlus"
-            >+</button>
+            >+</IonButton>
         </div>
     </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
-import { IonIcon } from '@ionic/vue';
+import { IonIcon, IonButton } from '@ionic/vue';
 import { bookOutline, tvOutline, libraryOutline } from 'ionicons/icons';
 import { UserContent, ContentStatus } from '@/services/userContentService';
 import { CONTENT_TYPE_LABELS, CONTENT_TYPE_COLORS, UNIT_LABEL, ContentType } from '@/services/contentService';
@@ -98,7 +101,7 @@ const STATUS_COLORS: Record<ContentStatus, string> = {
 
 export default defineComponent({
     name: 'ContentCard',
-    components: { IonIcon, StatusBadge },
+    components: { IonIcon, IonButton, StatusBadge },
     emits: ['click', 'plusOne'],
     props: {
         item: { type: Object as PropType<UserContent>, required: true },
@@ -144,3 +147,20 @@ export default defineComponent({
     },
 });
 </script>
+
+<style scoped>
+.plus-btn {
+    --border-radius: 50%;
+    --padding-start: 0;
+    --padding-end: 0;
+    --letter-spacing: 0;
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+    font-weight: 700;
+    flex-shrink: 0;
+    align-self: center;
+    margin: 0;
+    transition: transform 0.2s;
+}
+</style>

@@ -5,7 +5,7 @@
                 <IonRefresherContent pulling-icon="chevron-down-circle-outline" refreshing-spinner="crescent" pulling-text="" refreshing-text="" />
             </IonRefresher>
 
-            <div class="px-4 pt-4 pb-24">
+            <div class="px-4 pb-24 page-top">
                 <!-- Header -->
                 <div class="flex items-start justify-between mb-3">
                     <div>
@@ -23,50 +23,44 @@
                 </div>
 
                 <!-- Search -->
-                <div class="relative mb-2.5">
-                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-neon-muted text-sm pointer-events-none">🔍</span>
-                    <input
-                        v-model="search"
-                        placeholder="Buscar na biblioteca..."
-                        class="w-full pl-8 pr-9 py-[9px] rounded-[10px] border border-neon-border bg-neon-surface text-neon-text text-[13px] outline-none placeholder:text-neon-muted"
-                        @input="applyFilters"
-                    />
-                    <button
-                        v-if="search"
-                        class="absolute right-2.5 top-1/2 -translate-y-1/2 text-neon-muted text-lg leading-none bg-none border-none cursor-pointer p-0"
-                        @click="search = ''; applyFilters()"
-                    >×</button>
-                </div>
+                <IonSearchbar
+                    :value="search"
+                    placeholder="Buscar na biblioteca..."
+                    show-clear-button="focus"
+                    class="neon-search"
+                    @ionInput="onSearch"
+                />
 
                 <!-- Type pills -->
-                <div class="flex gap-1.5 overflow-x-auto pb-1.5 mb-2 no-scrollbar">
-                    <button
+                <div class="flex gap-1.5 overflow-x-auto pb-1 mb-1.5 no-scrollbar">
+                    <IonButton
                         v-for="opt in typeOptions"
                         :key="opt.value ?? 'all'"
-                        class="flex-shrink-0 px-3.5 py-[5px] rounded-full text-[11px] font-bold transition-all border"
-                        :class="activeType === opt.value
-                            ? 'bg-neon-accent text-black border-neon-accent'
-                            : 'bg-transparent border-neon-border text-neon-subtle'"
+                        shape="round"
+                        size="small"
+                        fill="outline"
+                        class="pill"
+                        :style="activeType === opt.value
+                            ? { '--background': '#00d4aa', '--color': '#000', '--border-color': '#00d4aa' }
+                            : { '--background': '#1c2644', '--color': '#8892aa', '--border-color': '#4a5a80' }"
                         @click="activeType = opt.value; applyFilters()"
-                    >
-                        {{ opt.label }}
-                    </button>
+                    >{{ opt.label }}</IonButton>
                 </div>
 
                 <!-- Status pills -->
-                <div class="flex gap-[5px] overflow-x-auto pb-1.5 mb-3 no-scrollbar">
-                    <button
+                <div class="flex gap-1 overflow-x-auto pb-1 mb-3 no-scrollbar">
+                    <IonButton
                         v-for="opt in statusOptions"
                         :key="opt.value ?? 'all-status'"
-                        class="flex-shrink-0 px-[11px] py-1 rounded-full text-[10px] font-bold transition-all border"
-                        :class="activeStatus === opt.value
-                            ? 'border-transparent text-white'
-                            : 'bg-transparent border-neon-border text-neon-muted'"
-                        :style="activeStatus === opt.value ? { background: statusColor(opt.value) } : {}"
+                        shape="round"
+                        size="small"
+                        fill="outline"
+                        class="pill"
+                        :style="activeStatus === opt.value
+                            ? { '--background': statusColor(opt.value), '--color': '#fff', '--border-color': statusColor(opt.value) }
+                            : { '--background': '#1c2644', '--color': '#8892aa', '--border-color': '#4a5a80' }"
                         @click="activeStatus = opt.value; applyFilters()"
-                    >
-                        {{ opt.label }}
-                    </button>
+                    >{{ opt.label }}</IonButton>
                 </div>
 
                 <!-- Counter -->
@@ -119,7 +113,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import {
-    IonPage, IonContent, IonIcon, IonSpinner, IonButton,
+    IonPage, IonContent, IonIcon, IonSpinner, IonButton, IonSearchbar,
     IonRefresher, IonRefresherContent, toastController,
 } from '@ionic/vue';
 import { bookOutline } from 'ionicons/icons';
@@ -150,7 +144,7 @@ const STATUS_COLOR_MAP: Record<string, string> = {
 export default defineComponent({
     name: 'LibraryPage',
     components: {
-        IonPage, IonContent, IonIcon, IonSpinner, IonButton,
+        IonPage, IonContent, IonIcon, IonSpinner, IonButton, IonSearchbar,
         IonRefresher, IonRefresherContent, ContentCard,
     },
     data() {
@@ -194,6 +188,11 @@ export default defineComponent({
             } finally {
                 this.loading = false;
             }
+        },
+
+        onSearch(ev: Event) {
+            this.search = (ev as CustomEvent).detail.value ?? '';
+            this.applyFilters();
         },
 
         applyFilters() {
@@ -243,4 +242,26 @@ export default defineComponent({
 .btn-primary { --background: var(--neon-accent); --color: #000; --border-radius: 14px; font-weight: 700; height: 52px; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+.neon-search {
+    --background: #141825;
+    --color: #f0f4ff;
+    --placeholder-color: #5a6480;
+    --icon-color: #5a6480;
+    --clear-button-color: #5a6480;
+    --border-radius: 10px;
+    --box-shadow: 0 0 0 1px #222840;
+    padding-inline: 0;
+    padding-top: 0;
+    padding-bottom: 4px;
+}
+
+.pill {
+    --height: 30px;
+    --padding-start: 12px;
+    --padding-end: 12px;
+    --border-width: 1px;
+    --letter-spacing: 0;
+    margin: 0;
+}
 </style>

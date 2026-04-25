@@ -1,6 +1,6 @@
 <template>
-    <ion-page class="[--background:#0a0e1a]">
-        <ion-content :fullscreen="true" class="[--background:#0a0e1a]">
+    <ion-page class="[--background:#0b0f1a]">
+        <ion-content :fullscreen="true" class="[--background:#0b0f1a]">
             <!-- Logo -->
             <div class="flex flex-col items-center px-6 pt-16 pb-8">
                 <div class="w-[72px] h-[72px] bg-neon-accent/12 rounded-[20px] flex items-center justify-center mb-4 border border-neon-accent/20">
@@ -16,27 +16,30 @@
             </div>
 
             <!-- Auth card -->
-            <div class="mx-5 mb-6 bg-[#131929] border border-neon-border rounded-[20px] p-7">
+            <div class="mx-5 mb-6 bg-neon-surface border border-neon-border rounded-[20px] p-7">
                 <h2 class="text-[22px] font-extrabold text-neon-text m-0 mb-1.5">Bem-vindo de volta</h2>
                 <p class="text-sm text-neon-muted m-0 mb-6">Entre para acessar seus arquivos digitais.</p>
 
-                <button
-                    class="w-full flex items-center justify-center gap-3 bg-[#1a2035] border border-neon-border rounded-[14px] p-4 text-neon-text text-[15px] font-semibold cursor-pointer transition-colors min-h-[52px] [&:active]:bg-[#212b45] disabled:opacity-70"
-                    :class="{ 'border-neon-accent/30': loading }"
+                <IonButton
+                    expand="block"
+                    fill="outline"
+                    class="google-btn"
                     :disabled="loading"
                     @click="loginWithGoogle"
                 >
-                    <ion-spinner v-if="loading" name="crescent" class="w-5 h-5 [--color:#00e5b0]" />
+                    <IonSpinner v-if="loading" slot="start" name="crescent" style="width:20px;height:20px;--color:#00d4aa" />
                     <template v-else>
-                        <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true">
-                            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-                            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-                            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-                            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-                        </svg>
+                        <span slot="start" style="display:flex;align-items:center;margin-inline-end:10px">
+                            <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true">
+                                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                            </svg>
+                        </span>
                         Entrar com Google
                     </template>
-                </button>
+                </IonButton>
 
                 <p class="text-center text-[13px] text-neon-muted mt-5 mb-0 leading-relaxed">
                     Acesso apenas via Google.<br />
@@ -68,14 +71,14 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { IonPage, IonContent, IonIcon, IonSpinner, toastController } from '@ionic/vue';
+import { IonPage, IonContent, IonIcon, IonSpinner, IonButton, toastController } from '@ionic/vue';
 import { bookSharp } from 'ionicons/icons';
 import { authService } from '@/services/authService';
 import { authStore } from '@/store/auth';
 
 export default defineComponent({
     name: 'LoginPage',
-    components: { IonPage, IonContent, IonIcon, IonSpinner },
+    components: { IonPage, IonContent, IonIcon, IonSpinner, IonButton },
     data() {
         return { loading: false, bookSharp };
     },
@@ -119,3 +122,18 @@ export default defineComponent({
     },
 });
 </script>
+
+<style scoped>
+.google-btn {
+    --background: #1a2035;
+    --color: #f0f4ff;
+    --border-color: #222840;
+    --border-radius: 14px;
+    --border-width: 1px;
+    --letter-spacing: 0;
+    height: 52px;
+    font-size: 15px;
+    font-weight: 600;
+    text-transform: none;
+}
+</style>

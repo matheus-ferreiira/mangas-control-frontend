@@ -1,7 +1,7 @@
 <template>
     <ion-page>
         <ion-content :fullscreen="true">
-            <div class="px-4 pt-4 pb-24">
+            <div class="px-4 pb-24 page-top">
                 <!-- Title -->
                 <div class="text-[20px] font-extrabold text-neon-accent tracking-[-0.02em] mb-5">Perfil</div>
 

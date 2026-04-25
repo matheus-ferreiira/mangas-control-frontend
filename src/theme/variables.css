@@ -55,6 +55,7 @@
     --neon-gradient: linear-gradient(135deg, #8b5cf6 0%, #00d4aa 100%);
     --neon-danger: #ef4444;
     --neon-warning: #f59e0b;
+    --neon-pill-border: #4a5a80;
 
     /* Status colors */
     --status-reading: #3b82f6;
@@ -81,6 +82,7 @@ ion-tab-bar {
     border-top: 1px solid #222840;
     padding-bottom: env(safe-area-inset-bottom);
     height: 60px;
+    overflow: visible;
 }
 
 ion-tab-button {
@@ -141,6 +143,11 @@ ion-back-button {
     letter-spacing: 1.5px;
     text-transform: uppercase;
     color: var(--neon-accent);
+}
+
+/* Safe-area top padding for pages without IonHeader */
+.page-top {
+    padding-top: max(16px, env(safe-area-inset-top, 16px));
 }
 
 @keyframes shimmer {

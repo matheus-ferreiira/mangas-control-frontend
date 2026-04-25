@@ -20,4 +20,7 @@
     --color-status-paused: #f59e0b;
     --color-status-dropped: #ef4444;
     --color-status-plan: #8b5cf6;
+
+    /* Interactive element borders — brighter than card borders for visibility */
+    --color-neon-pill-border: #4a5a80;
 }

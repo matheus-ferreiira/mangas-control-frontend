@@ -2,7 +2,7 @@
     <IonPage>
         <IonContent :fullscreen="true">
             <div class="pb-24">
-                <div class="px-4 pt-4 pb-3">
+                <div class="px-4 pb-3 page-top">
                     <div class="text-[20px] font-extrabold text-neon-text tracking-[-0.02em] mb-1">Fontes</div>
                     <div class="text-[12px] text-neon-muted">Sites onde você lê seus conteúdos</div>
                 </div>

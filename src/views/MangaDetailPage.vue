@@ -16,11 +16,11 @@
                     <!-- Gradient overlay -->
                     <div class="absolute inset-0" style="background: linear-gradient(to bottom, rgba(11,15,26,0.3) 0%, rgba(11,15,26,0.98) 100%)"></div>
                     <!-- Back button -->
-                    <button
-                        class="absolute top-3 left-3 w-[34px] h-[34px] rounded-full flex items-center justify-center border border-neon-border cursor-pointer text-neon-text text-lg"
-                        style="background: rgba(0,0,0,0.55)"
-                        @click="$router.back()"
-                    >‹</button>
+                    <div class="absolute left-2" style="top: max(10px, env(safe-area-inset-top, 10px))">
+                        <IonButton fill="clear" class="back-btn" @click="$router.back()">
+                            <IonIcon slot="icon-only" :icon="chevronBackOutline" />
+                        </IonButton>
+                    </div>
                     <!-- Content info -->
                     <div class="absolute bottom-3.5 left-4 right-4">
                         <div class="flex items-center gap-1.5 mb-1.5">
@@ -62,14 +62,18 @@
                         <div class="mb-3">
                             <div class="text-[10px] font-bold uppercase tracking-[0.08em] text-neon-muted mb-1.5">Status</div>
                             <div class="flex flex-wrap gap-1.5">
-                                <button
+                                <IonButton
                                     v-for="s in statuses"
                                     :key="s.value"
-                                    class="px-2.5 py-1 rounded-full text-[10px] font-bold border cursor-pointer transition-all duration-150 font-sans"
-                                    :class="item.status === s.value ? 'border-transparent text-white' : 'bg-transparent border-neon-border text-neon-muted'"
-                                    :style="item.status === s.value ? { background: getStatusColor(s.value) } : {}"
+                                    shape="round"
+                                    size="small"
+                                    fill="outline"
+                                    class="pill"
+                                    :style="item.status === s.value
+                                        ? { '--background': getStatusColor(s.value), '--color': '#fff', '--border-color': getStatusColor(s.value) }
+                                        : { '--background': '#1c2644', '--color': '#8892aa', '--border-color': '#4a5a80' }"
                                     @click="changeStatus(s.value)"
-                                >{{ s.label }}</button>
+                                >{{ s.label }}</IonButton>
                             </div>
                         </div>
 
@@ -79,19 +83,16 @@
                                 {{ contentType === 'anime' ? 'Episódio atual' : 'Capítulo atual' }}
                             </div>
                             <div class="flex items-center gap-2">
-                                <button
-                                    class="w-[34px] h-[34px] rounded-lg border border-neon-border bg-transparent text-neon-text flex items-center justify-center text-lg font-bold cursor-pointer flex-shrink-0 disabled:opacity-40"
-                                    :disabled="saving || item.current_units <= 0"
-                                    @click="decrement"
-                                >−</button>
+                                <IonButton fill="outline" class="unit-btn" :disabled="saving || item.current_units <= 0" @click="decrement">−</IonButton>
                                 <div class="flex-1 text-center">
-                                    <input
+                                    <IonInput
                                         v-if="editingUnits"
-                                        v-model.number="unitsInput"
+                                        :value="unitsInput"
                                         type="number"
-                                        class="text-[32px] font-extrabold text-neon-text bg-transparent border-b-2 border-neon-accent outline-none w-20 text-center leading-none"
-                                        @blur="saveUnits"
-                                        @keyup.enter="saveUnits"
+                                        inputmode="numeric"
+                                        class="unit-input"
+                                        @ionBlur="saveUnits"
+                                        @ionInput="unitsInput = Number(($event as CustomEvent).detail.value) || 0"
                                         ref="unitsField"
                                         min="0"
                                     />
@@ -101,12 +102,7 @@
                                         @click="startEditUnits"
                                     >{{ item.current_units }}</span>
                                 </div>
-                                <button
-                                    class="w-[34px] h-[34px] rounded-lg border-none flex items-center justify-center text-lg font-bold cursor-pointer flex-shrink-0 disabled:opacity-40"
-                                    style="background: #00d4aa; color: #000"
-                                    :disabled="saving"
-                                    @click="increment"
-                                >+</button>
+                                <IonButton fill="solid" class="unit-btn unit-plus" :disabled="saving" @click="increment">+</IonButton>
                             </div>
                             <!-- Progress bar -->
                             <div v-if="!isOngoing" class="mt-2">
@@ -123,15 +119,17 @@
                         <div class="mb-3">
                             <div class="text-[10px] font-bold uppercase tracking-[0.08em] text-neon-muted mb-1.5">Avaliação (0–10)</div>
                             <div class="flex flex-wrap gap-1.5">
-                                <button
+                                <IonButton
                                     v-for="n in ratingOptions"
                                     :key="n"
-                                    class="w-7 h-7 rounded-md border text-[11px] font-bold cursor-pointer transition-all font-sans"
-                                    :class="item.rating === n
-                                        ? 'border-transparent bg-amber-400 text-black'
-                                        : 'border-neon-border bg-transparent text-neon-muted'"
+                                    size="small"
+                                    fill="outline"
+                                    class="rating-btn"
+                                    :style="item.rating === n
+                                        ? { '--background': '#f59e0b', '--color': '#000', '--border-color': '#f59e0b' }
+                                        : { '--background': '#1c2644', '--color': '#8892aa', '--border-color': '#4a5a80' }"
                                     @click="changeRating(item.rating === n ? null : n)"
-                                >{{ n }}</button>
+                                >{{ n }}</IonButton>
                             </div>
                         </div>
 
@@ -173,7 +171,7 @@ import {
     IonButton, IonSelect, IonSelectOption,
     toastController, alertController,
 } from '@ionic/vue';
-import { bookOutline, tvOutline, libraryOutline, trashOutline } from 'ionicons/icons';
+import { bookOutline, tvOutline, libraryOutline, trashOutline, chevronBackOutline } from 'ionicons/icons';
 import { userContentService, UserContent, ContentStatus, STATUS_LABELS, getStatusLabel } from '@/services/userContentService';
 import { siteService, Site } from '@/services/siteService';
 import { ContentType, CONTENT_TYPE_LABELS, CONTENT_TYPE_COLORS, UNIT_LABEL } from '@/services/contentService';
@@ -208,7 +206,7 @@ export default defineComponent({
             unitsInput: 0,
             selectedSiteId: '' as string | number,
             ratingOptions: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-            trashOutline,
+            trashOutline, chevronBackOutline,
         };
     },
     computed: {
@@ -398,6 +396,73 @@ export default defineComponent({
 
 <style scoped>
 .btn-delete { --border-radius: 14px; margin-top: 8px; }
+
+.back-btn {
+    --border-radius: 50%;
+    --background: rgba(0,0,0,0.55);
+    --color: #f0f4ff;
+    --padding-start: 0;
+    --padding-end: 0;
+    width: 34px;
+    height: 34px;
+    margin: 0;
+}
+
+.unit-btn {
+    --border-radius: 10px;
+    --border-width: 1px;
+    --border-color: #222840;
+    --background: transparent;
+    --color: #f0f4ff;
+    --padding-start: 0;
+    --padding-end: 0;
+    --letter-spacing: 0;
+    width: 34px;
+    height: 34px;
+    font-size: 18px;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin: 0;
+}
+
+.unit-plus {
+    --background: #00d4aa;
+    --color: #000;
+    --border-color: #00d4aa;
+}
+
+.unit-input {
+    --background: transparent;
+    --color: #f0f4ff;
+    --highlight-color-focused: #00d4aa;
+    --border-color: #00d4aa;
+    --padding-start: 0;
+    --padding-end: 0;
+    font-size: 32px;
+    font-weight: 800;
+    text-align: center;
+    width: 80px;
+}
+
+.pill {
+    --height: 30px;
+    --padding-start: 12px;
+    --padding-end: 12px;
+    --border-width: 1px;
+    --letter-spacing: 0;
+    margin: 0;
+}
+
+.rating-btn {
+    --border-radius: 6px;
+    --border-width: 1px;
+    --padding-start: 0;
+    --padding-end: 0;
+    --height: 28px;
+    --letter-spacing: 0;
+    width: 28px;
+    margin: 0;
+}
 
 .neon-select {
     --background: #1a2035;

@@ -14,17 +14,18 @@
 
                 <!-- Filter chips -->
                 <div class="flex gap-2 overflow-x-auto pb-2 mb-4 no-scrollbar">
-                    <button
+                    <IonButton
                         v-for="opt in [{ label: 'Todos', value: null }, ...typeOptions]"
                         :key="opt.value ?? 'all'"
-                        class="flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all border"
-                        :class="filterType === opt.value
-                            ? 'bg-neon-accent text-black border-neon-accent'
-                            : 'bg-neon-elevated border-neon-border text-neon-muted'"
+                        shape="round"
+                        size="small"
+                        fill="outline"
+                        class="pill"
+                        :style="filterType === opt.value
+                            ? { '--background': '#00d4aa', '--color': '#000', '--border-color': '#00d4aa' }
+                            : { '--background': '#1c2644', '--color': '#8892aa', '--border-color': '#4a5a80' }"
                         @click="filterType = opt.value as any; applyFilter()"
-                    >
-                        {{ opt.label }}
-                    </button>
+                    >{{ opt.label }}</IonButton>
                 </div>
 
                 <!-- List header -->
@@ -71,12 +72,12 @@
                             <span v-if="content.total_units" class="text-xs text-neon-muted">{{ content.total_units }} {{ UNIT_LABEL[content.type].plural }}</span>
                         </div>
                         <div class="flex gap-2 flex-shrink-0">
-                            <button class="w-[34px] h-[34px] rounded-[10px] bg-neon-elevated border border-neon-border flex items-center justify-center text-base text-[#7b8ff5] cursor-pointer" @click="openModal(content)">
-                                <IonIcon :icon="pencilOutline" />
-                            </button>
-                            <button class="w-[34px] h-[34px] rounded-[10px] bg-neon-elevated border border-neon-border flex items-center justify-center text-base text-neon-danger cursor-pointer" @click="confirmDelete(content)">
-                                <IonIcon :icon="trashOutline" />
-                            </button>
+                            <IonButton fill="outline" class="icon-btn edit-btn" @click="openModal(content)">
+                                <IonIcon slot="icon-only" :icon="pencilOutline" />
+                            </IonButton>
+                            <IonButton fill="outline" class="icon-btn delete-btn" @click="confirmDelete(content)">
+                                <IonIcon slot="icon-only" :icon="trashOutline" />
+                            </IonButton>
                         </div>
                     </div>
                 </div>
@@ -118,15 +119,15 @@
                     <div class="mb-4">
                         <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-2">Tipo</span>
                         <div class="grid grid-cols-3 gap-2">
-                            <button
+                            <IonButton
                                 v-for="opt in typeOptions"
                                 :key="opt.value"
-                                class="py-3 rounded-xl border text-[13px] font-semibold cursor-pointer transition-all text-center"
-                                :class="form.type === opt.value ? opt.activeClass : 'bg-neon-surface border-neon-border text-neon-muted'"
+                                expand="block"
+                                fill="outline"
+                                class="type-btn"
+                                :style="form.type === opt.value ? typeActiveStyle(opt.value) : { '--background': '#141825', '--color': '#5a6480', '--border-color': '#222840' }"
                                 @click="form.type = opt.value"
-                            >
-                                {{ opt.label }}
-                            </button>
+                            >{{ opt.label }}</IonButton>
                         </div>
                     </div>
 
@@ -204,8 +205,8 @@ const TYPE_ICONS: Record<ContentType, string> = {
 
 const TYPE_ACTIVE_CLASSES: Record<ContentType, string> = {
     manga: 'bg-neon-accent/15 border-neon-accent/50 text-neon-accent',
-    anime: 'bg-[#7b8ff5]/15 border-[#7b8ff5]/50 text-[#7b8ff5]',
-    novel: 'bg-[#ffa26b]/15 border-[#ffa26b]/50 text-[#ffa26b]',
+    anime: 'bg-neon-blue/15 border-neon-blue/50 text-neon-blue',
+    novel: 'bg-neon-warning/15 border-neon-warning/50 text-neon-warning',
 };
 
 export default defineComponent({
@@ -374,6 +375,15 @@ export default defineComponent({
         getTypeIcon(type: ContentType): string { return TYPE_ICONS[type] ?? bookOutline; },
         getTypeColor(type: ContentType): string { return CONTENT_TYPE_COLORS[type] ?? ''; },
 
+        typeActiveStyle(type: ContentType): Record<string, string> {
+            const map: Record<ContentType, Record<string, string>> = {
+                manga: { '--background': 'rgba(0,212,170,0.15)', '--color': '#00d4aa', '--border-color': 'rgba(0,212,170,0.5)' },
+                anime: { '--background': 'rgba(139,92,246,0.15)', '--color': '#8b5cf6', '--border-color': 'rgba(139,92,246,0.5)' },
+                novel: { '--background': 'rgba(245,158,11,0.15)', '--color': '#f59e0b', '--border-color': 'rgba(245,158,11,0.5)' },
+            };
+            return map[type] ?? {};
+        },
+
         async showToast(message: string, color: string) {
             const toast = await toastController.create({ message, duration: 2000, color, position: 'top' });
             await toast.present();
@@ -388,11 +398,11 @@ export default defineComponent({
 
 .neon-input {
     --background: #1a2035;
-    --color: #e8eaf0;
-    --placeholder-color: #4a5568;
-    --border-color: #1e2538;
+    --color: #f0f4ff;
+    --placeholder-color: #4a5570;
+    --border-color: #222840;
     --border-radius: 12px;
-    --highlight-color-focused: #00e5b0;
+    --highlight-color-focused: #00d4aa;
     --padding-start: 16px;
     --padding-end: 16px;
     min-height: 52px;
@@ -402,7 +412,37 @@ export default defineComponent({
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+.pill {
+    --height: 30px;
+    --padding-start: 12px;
+    --padding-end: 12px;
+    --border-width: 1px;
+    --letter-spacing: 0;
+    margin: 0;
+}
+
+.type-btn {
+    --border-radius: 12px;
+    --border-width: 1px;
+    --letter-spacing: 0;
+    height: 46px;
+    margin: 0;
+}
+
+.icon-btn {
+    --border-radius: 10px;
+    --border-width: 1px;
+    --background: #1a2035;
+    --padding-start: 0;
+    --padding-end: 0;
+    width: 34px;
+    height: 34px;
+    margin: 0;
+}
+.edit-btn { --color: #8b5cf6; --border-color: #222840; }
+.delete-btn { --color: #ef4444; --border-color: rgba(239,68,68,0.3); }
+
 .modal-content {
-    --background: #0a0e1a;
+    --background: #0b0f1a;
 }
 </style>

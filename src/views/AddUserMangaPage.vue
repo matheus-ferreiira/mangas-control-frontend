@@ -1,7 +1,7 @@
 <template>
     <IonPage>
         <IonContent :fullscreen="true">
-            <div class="px-4 pt-4 pb-24">
+            <div class="px-4 pb-24 page-top">
                 <!-- Header -->
                 <div class="mb-4">
                     <div class="text-[20px] font-extrabold text-neon-text tracking-[-0.02em] mb-0.5">Adicionar</div>
@@ -26,21 +26,20 @@
                                 {{ typeLabel(selectedContent.type) }}
                             </span>
                         </div>
-                        <button class="w-8 h-8 rounded-lg bg-neon-elevated border border-neon-border flex items-center justify-center text-neon-muted cursor-pointer" @click="clearContent">
-                            <IonIcon :icon="closeOutline" />
-                        </button>
+                        <IonButton fill="outline" class="clear-btn" @click="clearContent">
+                            <IonIcon slot="icon-only" :icon="closeOutline" />
+                        </IonButton>
                     </div>
 
                     <!-- Search -->
-                    <div v-else class="relative">
-                        <div class="relative">
-                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-neon-muted text-sm pointer-events-none">🔍</span>
-                            <input
-                                v-model="contentSearch"
-                                placeholder="Buscar no acervo..."
-                                class="w-full pl-8 pr-4 py-[10px] rounded-[10px] border border-neon-border bg-neon-surface text-neon-text text-[13px] outline-none placeholder:text-neon-muted"
-                            />
-                        </div>
+                    <div v-else>
+                        <IonSearchbar
+                            :value="contentSearch"
+                            placeholder="Buscar no acervo..."
+                            show-clear-button="focus"
+                            class="neon-search"
+                            @ionInput="contentSearch = ($event as CustomEvent).detail.value ?? ''"
+                        />
                         <div v-if="filteredContents.length" class="mt-1 bg-neon-surface border border-neon-border rounded-xl overflow-hidden max-h-52 overflow-y-auto">
                             <div
                                 v-for="c in filteredContents"
@@ -89,14 +88,18 @@
                 <div class="mb-4">
                     <div class="text-[10px] font-bold uppercase tracking-[0.08em] text-neon-muted mb-1.5">Status</div>
                     <div class="flex flex-wrap gap-1.5">
-                        <button
+                        <IonButton
                             v-for="s in statuses"
                             :key="s.value"
-                            class="px-3 py-1.5 rounded-full text-[10px] font-bold border cursor-pointer transition-all font-sans"
-                            :class="form.status === s.value ? 'border-transparent text-white' : 'bg-transparent border-neon-border text-neon-muted'"
-                            :style="form.status === s.value ? { background: statusColor(s.value) } : {}"
+                            shape="round"
+                            size="small"
+                            fill="outline"
+                            class="pill"
+                            :style="form.status === s.value
+                                ? { '--background': statusColor(s.value), '--color': '#fff', '--border-color': statusColor(s.value) }
+                                : { '--background': '#1c2644', '--color': '#8892aa', '--border-color': '#4a5a80' }"
                             @click="form.status = s.value"
-                        >{{ s.label }}</button>
+                        >{{ s.label }}</IonButton>
                     </div>
                 </div>
 
@@ -121,15 +124,17 @@
                 <div class="mb-6">
                     <div class="text-[10px] font-bold uppercase tracking-[0.08em] text-neon-muted mb-1.5">Avaliação (opcional, 0–10)</div>
                     <div class="flex flex-wrap gap-1.5">
-                        <button
+                        <IonButton
                             v-for="n in ratingOptions"
                             :key="n"
-                            class="w-7 h-7 rounded-md border text-[11px] font-bold cursor-pointer transition-all font-sans"
-                            :class="form.rating === n
-                                ? 'border-transparent bg-amber-400 text-black'
-                                : 'border-neon-border bg-transparent text-neon-muted'"
+                            size="small"
+                            fill="outline"
+                            class="rating-btn"
+                            :style="form.rating === n
+                                ? { '--background': '#f59e0b', '--color': '#000', '--border-color': '#f59e0b' }
+                                : { '--background': '#1c2644', '--color': '#8892aa', '--border-color': '#4a5a80' }"
                             @click="form.rating = (form.rating === n ? null : n)"
-                        >{{ n }}</button>
+                        >{{ n }}</IonButton>
                     </div>
                 </div>
 
@@ -148,7 +153,7 @@
 import { defineComponent } from 'vue';
 import {
     IonPage, IonContent,
-    IonButton, IonIcon, IonSpinner, IonInput, IonSelect, IonSelectOption,
+    IonButton, IonIcon, IonSpinner, IonInput, IonSelect, IonSelectOption, IonSearchbar,
     toastController,
 } from '@ionic/vue';
 import { bookOutline, tvOutline, libraryOutline, closeOutline } from 'ionicons/icons';
@@ -172,7 +177,7 @@ const STATUS_COLORS: Record<string, string> = {
 
 export default defineComponent({
     name: 'AddUserMangaPage',
-    components: { IonPage, IonContent, IonButton, IonIcon, IonSpinner, IonInput, IonSelect, IonSelectOption },
+    components: { IonPage, IonContent, IonButton, IonIcon, IonSpinner, IonInput, IonSelect, IonSelectOption, IonSearchbar },
     data() {
         return {
             saving: false,
@@ -287,6 +292,53 @@ export default defineComponent({
 <style scoped>
 .btn-primary { --background: var(--neon-accent); --color: #000; --border-radius: 12px; font-weight: 700; height: 50px; }
 .btn-cancel { --background: #1a2035; --color: #f0f4ff; --border-radius: 12px; height: 50px; }
+
+.neon-search {
+    --background: #141825;
+    --color: #f0f4ff;
+    --placeholder-color: #5a6480;
+    --icon-color: #5a6480;
+    --clear-button-color: #5a6480;
+    --border-radius: 10px;
+    --box-shadow: 0 0 0 1px #222840;
+    padding-inline: 0;
+    padding-top: 0;
+    padding-bottom: 4px;
+}
+
+.pill {
+    --height: 30px;
+    --padding-start: 12px;
+    --padding-end: 12px;
+    --border-width: 1px;
+    --letter-spacing: 0;
+    margin: 0;
+}
+
+.rating-btn {
+    --border-radius: 6px;
+    --border-width: 1px;
+    --padding-start: 0;
+    --padding-end: 0;
+    --height: 28px;
+    --letter-spacing: 0;
+    width: 28px;
+    margin: 0;
+}
+
+.clear-btn {
+    --border-radius: 8px;
+    --background: #1a2035;
+    --color: #8892aa;
+    --border-color: #222840;
+    --border-width: 1px;
+    --height: 32px;
+    --padding-start: 0;
+    --padding-end: 0;
+    width: 32px;
+    margin: 0;
+    flex-shrink: 0;
+}
 
 .neon-input {
     --background: #1a2035;
