@@ -55,6 +55,21 @@
                     <IonIcon :icon="chevronForwardOutline" class="text-neon-muted text-lg" />
                 </div>
 
+                <!-- Instalar App -->
+                <template v-if="canInstall">
+                    <div class="text-[10px] font-bold uppercase tracking-[0.1em] text-neon-muted mb-2.5 mt-5">Aplicativo</div>
+                    <div class="bg-neon-surface border border-neon-border rounded-[14px] p-3.5 mb-2 flex items-center gap-3.5 cursor-pointer transition-colors active:border-neon-accent" @click="installPwa">
+                        <div class="w-[38px] h-[38px] rounded-[10px] flex items-center justify-center text-xl flex-shrink-0" style="background: rgba(59,130,246,0.12); color: #3b82f6">
+                            <IonIcon :icon="downloadOutline" />
+                        </div>
+                        <div class="flex-1">
+                            <div class="text-[15px] font-semibold text-neon-text">Instalar como App</div>
+                            <div class="text-[11px] text-neon-muted mt-0.5">Adicionar à tela inicial</div>
+                        </div>
+                        <IonIcon :icon="chevronForwardOutline" class="text-neon-muted text-lg" />
+                    </div>
+                </template>
+
                 <!-- Conta -->
                 <div class="text-[10px] font-bold uppercase tracking-[0.1em] text-neon-muted mb-2.5 mt-5">Conta</div>
                 <div class="bg-neon-surface border rounded-[14px] p-3.5 flex items-center gap-3.5 cursor-pointer transition-colors" style="border-color: rgba(239,68,68,0.2)" @click="confirmLogout">
@@ -77,7 +92,7 @@ import {
     IonPage, IonContent, IonIcon, alertController,
 } from '@ionic/vue';
 import {
-    bookOutline, cloudDownloadOutline, chevronForwardOutline, logOutOutline,
+    bookOutline, cloudDownloadOutline, chevronForwardOutline, logOutOutline, downloadOutline,
 } from 'ionicons/icons';
 import { authStore } from '@/store/auth';
 import { authService } from '@/services/authService';
@@ -89,8 +104,21 @@ export default defineComponent({
     data() {
         return {
             userContents: [] as UserContent[],
-            bookOutline, cloudDownloadOutline, chevronForwardOutline, logOutOutline,
+            canInstall: false,
+            deferredPrompt: null as any,
+            bookOutline, cloudDownloadOutline, chevronForwardOutline, logOutOutline, downloadOutline,
         };
+    },
+    mounted() {
+        window.addEventListener('beforeinstallprompt', (e: Event) => {
+            e.preventDefault();
+            this.deferredPrompt = e;
+            this.canInstall = true;
+        });
+        window.addEventListener('appinstalled', () => {
+            this.canInstall = false;
+            this.deferredPrompt = null;
+        });
     },
     computed: {
         user() { return authStore.user; },
@@ -123,6 +151,15 @@ export default defineComponent({
                 ],
             });
             await alert.present();
+        },
+        async installPwa() {
+            if (!this.deferredPrompt) return;
+            this.deferredPrompt.prompt();
+            const { outcome } = await this.deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                this.canInstall = false;
+                this.deferredPrompt = null;
+            }
         },
         async logout() {
             try {
