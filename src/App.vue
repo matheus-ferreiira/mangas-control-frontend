@@ -1,8 +1,8 @@
 <template>
-    <ion-app>
-        <ion-router-outlet />
+    <IonApp>
+        <IonRouterOutlet />
         <PWAInstallPrompt />
-    </ion-app>
+    </IonApp>
 </template>
 
 <script setup lang="ts">

@@ -19,20 +19,18 @@
                     @ionInput="onSearch"
                 />
 
-                <!-- Type pills -->
-                <div class="flex gap-1.5 overflow-x-auto pb-1 mb-3 no-scrollbar">
-                    <IonButton
+                <!-- Type filters -->
+                <div class="flex bg-neon-surface border border-neon-border rounded-xl p-1 gap-0.5 mt-3 mb-3">
+                    <div
                         v-for="opt in typeOptions"
                         :key="opt.value ?? 'all'"
-                        shape="round"
-                        size="small"
-                        fill="outline"
-                        class="pill"
-                        :style="activeType === opt.value
-                            ? { '--background': '#00d4aa', '--color': '#000', '--border-color': '#00d4aa' }
-                            : { '--background': '#1c2644', '--color': '#8892aa', '--border-color': '#4a5a80' }"
+                        class="flex-1 flex items-center justify-center gap-1.5 h-9 rounded-[9px] text-[12px] font-bold transition-colors cursor-pointer select-none"
+                        :class="activeType === opt.value ? 'bg-neon-accent text-black' : 'text-neon-muted'"
                         @click="setType(opt.value)"
-                    >{{ opt.label }}</IonButton>
+                    >
+                        <IonIcon v-if="opt.icon" :icon="opt.icon" class="text-[14px]" />
+                        {{ opt.label }}
+                    </div>
                 </div>
 
                 <!-- Counter -->
@@ -128,8 +126,10 @@ export default defineComponent({
             query: '',
             activeType: null as ContentType | null,
             typeOptions: [
-                { label: 'Todos', value: null as ContentType | null },
-                ...Object.entries(CONTENT_TYPE_LABELS).map(([value, label]) => ({ label, value: value as ContentType })),
+                { label: 'Todos', value: null as ContentType | null, icon: null as string | null },
+                { label: CONTENT_TYPE_LABELS.manga, value: 'manga' as ContentType, icon: bookOutline },
+                { label: CONTENT_TYPE_LABELS.anime, value: 'anime' as ContentType, icon: tvOutline },
+                { label: CONTENT_TYPE_LABELS.novel, value: 'novel' as ContentType, icon: libraryOutline },
             ],
             compassOutline, addCircleOutline, settingsOutline, pencilOutline,
         };
@@ -222,14 +222,6 @@ export default defineComponent({
     padding-bottom: 4px;
 }
 
-.pill {
-    --height: 30px;
-    --padding-start: 12px;
-    --padding-end: 12px;
-    --border-width: 1px;
-    --letter-spacing: 0;
-    margin: 0;
-}
 
 .settings-btn {
     --border-radius: 10px;

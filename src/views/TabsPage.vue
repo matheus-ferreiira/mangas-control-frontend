@@ -1,37 +1,37 @@
 <template>
-    <ion-page>
-        <ion-tabs>
-            <ion-router-outlet></ion-router-outlet>
-            <ion-tab-bar slot="bottom">
-                <ion-tab-button tab="library" href="/tabs/library">
-                    <ion-icon :icon="libraryOutline" />
-                    <ion-label>Biblioteca</ion-label>
-                </ion-tab-button>
+    <IonPage>
+        <IonTabs>
+            <IonRouterOutlet></IonRouterOutlet>
+            <IonTabBar slot="bottom">
+                <IonTabButton tab="library" href="/tabs/library">
+                    <IonIcon :icon="libraryOutline" />
+                    <IonLabel>Biblioteca</IonLabel>
+                </IonTabButton>
 
-                <ion-tab-button tab="discover" href="/tabs/discover">
-                    <ion-icon :icon="compassOutline" />
-                    <ion-label>Descobrir</ion-label>
-                </ion-tab-button>
+                <IonTabButton tab="discover" href="/tabs/discover">
+                    <IonIcon :icon="compassOutline" />
+                    <IonLabel>Descobrir</IonLabel>
+                </IonTabButton>
 
-                <ion-tab-button tab="add" href="/tabs/add" class="tab-fab">
+                <IonTabButton tab="add" href="/tabs/add" class="tab-fab">
                     <div class="fab-circle">
-                        <ion-icon :icon="addOutline" class="fab-icon" />
+                        <IonIcon :icon="addOutline" class="fab-icon" />
                     </div>
-                    <ion-label>Adicionar</ion-label>
-                </ion-tab-button>
+                    <IonLabel>Adicionar</IonLabel>
+                </IonTabButton>
 
-                <ion-tab-button tab="sources" href="/tabs/sources">
-                    <ion-icon :icon="cloudDownloadOutline" />
-                    <ion-label>Fontes</ion-label>
-                </ion-tab-button>
+                <IonTabButton tab="sources" href="/tabs/sources">
+                    <IonIcon :icon="cloudDownloadOutline" />
+                    <IonLabel>Fontes</IonLabel>
+                </IonTabButton>
 
-                <ion-tab-button tab="profile" href="/tabs/profile">
-                    <ion-icon :icon="personOutline" />
-                    <ion-label>Perfil</ion-label>
-                </ion-tab-button>
-            </ion-tab-bar>
-        </ion-tabs>
-    </ion-page>
+                <IonTabButton tab="profile" href="/tabs/profile">
+                    <IonIcon :icon="personOutline" />
+                    <IonLabel>Perfil</IonLabel>
+                </IonTabButton>
+            </IonTabBar>
+        </IonTabs>
+    </IonPage>
 </template>
 
 <script lang="ts">
@@ -66,14 +66,14 @@ export default defineComponent({
 }
 
 .fab-circle {
-    width: 46px;
-    height: 46px;
+    width: 36px;
+    height: 36px;
     border-radius: 23px;
     background: linear-gradient(135deg, #00d4aa, #00b894);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: -14px;
+    margin-top: -4px;
     box-shadow: 0 4px 16px rgba(0, 212, 170, 0.4);
     flex-shrink: 0;
 }

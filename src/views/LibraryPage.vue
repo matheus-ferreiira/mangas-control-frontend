@@ -31,36 +31,37 @@
                     @ionInput="onSearch"
                 />
 
-                <!-- Type pills -->
-                <div class="flex gap-1.5 overflow-x-auto pb-1 mb-1.5 no-scrollbar">
-                    <IonButton
+                <!-- Type filters -->
+                <div class="flex bg-neon-surface border border-neon-border rounded-xl p-1 gap-0.5 mt-2 mb-3">
+                    <div
                         v-for="opt in typeOptions"
                         :key="opt.value ?? 'all'"
-                        shape="round"
-                        size="small"
-                        fill="outline"
-                        class="pill"
-                        :style="activeType === opt.value
-                            ? { '--background': '#00d4aa', '--color': '#000', '--border-color': '#00d4aa' }
-                            : { '--background': '#1c2644', '--color': '#8892aa', '--border-color': '#4a5a80' }"
+                        class="flex-1 flex items-center justify-center gap-1.5 h-9 rounded-[9px] text-[12px] font-bold transition-colors cursor-pointer select-none"
+                        :class="activeType === opt.value ? 'bg-neon-accent text-black' : 'text-neon-muted'"
                         @click="activeType = opt.value; applyFilters()"
-                    >{{ opt.label }}</IonButton>
+                    >
+                        <IonIcon v-if="opt.icon" :icon="opt.icon" class="text-[14px]" />
+                        {{ opt.label }}
+                    </div>
                 </div>
 
-                <!-- Status pills -->
-                <div class="flex gap-1 overflow-x-auto pb-1 mb-3 no-scrollbar">
-                    <IonButton
+                <!-- Status filters -->
+                <div class="flex gap-1.5 overflow-x-auto pb-1 mb-3 no-scrollbar">
+                    <div
                         v-for="opt in statusOptions"
                         :key="opt.value ?? 'all-status'"
-                        shape="round"
-                        size="small"
-                        fill="outline"
-                        class="pill"
+                        class="flex-shrink-0 flex items-center gap-1.5 h-7 px-3 rounded-full text-[11px] font-bold whitespace-nowrap cursor-pointer select-none border transition-colors"
                         :style="activeStatus === opt.value
-                            ? { '--background': statusColor(opt.value), '--color': '#fff', '--border-color': statusColor(opt.value) }
-                            : { '--background': '#1c2644', '--color': '#8892aa', '--border-color': '#4a5a80' }"
+                            ? { background: statusColor(opt.value) + '22', color: statusColor(opt.value), borderColor: statusColor(opt.value) + '66' }
+                            : { background: '#141825', color: '#5a6480', borderColor: '#222840' }"
                         @click="activeStatus = opt.value; applyFilters()"
-                    >{{ opt.label }}</IonButton>
+                    >
+                        <span
+                            class="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                            :style="activeStatus === opt.value ? { background: statusColor(opt.value) } : { background: '#4a5570' }"
+                        ></span>
+                        {{ opt.label }}
+                    </div>
                 </div>
 
                 <!-- Counter -->
@@ -116,7 +117,7 @@ import {
     IonPage, IonContent, IonIcon, IonSpinner, IonButton, IonSearchbar,
     IonRefresher, IonRefresherContent, toastController,
 } from '@ionic/vue';
-import { bookOutline } from 'ionicons/icons';
+import { bookOutline, tvOutline, libraryOutline } from 'ionicons/icons';
 import { userContentService, UserContent, ContentStatus } from '@/services/userContentService';
 import { ContentType, CONTENT_TYPE_LABELS } from '@/services/contentService';
 import { authStore } from '@/store/auth';
@@ -156,11 +157,13 @@ export default defineComponent({
             activeType: null as FilterType,
             activeStatus: null as FilterStatus,
             typeOptions: [
-                { label: 'Todos', value: null as FilterType },
-                ...Object.entries(CONTENT_TYPE_LABELS).map(([value, label]) => ({ label, value: value as ContentType })),
+                { label: 'Todos', value: null as FilterType, icon: null as string | null },
+                { label: CONTENT_TYPE_LABELS.manga, value: 'manga' as ContentType, icon: bookOutline },
+                { label: CONTENT_TYPE_LABELS.anime, value: 'anime' as ContentType, icon: tvOutline },
+                { label: CONTENT_TYPE_LABELS.novel, value: 'novel' as ContentType, icon: libraryOutline },
             ],
             statusOptions: [
-                { label: 'Todos status', value: null as FilterStatus },
+                { label: 'Todos', value: null as FilterStatus },
                 ...Object.entries(STATUS_LABEL_MAP).map(([value, label]) => ({ label, value: value as ContentStatus })),
             ],
             bookOutline,
@@ -232,7 +235,7 @@ export default defineComponent({
         },
 
         statusColor(value: FilterStatus): string {
-            return value ? (STATUS_COLOR_MAP[value] ?? '#5a6480') : '#5a6480';
+            return value ? (STATUS_COLOR_MAP[value] ?? '#5a6480') : '#00d4aa';
         },
     },
 });
@@ -256,12 +259,4 @@ export default defineComponent({
     padding-bottom: 4px;
 }
 
-.pill {
-    --height: 30px;
-    --padding-start: 12px;
-    --padding-end: 12px;
-    --border-width: 1px;
-    --letter-spacing: 0;
-    margin: 0;
-}
 </style>

@@ -1,10 +1,10 @@
 <template>
-    <ion-page class="[--background:#0b0f1a]">
-        <ion-content :fullscreen="true" class="[--background:#0b0f1a]">
+    <IonPage class="[--background:#0b0f1a]">
+        <IonContent :fullscreen="true" class="[--background:#0b0f1a]">
             <!-- Logo -->
             <div class="flex flex-col items-center px-6 pt-16 pb-8">
                 <div class="w-[72px] h-[72px] bg-neon-accent/12 rounded-[20px] flex items-center justify-center mb-4 border border-neon-accent/20">
-                    <ion-icon :icon="bookSharp" class="text-[40px] text-neon-accent" />
+                    <IonIcon :icon="bookSharp" class="text-[40px] text-neon-accent" />
                 </div>
                 <h1 class="text-[28px] font-black tracking-[4px] m-0 mb-2.5 leading-none">
                     <span class="text-neon-blue">NEON</span>
@@ -65,8 +65,8 @@
                     <a href="#" class="text-[10px] text-[#4a5568] no-underline tracking-[0.5px]">TERMOS DE USO</a>
                 </div>
             </div>
-        </ion-content>
-    </ion-page>
+        </IonContent>
+    </IonPage>
 </template>
 
 <script lang="ts">

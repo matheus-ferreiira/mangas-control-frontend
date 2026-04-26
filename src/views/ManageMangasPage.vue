@@ -1,6 +1,6 @@
 <template>
     <IonPage>
-        <IonHeader>
+        <IonHeader class="ion-header">
             <IonToolbar>
                 <IonButtons slot="start">
                     <IonBackButton default-href="/tabs/discover" text="" />
@@ -13,19 +13,17 @@
             <div class="px-5 pt-5 pb-28">
 
                 <!-- Filter chips -->
-                <div class="flex gap-2 overflow-x-auto pb-2 mb-4 no-scrollbar">
-                    <IonButton
-                        v-for="opt in [{ label: 'Todos', value: null }, ...typeOptions]"
+                <div class="flex bg-neon-surface border border-neon-border rounded-xl p-1 gap-0.5 mb-4">
+                    <div
+                        v-for="opt in [{ label: 'Todos', value: null, icon: null }, ...typeOptions]"
                         :key="opt.value ?? 'all'"
-                        shape="round"
-                        size="small"
-                        fill="outline"
-                        class="pill"
-                        :style="filterType === opt.value
-                            ? { '--background': '#00d4aa', '--color': '#000', '--border-color': '#00d4aa' }
-                            : { '--background': '#1c2644', '--color': '#8892aa', '--border-color': '#4a5a80' }"
+                        class="flex-1 flex items-center justify-center gap-1.5 h-9 rounded-[9px] text-[12px] font-bold transition-colors cursor-pointer select-none"
+                        :class="filterType === opt.value ? 'bg-neon-accent text-black' : 'text-neon-muted'"
                         @click="filterType = opt.value as any; applyFilter()"
-                    >{{ opt.label }}</IonButton>
+                    >
+                        <IonIcon v-if="opt.icon" :icon="opt.icon" class="text-[14px]" />
+                        {{ opt.label }}
+                    </div>
                 </div>
 
                 <!-- List header -->
@@ -237,6 +235,7 @@ export default defineComponent({
                 value: value as ContentType,
                 label,
                 activeClass: TYPE_ACTIVE_CLASSES[value as ContentType],
+                icon: TYPE_ICONS[value as ContentType],
             })),
             CONTENT_TYPE_LABELS,
             UNIT_LABEL,
@@ -393,6 +392,11 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.ion-header .toolbar-background {
+    --background: #003bdf;
+    border-bottom: 1px solid #222840;
+}
+
 .btn-primary { --background: var(--neon-accent); --color: #000; --border-radius: 12px; font-weight: 700; height: 48px; }
 .btn-outline { --border-radius: 12px; --color: var(--neon-accent); --border-color: var(--neon-accent); }
 
@@ -412,14 +416,6 @@ export default defineComponent({
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-.pill {
-    --height: 30px;
-    --padding-start: 12px;
-    --padding-end: 12px;
-    --border-width: 1px;
-    --letter-spacing: 0;
-    margin: 0;
-}
 
 .type-btn {
     --border-radius: 12px;

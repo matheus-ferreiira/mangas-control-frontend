@@ -11,7 +11,7 @@
                 class="w-full h-full object-cover"
             />
             <div v-else class="w-full h-full bg-neon-elevated flex items-center justify-center text-neon-muted text-[28px]">
-                <ion-icon :icon="bookOutline" />
+                <IonIcon :icon="bookOutline" />
             </div>
         </div>
 
@@ -21,14 +21,14 @@
             </h3>
             <p class="text-[13px] text-neon-muted m-0 mb-2">Capítulo {{ userManga.current_chapters }}</p>
             <div class="flex items-center gap-2 flex-wrap">
-                <status-badge :status="userManga.status" />
+                <StatusBadge :status="userManga.status" />
                 <span v-if="userManga.site" class="text-[11px] text-neon-muted bg-neon-elevated rounded-md px-2 py-0.5">
                     {{ userManga.site.name }}
                 </span>
             </div>
         </div>
 
-        <ion-icon :icon="chevronForwardOutline" class="text-neon-muted text-lg flex-shrink-0" />
+        <IonIcon :icon="chevronForwardOutline" class="text-neon-muted text-lg flex-shrink-0" />
     </div>
 </template>
 

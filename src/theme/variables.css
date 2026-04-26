@@ -22,9 +22,11 @@
 
     --ion-card-background: #1a2035;
     --ion-item-background: #141825;
-    --ion-toolbar-background: #0d1120;
-    --ion-tab-bar-background: #141825;
-    --ion-tab-bar-border-color: #222840;
+    --ion-font-family: 'Inter', system-ui, -apple-system, sans-serif;
+
+    --ion-toolbar-background: #141825;
+    --ion-tab-bar-background: #0f1629;
+    --ion-tab-bar-border-color: rgba(0, 212, 170, 0.2);
     --ion-tab-bar-color: #5a6480;
     --ion-tab-bar-color-selected: #00d4aa;
 
@@ -65,12 +67,32 @@
     --status-plan: #8b5cf6;
 }
 
+body, ion-app {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+h1, h2, h3, h4 {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+}
+
+.font-display {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+}
+
 ion-content {
     --background: #0b0f1a;
 }
 
 ion-toolbar {
-    --border-color: #222840;
+    --background: #141825;
+    --border-color: rgba(0, 212, 170, 0.12);
+    border-bottom: 1px solid rgba(0, 212, 170, 0.12);
+}
+
+ion-title {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
 }
 
 ion-item {
@@ -79,7 +101,7 @@ ion-item {
 }
 
 ion-tab-bar {
-    border-top: 1px solid #222840;
+    border-top: 1px solid rgba(0, 212, 170, 0.2);
     padding-bottom: env(safe-area-inset-bottom);
     height: 60px;
     overflow: visible;
@@ -88,10 +110,15 @@ ion-tab-bar {
 ion-tab-button {
     --color: #5a6480;
     --color-selected: #00d4aa;
+    font-family: 'Inter', system-ui, sans-serif;
     font-size: 10px;
     font-weight: 600;
     letter-spacing: 0.5px;
     text-transform: uppercase;
+}
+
+ion-modal ion-header {
+    padding-top: 12px;
 }
 
 ion-back-button {

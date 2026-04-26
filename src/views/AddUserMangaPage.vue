@@ -88,18 +88,21 @@
                 <div class="mb-4">
                     <div class="text-[10px] font-bold uppercase tracking-[0.08em] text-neon-muted mb-1.5">Status</div>
                     <div class="flex flex-wrap gap-1.5">
-                        <IonButton
+                        <div
                             v-for="s in statuses"
                             :key="s.value"
-                            shape="round"
-                            size="small"
-                            fill="outline"
-                            class="pill"
+                            class="flex items-center gap-1.5 h-7 px-3 rounded-full text-[11px] font-bold whitespace-nowrap cursor-pointer select-none border transition-colors"
                             :style="form.status === s.value
-                                ? { '--background': statusColor(s.value), '--color': '#fff', '--border-color': statusColor(s.value) }
-                                : { '--background': '#1c2644', '--color': '#8892aa', '--border-color': '#4a5a80' }"
+                                ? { background: statusColor(s.value) + '22', color: statusColor(s.value), borderColor: statusColor(s.value) + '66' }
+                                : { background: '#141825', color: '#5a6480', borderColor: '#222840' }"
                             @click="form.status = s.value"
-                        >{{ s.label }}</IonButton>
+                        >
+                            <span
+                                class="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                                :style="form.status === s.value ? { background: statusColor(s.value) } : { background: '#4a5570' }"
+                            ></span>
+                            {{ s.label }}
+                        </div>
                     </div>
                 </div>
 
@@ -124,17 +127,15 @@
                 <div class="mb-6">
                     <div class="text-[10px] font-bold uppercase tracking-[0.08em] text-neon-muted mb-1.5">Avaliação (opcional, 0–10)</div>
                     <div class="flex flex-wrap gap-1.5">
-                        <IonButton
+                        <div
                             v-for="n in ratingOptions"
                             :key="n"
-                            size="small"
-                            fill="outline"
-                            class="rating-btn"
+                            class="w-8 h-8 flex items-center justify-center rounded-lg text-[12px] font-bold cursor-pointer select-none border transition-colors"
                             :style="form.rating === n
-                                ? { '--background': '#f59e0b', '--color': '#000', '--border-color': '#f59e0b' }
-                                : { '--background': '#1c2644', '--color': '#8892aa', '--border-color': '#4a5a80' }"
+                                ? { background: '#f59e0b22', color: '#f59e0b', borderColor: '#f59e0b66' }
+                                : { background: '#141825', color: '#5a6480', borderColor: '#222840' }"
                             @click="form.rating = (form.rating === n ? null : n)"
-                        >{{ n }}</IonButton>
+                        >{{ n }}</div>
                     </div>
                 </div>
 
@@ -306,25 +307,6 @@ export default defineComponent({
     padding-bottom: 4px;
 }
 
-.pill {
-    --height: 30px;
-    --padding-start: 12px;
-    --padding-end: 12px;
-    --border-width: 1px;
-    --letter-spacing: 0;
-    margin: 0;
-}
-
-.rating-btn {
-    --border-radius: 6px;
-    --border-width: 1px;
-    --padding-start: 0;
-    --padding-end: 0;
-    --height: 28px;
-    --letter-spacing: 0;
-    width: 28px;
-    margin: 0;
-}
 
 .clear-btn {
     --border-radius: 8px;

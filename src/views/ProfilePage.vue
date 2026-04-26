@@ -1,6 +1,6 @@
 <template>
-    <ion-page>
-        <ion-content :fullscreen="true">
+    <IonPage>
+        <IonContent :fullscreen="true">
             <div class="px-4 pb-24 page-top">
                 <!-- Title -->
                 <div class="text-[20px] font-extrabold text-neon-accent tracking-[-0.02em] mb-5">Perfil</div>
@@ -42,33 +42,33 @@
                 <div class="text-[10px] font-bold uppercase tracking-[0.1em] text-neon-muted mb-2.5">Gerenciamento</div>
                 <div class="bg-neon-surface border border-neon-border rounded-[14px] p-3.5 mb-2 flex items-center gap-3.5 cursor-pointer transition-colors active:border-neon-accent" @click="$router.push('/manage-mangas')">
                     <div class="w-[38px] h-[38px] rounded-[10px] flex items-center justify-center text-xl flex-shrink-0" style="background: rgba(0,212,170,0.12); color: #00d4aa">
-                        <ion-icon :icon="bookOutline" />
+                        <IonIcon :icon="bookOutline" />
                     </div>
                     <span class="flex-1 text-[15px] font-semibold text-neon-text">Catálogo de Mangás</span>
-                    <ion-icon :icon="chevronForwardOutline" class="text-neon-muted text-lg" />
+                    <IonIcon :icon="chevronForwardOutline" class="text-neon-muted text-lg" />
                 </div>
                 <div class="bg-neon-surface border border-neon-border rounded-[14px] p-3.5 mb-2 flex items-center gap-3.5 cursor-pointer transition-colors active:border-neon-accent" @click="$router.push('/tabs/sources')">
                     <div class="w-[38px] h-[38px] rounded-[10px] flex items-center justify-center text-xl flex-shrink-0" style="background: rgba(139,92,246,0.12); color: #8b5cf6">
-                        <ion-icon :icon="cloudDownloadOutline" />
+                        <IonIcon :icon="cloudDownloadOutline" />
                     </div>
                     <span class="flex-1 text-[15px] font-semibold text-neon-text">Gerenciar Fontes</span>
-                    <ion-icon :icon="chevronForwardOutline" class="text-neon-muted text-lg" />
+                    <IonIcon :icon="chevronForwardOutline" class="text-neon-muted text-lg" />
                 </div>
 
                 <!-- Conta -->
                 <div class="text-[10px] font-bold uppercase tracking-[0.1em] text-neon-muted mb-2.5 mt-5">Conta</div>
                 <div class="bg-neon-surface border rounded-[14px] p-3.5 flex items-center gap-3.5 cursor-pointer transition-colors" style="border-color: rgba(239,68,68,0.2)" @click="confirmLogout">
                     <div class="w-[38px] h-[38px] rounded-[10px] flex items-center justify-center text-xl flex-shrink-0" style="background: rgba(239,68,68,0.12); color: #ef4444">
-                        <ion-icon :icon="logOutOutline" />
+                        <IonIcon :icon="logOutOutline" />
                     </div>
                     <span class="flex-1 text-[15px] font-semibold" style="color: #ef4444">Sair</span>
-                    <ion-icon :icon="chevronForwardOutline" class="text-neon-muted text-lg" />
+                    <IonIcon :icon="chevronForwardOutline" class="text-neon-muted text-lg" />
                 </div>
 
                 <p class="text-center text-[11px] text-neon-muted mt-6">© 2025 Content Tracker · v1.0.0</p>
             </div>
-        </ion-content>
-    </ion-page>
+        </IonContent>
+    </IonPage>
 </template>
 
 <script lang="ts">
