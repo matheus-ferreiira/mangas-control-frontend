@@ -12,6 +12,18 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/LoginPage.vue'),
     },
     {
+        path: '/register',
+        component: () => import('@/views/RegisterPage.vue'),
+    },
+    {
+        path: '/forgot-password',
+        component: () => import('@/views/ForgotPasswordPage.vue'),
+    },
+    {
+        path: '/reset-password',
+        component: () => import('@/views/ResetPasswordPage.vue'),
+    },
+    {
         path: '/tabs/',
         component: TabsPage,
         meta: { requiresAuth: true },
@@ -44,17 +56,21 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/MangaDetailPage.vue'),
         meta: { requiresAuth: true },
     },
-    // alias para compatibilidade com links antigos
-    {
-        path: '/manga/:id',
-        redirect: (to) => `/content/${to.params.id}`,
-    },
     {
         path: '/manage-contents',
         component: () => import('@/views/ManageMangasPage.vue'),
         meta: { requiresAuth: true },
     },
-    // alias para compatibilidade
+    {
+        path: '/content-requests',
+        component: () => import('@/views/ContentRequestsPage.vue'),
+        meta: { requiresAuth: true },
+    },
+    // aliases para compatibilidade com links antigos
+    {
+        path: '/manga/:id',
+        redirect: (to) => `/content/${to.params.id}`,
+    },
     {
         path: '/manage-mangas',
         redirect: '/manage-contents',
