@@ -1,5 +1,5 @@
 import api from './api';
-import { ContentType } from './contentService';
+import { ContentType, ContentCatalogStatus } from './contentService';
 
 export type ContentStatus = 'reading' | 'completed' | 'paused' | 'dropped' | 'plan_to_read';
 
@@ -25,12 +25,16 @@ export interface UserContent {
     current_units: number;
     rating?: number | null;
     status: ContentStatus;
+    last_unit_update?: string;
     content?: {
         id: number;
         name: string;
+        alternative_names?: string[];
         cover?: string;
         type: ContentType;
         total_units?: number;
+        status?: ContentCatalogStatus;
+        last_unit_update?: string;
     };
     site?: {
         id: number;
