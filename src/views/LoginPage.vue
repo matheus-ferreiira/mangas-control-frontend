@@ -16,18 +16,19 @@
             </div>
 
             <!-- Auth card -->
-            <div class="mx-5 mb-6 bg-neon-surface border border-neon-border rounded-[20px] p-7">
+            <div class="mx-5 mb-6 bg-neon-surface border border-neon-border rounded-[20px] p-6">
                 <h2 class="text-[22px] font-extrabold text-neon-text m-0 mb-1.5">Bem-vindo de volta</h2>
-                <p class="text-sm text-neon-muted m-0 mb-6">Entre para acessar seus arquivos digitais.</p>
+                <p class="text-sm text-neon-muted m-0 mb-5">Entre para acessar seus arquivos digitais.</p>
 
+                <!-- Google -->
                 <IonButton
                     expand="block"
                     fill="outline"
-                    class="google-btn"
+                    class="google-btn mb-4"
                     :disabled="loading"
                     @click="loginWithGoogle"
                 >
-                    <IonSpinner v-if="loading" slot="start" name="crescent" style="width:20px;height:20px;--color:#00d4aa" />
+                    <IonSpinner v-if="loading && loginMode === 'google'" slot="start" name="crescent" style="width:20px;height:20px;--color:#00d4aa" />
                     <template v-else>
                         <span slot="start" style="display:flex;align-items:center;margin-inline-end:10px">
                             <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true">
@@ -41,20 +42,56 @@
                     </template>
                 </IonButton>
 
-                <p class="text-center text-[13px] text-neon-muted mt-5 mb-0 leading-relaxed">
-                    Acesso apenas via Google.<br />
-                    <span class="text-[12px] text-[#4a5568]">Fale com o administrador para obter acesso.</span>
-                </p>
-            </div>
+                <!-- Divider -->
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="flex-1 h-px bg-neon-border"></div>
+                    <span class="text-[11px] font-semibold text-neon-muted">ou</span>
+                    <div class="flex-1 h-px bg-neon-border"></div>
+                </div>
 
-            <!-- Atmospheric -->
-            <div class="flex gap-2 mx-5 mb-6 h-[140px]">
-                <div class="flex-1 rounded-2xl bg-gradient-to-br from-[#0d1a2d] to-[#1a0d2e] relative overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-t from-[rgba(10,14,26,0.8)] to-transparent"></div>
+                <!-- Email login form -->
+                <div class="mb-3">
+                    <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-1.5">Email</span>
+                    <IonInput
+                        v-model="emailForm.email"
+                        type="email"
+                        placeholder="seu@email.com"
+                        fill="outline"
+                        class="neon-input"
+                        @keyup.enter="loginWithEmail"
+                    />
                 </div>
-                <div class="flex-1 rounded-2xl bg-gradient-to-br from-[#0d1a2d] to-[#0d2d1a] relative overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-t from-[rgba(10,14,26,0.8)] to-transparent"></div>
+                <div class="mb-4">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <span class="text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted">Senha</span>
+                        <button class="text-[11px] text-neon-accent font-semibold" @click="$router.push('/forgot-password')">
+                            Esqueceu a senha?
+                        </button>
+                    </div>
+                    <IonInput
+                        v-model="emailForm.password"
+                        type="password"
+                        placeholder="••••••••"
+                        fill="outline"
+                        class="neon-input"
+                        @keyup.enter="loginWithEmail"
+                    />
                 </div>
+
+                <IonButton
+                    expand="block"
+                    class="btn-primary mb-4"
+                    :disabled="loading || !emailForm.email || !emailForm.password"
+                    @click="loginWithEmail"
+                >
+                    <IonSpinner v-if="loading && loginMode === 'email'" name="crescent" />
+                    <span v-else>Entrar</span>
+                </IonButton>
+
+                <p class="text-center text-[13px] text-neon-muted m-0">
+                    Não tem conta?
+                    <button class="text-neon-accent font-bold ml-1" @click="$router.push('/register')">Cadastre-se</button>
+                </p>
             </div>
 
             <!-- Footer -->
@@ -71,18 +108,40 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { IonPage, IonContent, IonIcon, IonSpinner, IonButton, toastController } from '@ionic/vue';
+import { IonPage, IonContent, IonIcon, IonSpinner, IonButton, IonInput, toastController } from '@ionic/vue';
 import { bookSharp } from 'ionicons/icons';
 import { authService } from '@/services/authService';
 import { authStore } from '@/store/auth';
 
 export default defineComponent({
     name: 'LoginPage',
-    components: { IonPage, IonContent, IonIcon, IonSpinner, IonButton },
+    components: { IonPage, IonContent, IonIcon, IonSpinner, IonButton, IonInput },
     data() {
-        return { loading: false, bookSharp };
+        return {
+            loading: false,
+            loginMode: '' as 'google' | 'email' | '',
+            emailForm: { email: '', password: '' },
+            bookSharp,
+        };
     },
     methods: {
+        async loginWithEmail() {
+            if (!this.emailForm.email || !this.emailForm.password) return;
+            this.loading = true;
+            this.loginMode = 'email';
+            try {
+                const res = await authService.login(this.emailForm.email, this.emailForm.password);
+                authStore.setAuth(res.token, res.user);
+                this.$router.replace('/tabs/library');
+            } catch {
+                const toast = await toastController.create({ message: 'Email ou senha incorretos.', duration: 2500, color: 'danger', position: 'top' });
+                await toast.present();
+            } finally {
+                this.loading = false;
+                this.loginMode = '';
+            }
+        },
+
         loginWithGoogle() {
             const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
             if (!clientId) {
@@ -94,6 +153,7 @@ export default defineComponent({
                 toastController.create({ message: 'Google Sign-In não disponível. Recarregue a página.', duration: 2500, color: 'warning', position: 'top' }).then((t) => t.present());
                 return;
             }
+            this.loginMode = 'google';
             g.accounts.id.initialize({
                 client_id: clientId,
                 callback: async (response: { credential: string }) => {
@@ -107,6 +167,7 @@ export default defineComponent({
                         await toast.present();
                     } finally {
                         this.loading = false;
+                        this.loginMode = '';
                     }
                 },
                 use_fedcm_for_prompt: false,
@@ -115,6 +176,7 @@ export default defineComponent({
             g.accounts.id.prompt((notification: any) => {
                 if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
                     this.loading = false;
+                    this.loginMode = '';
                     toastController.create({ message: 'Pop-up bloqueado. Verifique as configurações do navegador.', duration: 3000, color: 'warning', position: 'top' }).then((t) => t.present());
                 }
             });
@@ -135,5 +197,26 @@ export default defineComponent({
     font-size: 15px;
     font-weight: 600;
     text-transform: none;
+}
+
+.btn-primary {
+    --background: var(--neon-accent);
+    --color: #000;
+    --border-radius: 14px;
+    font-weight: 700;
+    height: 52px;
+}
+
+.neon-input {
+    --background: #1a2035;
+    --color: #f0f4ff;
+    --placeholder-color: #4a5570;
+    --border-color: #222840;
+    --border-radius: 12px;
+    --highlight-color-focused: #00d4aa;
+    --padding-start: 16px;
+    --padding-end: 16px;
+    min-height: 50px;
+    width: 100%;
 }
 </style>
