@@ -206,6 +206,8 @@ import {
 import { ContentType, CONTENT_TYPE_LABELS, CONTENT_TYPE_COLORS } from '@/services/contentService';
 import { authStore } from '@/store/auth';
 
+type TabType = 'new' | 'my' | 'admin';
+
 export default defineComponent({
     name: 'ContentRequestsPage',
     components: { IonPage, IonContent, IonIcon, IonButton, IonSpinner, IonInput, IonAlert },
@@ -238,21 +240,26 @@ export default defineComponent({
         isAdmin(): boolean {
             return authStore.user?.role === 'admin';
         },
-        availableTabs() {
-            const tabs = [
-                { label: 'Solicitar', value: 'new' as const },
-                { label: 'Minhas', value: 'my' as const },
+        availableTabs(): { label: string; value: TabType }[] {
+            const tabs: { label: string; value: TabType }[] = [
+                { label: 'Solicitar', value: 'new' },
+                { label: 'Minhas', value: 'my' },
             ];
-            if (this.isAdmin) tabs.push({ label: 'Admin', value: 'admin' as const });
+
+            if (this.isAdmin) {
+                tabs.push({ label: 'Admin', value: 'admin' });
+            }
+
             return tabs;
-        },
+        }
     },
     watch: {
-        activeTab(val: string) {
+        activeTab(val: 'new' | 'my' | 'admin') {
             if (val === 'my' && this.myRequests.length === 0) this.loadMyRequests();
             if (val === 'admin' && this.allRequests.length === 0) this.loadAllRequests();
         },
     },
+
     async ionViewWillEnter() {
         this.activeTab = 'new';
         this.submitSuccess = false;
