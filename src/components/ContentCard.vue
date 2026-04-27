@@ -39,14 +39,16 @@
                 </div>
 
                 <!-- Progress + rating -->
-                <div class="text-[11px] text-neon-muted mb-1.5">
-                    <template v-if="isOngoing">
-                        {{ item.current_units }} {{ unitShort }} lidos
+                <div class="text-[11px] text-neon-muted mb-1.5 flex items-center gap-1.5">
+                    <span>
+                        <template v-if="isOngoing">{{ item.current_units }} {{ unitShort }} lidos</template>
+                        <template v-else>{{ item.current_units }} / {{ item.content?.total_units }} {{ unitShort }}</template>
+                    </span>
+                    <span v-if="item.rating != null" class="text-amber-400">★ {{ item.rating }}</span>
+                    <template v-if="lastUpdateText">
+                        <span class="text-neon-border">·</span>
+                        <span class="text-[10px]">{{ lastUpdateText }}</span>
                     </template>
-                    <template v-else>
-                        {{ item.current_units }} / {{ item.content?.total_units }} {{ unitShort }}
-                    </template>
-                    <span v-if="item.rating != null" class="ml-2 text-amber-400">★ {{ item.rating }}</span>
                 </div>
 
                 <!-- Progress bar -->
@@ -135,6 +137,19 @@ export default defineComponent({
             const total = this.item.content?.total_units;
             if (!total) return 0;
             return Math.min((this.item.current_units / total) * 100, 100);
+        },
+        lastUpdateText(): string {
+            const date = this.item.last_unit_update;
+            if (!date) return '';
+            const diff = Date.now() - new Date(date).getTime();
+            const mins = Math.floor(diff / 60000);
+            if (mins < 1) return 'agora';
+            if (mins < 60) return `${mins}min`;
+            const hours = Math.floor(mins / 60);
+            if (hours < 24) return `${hours}h`;
+            const days = Math.floor(hours / 24);
+            if (days < 30) return `${days}d`;
+            return new Date(date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
         },
     },
     methods: {
