@@ -47,6 +47,13 @@
                     <span class="flex-1 text-[15px] font-semibold text-neon-text">Catálogo de Mangás</span>
                     <IonIcon :icon="chevronForwardOutline" class="text-neon-muted text-lg" />
                 </div>
+                <div class="bg-neon-surface border border-neon-border rounded-[14px] p-3.5 mb-2 flex items-center gap-3.5 cursor-pointer transition-colors active:border-neon-accent" @click="$router.push('/content-requests')">
+                    <div class="w-[38px] h-[38px] rounded-[10px] flex items-center justify-center text-xl flex-shrink-0" style="background: rgba(59,130,246,0.12); color: #3b82f6">
+                        <IonIcon :icon="addCircleOutline" />
+                    </div>
+                    <span class="flex-1 text-[15px] font-semibold text-neon-text">Solicitações de Conteúdo</span>
+                    <IonIcon :icon="chevronForwardOutline" class="text-neon-muted text-lg" />
+                </div>
                 <div class="bg-neon-surface border border-neon-border rounded-[14px] p-3.5 mb-2 flex items-center gap-3.5 cursor-pointer transition-colors active:border-neon-accent" @click="$router.push('/tabs/sources')">
                     <div class="w-[38px] h-[38px] rounded-[10px] flex items-center justify-center text-xl flex-shrink-0" style="background: rgba(139,92,246,0.12); color: #8b5cf6">
                         <IonIcon :icon="cloudDownloadOutline" />
@@ -92,7 +99,7 @@ import {
     IonPage, IonContent, IonIcon, alertController,
 } from '@ionic/vue';
 import {
-    bookOutline, cloudDownloadOutline, chevronForwardOutline, logOutOutline, downloadOutline,
+    bookOutline, cloudDownloadOutline, chevronForwardOutline, logOutOutline, downloadOutline, addCircleOutline,
 } from 'ionicons/icons';
 import { authStore } from '@/store/auth';
 import { authService } from '@/services/authService';
@@ -106,7 +113,7 @@ export default defineComponent({
             userContents: [] as UserContent[],
             canInstall: false,
             deferredPrompt: null as any,
-            bookOutline, cloudDownloadOutline, chevronForwardOutline, logOutOutline, downloadOutline,
+            bookOutline, cloudDownloadOutline, chevronForwardOutline, logOutOutline, downloadOutline, addCircleOutline,
         };
     },
     mounted() {
