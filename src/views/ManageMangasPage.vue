@@ -10,9 +10,18 @@
         </IonHeader>
 
         <IonContent :fullscreen="true">
-            <div class="px-5 pt-5 pb-28">
+            <div class="px-5 pt-4 pb-28">
 
-                <!-- Filter chips -->
+                <!-- Search -->
+                <IonSearchbar
+                    :value="filterSearch"
+                    placeholder="Buscar no acervo..."
+                    show-clear-button="focus"
+                    class="neon-search mb-3"
+                    @ionInput="onSearch"
+                />
+
+                <!-- Type filter -->
                 <div class="flex bg-neon-surface border border-neon-border rounded-xl p-1 gap-0.5 mb-4">
                     <div
                         v-for="opt in [{ label: 'Todos', value: null, icon: null }, ...typeOptions]"
@@ -62,11 +71,23 @@
                                 <IonIcon :icon="getTypeIcon(content.type)" />
                             </div>
                         </div>
-                        <div class="flex-1 min-w-0 flex flex-col gap-1">
-                            <span class="text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded inline-block self-start" :class="getTypeColor(content.type)">
-                                {{ CONTENT_TYPE_LABELS[content.type] }}
-                            </span>
+                        <div class="flex-1 min-w-0 flex flex-col gap-0.5">
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <span class="text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded inline-block" :class="getTypeColor(content.type)">
+                                    {{ CONTENT_TYPE_LABELS[content.type] }}
+                                </span>
+                                <span
+                                    v-if="content.status"
+                                    class="text-[9px] font-bold px-1.5 py-0.5 rounded"
+                                    :style="{ background: getCatalogStatusColor(content.status) + '22', color: getCatalogStatusColor(content.status) }"
+                                >
+                                    {{ CATALOG_STATUS_LABELS[content.status] }}
+                                </span>
+                            </div>
                             <span class="text-sm font-bold text-neon-text truncate">{{ content.name }}</span>
+                            <span v-if="content.alternative_names?.length" class="text-[10px] text-neon-muted truncate">
+                                {{ content.alternative_names.slice(0, 2).join(' · ') }}
+                            </span>
                             <span v-if="content.total_units" class="text-xs text-neon-muted">{{ content.total_units }} {{ UNIT_LABEL[content.type].plural }}</span>
                         </div>
                         <div class="flex gap-2 flex-shrink-0">
@@ -82,14 +103,14 @@
             </div>
         </IonContent>
 
-        <!-- FAB para adicionar -->
+        <!-- FAB -->
         <IonFab vertical="bottom" horizontal="end" slot="fixed">
             <IonFabButton color="primary" @click="openModal(null)">
                 <IonIcon :icon="addOutline" />
             </IonFabButton>
         </IonFab>
 
-        <!-- Modal de criação / edição -->
+        <!-- Modal criar / editar -->
         <IonModal :is-open="isModalOpen" @didDismiss="closeModal" :initial-breakpoint="1" :breakpoints="[0, 1]">
             <IonHeader>
                 <IonToolbar>
@@ -102,7 +123,7 @@
             <IonContent class="modal-content">
                 <div class="px-5 pt-5 pb-10">
 
-                    <!-- Name -->
+                    <!-- Nome -->
                     <div class="mb-4">
                         <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-2">Nome</span>
                         <IonInput
@@ -113,7 +134,19 @@
                         />
                     </div>
 
-                    <!-- Type -->
+                    <!-- Nomes alternativos -->
+                    <div class="mb-4">
+                        <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-1">Nomes Alternativos</span>
+                        <span class="block text-[10px] text-neon-muted mb-2">Separe por vírgula (ex: One Piece, ワンピース)</span>
+                        <IonInput
+                            v-model="alternativeNamesInput"
+                            placeholder="Nome 1, Nome 2, ..."
+                            fill="outline"
+                            class="neon-input"
+                        />
+                    </div>
+
+                    <!-- Tipo -->
                     <div class="mb-4">
                         <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-2">Tipo</span>
                         <div class="grid grid-cols-3 gap-2">
@@ -129,7 +162,25 @@
                         </div>
                     </div>
 
-                    <!-- Cover -->
+                    <!-- Status de publicação -->
+                    <div class="mb-4">
+                        <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-2">Status de Publicação</span>
+                        <div class="grid grid-cols-2 gap-2">
+                            <IonButton
+                                v-for="opt in catalogStatusOptions"
+                                :key="opt.value"
+                                expand="block"
+                                fill="outline"
+                                class="type-btn"
+                                :style="form.status === opt.value
+                                    ? { '--background': opt.color + '22', '--color': opt.color, '--border-color': opt.color + '88' }
+                                    : { '--background': '#141825', '--color': '#5a6480', '--border-color': '#222840' }"
+                                @click="form.status = opt.value"
+                            >{{ opt.label }}</IonButton>
+                        </div>
+                    </div>
+
+                    <!-- Capa -->
                     <div class="mb-4">
                         <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-2">Capa</span>
                         <div
@@ -154,7 +205,7 @@
                         </p>
                     </div>
 
-                    <!-- Total units -->
+                    <!-- Total de unidades -->
                     <div class="mb-6">
                         <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-2">
                             Total de {{ unitLabel }} (opcional)
@@ -186,13 +237,14 @@ import { defineComponent } from 'vue';
 import {
     IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
     IonButtons, IonBackButton, IonButton, IonIcon, IonSpinner, IonInput,
-    IonFab, IonFabButton, IonModal,
+    IonFab, IonFabButton, IonModal, IonSearchbar,
     toastController, alertController,
 } from '@ionic/vue';
 import { bookOutline, tvOutline, libraryOutline, pencilOutline, trashOutline, imageOutline, addOutline } from 'ionicons/icons';
 import {
-    contentService, Content, ContentType,
+    contentService, Content, ContentType, ContentCatalogStatus,
     CONTENT_TYPE_LABELS, CONTENT_TYPE_COLORS, UNIT_LABEL,
+    CATALOG_STATUS_LABELS, CATALOG_STATUS_COLORS,
 } from '@/services/contentService';
 
 const TYPE_ICONS: Record<ContentType, string> = {
@@ -201,18 +253,12 @@ const TYPE_ICONS: Record<ContentType, string> = {
     novel: libraryOutline,
 };
 
-const TYPE_ACTIVE_CLASSES: Record<ContentType, string> = {
-    manga: 'bg-neon-accent/15 border-neon-accent/50 text-neon-accent',
-    anime: 'bg-neon-blue/15 border-neon-blue/50 text-neon-blue',
-    novel: 'bg-neon-warning/15 border-neon-warning/50 text-neon-warning',
-};
-
 export default defineComponent({
     name: 'ManageMangasPage',
     components: {
         IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
         IonButtons, IonBackButton, IonButton, IonIcon, IonSpinner, IonInput,
-        IonFab, IonFabButton, IonModal,
+        IonFab, IonFabButton, IonModal, IonSearchbar,
     },
     data() {
         return {
@@ -222,22 +268,30 @@ export default defineComponent({
             contents: [] as Content[],
             filteredContents: [] as Content[],
             filterType: null as ContentType | null,
+            filterSearch: '',
             editingId: null as number | null,
+            alternativeNamesInput: '',
             form: {
                 name: '',
                 type: 'manga' as ContentType,
                 cover: '',
                 total_units: null as number | null,
+                status: null as ContentCatalogStatus | null,
             },
             coverFile: null as File | null,
             coverPreview: '' as string,
             typeOptions: Object.entries(CONTENT_TYPE_LABELS).map(([value, label]) => ({
                 value: value as ContentType,
                 label,
-                activeClass: TYPE_ACTIVE_CLASSES[value as ContentType],
                 icon: TYPE_ICONS[value as ContentType],
             })),
+            catalogStatusOptions: Object.entries(CATALOG_STATUS_LABELS).map(([value, label]) => ({
+                value: value as ContentCatalogStatus,
+                label,
+                color: CATALOG_STATUS_COLORS[value as ContentCatalogStatus],
+            })),
             CONTENT_TYPE_LABELS,
+            CATALOG_STATUS_LABELS,
             UNIT_LABEL,
             bookOutline, pencilOutline, trashOutline, imageOutline, addOutline,
         };
@@ -263,16 +317,35 @@ export default defineComponent({
             }
         },
 
+        onSearch(ev: Event) {
+            this.filterSearch = (ev as CustomEvent).detail.value ?? '';
+            this.applyFilter();
+        },
+
         applyFilter() {
-            this.filteredContents = this.filterType
-                ? this.contents.filter((c) => c.type === this.filterType)
-                : [...this.contents];
+            let result = [...this.contents];
+            if (this.filterType) result = result.filter((c) => c.type === this.filterType);
+            if (this.filterSearch.trim()) {
+                const q = this.filterSearch.toLowerCase();
+                result = result.filter((c) =>
+                    c.name.toLowerCase().includes(q) ||
+                    c.alternative_names?.some((n) => n.toLowerCase().includes(q))
+                );
+            }
+            this.filteredContents = result;
         },
 
         openModal(content: Content | null) {
             if (content) {
                 this.editingId = content.id;
-                this.form = { name: content.name, type: content.type, cover: content.cover || '', total_units: content.total_units || null };
+                this.form = {
+                    name: content.name,
+                    type: content.type,
+                    cover: content.cover || '',
+                    total_units: content.total_units || null,
+                    status: content.status || null,
+                };
+                this.alternativeNamesInput = content.alternative_names?.join(', ') ?? '';
                 this.coverFile = null;
                 if (this.coverPreview) URL.revokeObjectURL(this.coverPreview);
                 this.coverPreview = '';
@@ -289,12 +362,25 @@ export default defineComponent({
             this.resetForm();
         },
 
+        parseAlternativeNames(): string[] {
+            return this.alternativeNamesInput
+                .split(',')
+                .map((n) => n.trim())
+                .filter(Boolean);
+        },
+
         async createContent() {
             if (!this.form.name.trim()) return;
             this.saving = true;
             try {
                 const content = await contentService.create(
-                    { name: this.form.name.trim(), type: this.form.type, total_units: this.form.total_units || undefined },
+                    {
+                        name: this.form.name.trim(),
+                        type: this.form.type,
+                        total_units: this.form.total_units || undefined,
+                        status: this.form.status || undefined,
+                        alternative_names: this.parseAlternativeNames(),
+                    },
                     this.coverFile ?? undefined,
                 );
                 this.contents.unshift(content);
@@ -314,7 +400,13 @@ export default defineComponent({
             try {
                 const updated = await contentService.update(
                     this.editingId,
-                    { name: this.form.name.trim(), type: this.form.type, total_units: this.form.total_units ?? undefined },
+                    {
+                        name: this.form.name.trim(),
+                        type: this.form.type,
+                        total_units: this.form.total_units ?? undefined,
+                        status: this.form.status ?? undefined,
+                        alternative_names: this.parseAlternativeNames(),
+                    },
                     this.coverFile ?? undefined,
                 );
                 const idx = this.contents.findIndex((c) => c.id === this.editingId);
@@ -353,7 +445,8 @@ export default defineComponent({
         },
 
         resetForm() {
-            this.form = { name: '', type: 'manga', cover: '', total_units: null };
+            this.form = { name: '', type: 'manga', cover: '', total_units: null, status: null };
+            this.alternativeNamesInput = '';
             this.coverFile = null;
             if (this.coverPreview) URL.revokeObjectURL(this.coverPreview);
             this.coverPreview = '';
@@ -373,6 +466,9 @@ export default defineComponent({
 
         getTypeIcon(type: ContentType): string { return TYPE_ICONS[type] ?? bookOutline; },
         getTypeColor(type: ContentType): string { return CONTENT_TYPE_COLORS[type] ?? ''; },
+        getCatalogStatusColor(status: ContentCatalogStatus): string {
+            return CATALOG_STATUS_COLORS[status] ?? '#5a6480';
+        },
 
         typeActiveStyle(type: ContentType): Record<string, string> {
             const map: Record<ContentType, Record<string, string>> = {
@@ -392,10 +488,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.ion-header .toolbar-background {
-    --background: #003bdf;
-    border-bottom: 1px solid #222840;
-}
+.ion-header .toolbar-background { border-bottom: 1px solid #222840; }
 
 .btn-primary { --background: var(--neon-accent); --color: #000; --border-radius: 12px; font-weight: 700; height: 48px; }
 .btn-outline { --border-radius: 12px; --color: var(--neon-accent); --border-color: var(--neon-accent); }
@@ -413,9 +506,18 @@ export default defineComponent({
     width: 100%;
 }
 
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
+.neon-search {
+    --background: #141825;
+    --color: #f0f4ff;
+    --placeholder-color: #5a6480;
+    --icon-color: #5a6480;
+    --clear-button-color: #5a6480;
+    --border-radius: 10px;
+    --box-shadow: 0 0 0 1px #222840;
+    padding-inline: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
 
 .type-btn {
     --border-radius: 12px;
@@ -438,7 +540,5 @@ export default defineComponent({
 .edit-btn { --color: #8b5cf6; --border-color: #222840; }
 .delete-btn { --color: #ef4444; --border-color: rgba(239,68,68,0.3); }
 
-.modal-content {
-    --background: #0b0f1a;
-}
+.modal-content { --background: #0b0f1a; }
 </style>
