@@ -20,7 +20,7 @@
                 />
 
                 <!-- Type filters -->
-                <div class="flex bg-neon-surface border border-neon-border rounded-xl p-1 gap-0.5 mt-3 mb-3">
+                <div class="flex bg-neon-surface border border-neon-border rounded-xl p-1 gap-0.5 mt-3 mb-2">
                     <div
                         v-for="opt in typeOptions"
                         :key="opt.value ?? 'all'"
@@ -33,10 +33,30 @@
                     </div>
                 </div>
 
+                <!-- Catalog status filter -->
+                <div class="flex gap-1.5 overflow-x-auto pb-1 mb-3 no-scrollbar">
+                    <div
+                        v-for="opt in catalogStatusOptions"
+                        :key="opt.value ?? 'all-status'"
+                        class="flex-shrink-0 flex items-center gap-1.5 h-7 px-3 rounded-full text-[11px] font-bold whitespace-nowrap cursor-pointer select-none border transition-colors"
+                        :style="activeCatalogStatus === opt.value
+                            ? { background: opt.color + '22', color: opt.color, borderColor: opt.color + '66' }
+                            : { background: '#141825', color: '#5a6480', borderColor: '#222840' }"
+                        @click="setCatalogStatus(opt.value)"
+                    >
+                        <span
+                            class="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                            :style="activeCatalogStatus === opt.value ? { background: opt.color } : { background: '#4a5570' }"
+                        ></span>
+                        {{ opt.label }}
+                    </div>
+                </div>
+
                 <!-- Counter -->
                 <div class="pb-1.5 mb-1.5">
                     <span class="text-[11px] font-semibold text-neon-muted">
-                        Acervo · {{ filtered.length }} conteúdos
+                        Acervo · {{ contents.length }} conteúdos
+                        <template v-if="activeType || activeCatalogStatus || query"> · filtrado</template>
                     </span>
                 </div>
 
@@ -46,23 +66,25 @@
                 </div>
 
                 <!-- Empty -->
-                <div v-else-if="filtered.length === 0" class="text-center py-10">
+                <div v-else-if="contents.length === 0" class="text-center py-10">
                     <IonIcon :icon="compassOutline" class="text-[48px] text-neon-muted block mb-3.5" />
                     <h3 class="text-lg font-bold text-neon-text m-0 mb-2">Nenhum resultado</h3>
                     <p class="text-sm text-neon-muted m-0 mb-5">
-                        {{ query ? 'Tente uma busca diferente' : 'Adicione conteúdo pelo Acervo' }}
+                        {{ query ? 'Tente uma busca diferente' : 'Nenhum conteúdo encontrado' }}
                     </p>
-                    <IonButton router-link="/manage-contents" fill="outline" class="btn-outline">Gerenciar Acervo</IonButton>
+                    <div class="flex flex-col gap-2">
+                        <IonButton router-link="/manage-contents" fill="outline" class="btn-outline">Gerenciar Acervo</IonButton>
+                        <IonButton router-link="/content-requests" fill="outline" class="btn-outline-muted">Solicitar Novo Conteúdo</IonButton>
+                    </div>
                 </div>
 
                 <!-- List -->
                 <div v-else class="flex flex-col gap-2">
                     <div
-                        v-for="content in filtered"
+                        v-for="content in contents"
                         :key="content.id"
                         class="bg-neon-card border border-neon-border rounded-xl overflow-hidden"
                     >
-                        <!-- Main row -->
                         <div
                             class="flex items-center gap-2.5 p-3 cursor-pointer"
                             @click="addToLibrary(content)"
@@ -74,17 +96,31 @@
                                 </div>
                             </div>
                             <div class="flex-1 min-w-0">
-                                <div class="mb-1">
+                                <div class="flex items-center gap-1.5 mb-1 flex-wrap">
                                     <span class="text-[9px] font-bold tracking-[0.08em] uppercase px-1.5 py-0.5 rounded" :class="typeColorClass(content.type)">
                                         {{ typeLabel(content.type) }}
                                     </span>
+                                    <span
+                                        v-if="content.status"
+                                        class="text-[9px] font-bold px-1.5 py-0.5 rounded"
+                                        :style="{ background: catalogStatusColor(content.status) + '22', color: catalogStatusColor(content.status) }"
+                                    >
+                                        {{ catalogStatusLabel(content.status) }}
+                                    </span>
                                 </div>
                                 <div class="text-sm font-bold text-neon-text truncate">{{ content.name }}</div>
-                                <div class="text-[11px] text-neon-muted">
-                                    {{ content.total_units ? `${content.total_units} ${unitLabel(content.type)}` : 'Em andamento' }}
+                                <div v-if="content.alternative_names?.length" class="text-[10px] text-neon-muted truncate">
+                                    {{ content.alternative_names.slice(0, 2).join(' · ') }}
+                                </div>
+                                <div class="text-[11px] text-neon-muted flex items-center gap-1.5 mt-0.5">
+                                    <span>{{ content.total_units ? `${content.total_units} ${unitLabel(content.type)}` : 'Em andamento' }}</span>
+                                    <template v-if="content.last_unit_update">
+                                        <span class="text-neon-border">·</span>
+                                        <span>{{ formatRelativeDate(content.last_unit_update) }}</span>
+                                    </template>
                                 </div>
                             </div>
-                            <!-- Add button -->
+                            <!-- Action buttons -->
                             <div class="flex gap-1.5 flex-shrink-0">
                                 <IonButton fill="outline" class="icon-btn" @click.stop="$router.push('/manage-contents')">
                                     <IonIcon slot="icon-only" :icon="pencilOutline" />
@@ -107,7 +143,11 @@ import {
     IonPage, IonContent, IonButton, IonIcon, IonSpinner, IonSearchbar,
 } from '@ionic/vue';
 import { compassOutline, bookOutline, tvOutline, libraryOutline, addCircleOutline, settingsOutline, pencilOutline } from 'ionicons/icons';
-import { contentService, Content, ContentType, CONTENT_TYPE_LABELS, CONTENT_TYPE_COLORS, UNIT_LABEL } from '@/services/contentService';
+import {
+    contentService, Content, ContentType, ContentCatalogStatus,
+    CONTENT_TYPE_LABELS, CONTENT_TYPE_COLORS, UNIT_LABEL,
+    CATALOG_STATUS_LABELS, CATALOG_STATUS_COLORS,
+} from '@/services/contentService';
 
 const TYPE_ICONS: Record<ContentType, string> = {
     manga: bookOutline,
@@ -122,14 +162,23 @@ export default defineComponent({
         return {
             loading: false,
             contents: [] as Content[],
-            filtered: [] as Content[],
             query: '',
             activeType: null as ContentType | null,
+            activeCatalogStatus: null as ContentCatalogStatus | null,
+            searchTimer: null as ReturnType<typeof setTimeout> | null,
             typeOptions: [
                 { label: 'Todos', value: null as ContentType | null, icon: null as string | null },
                 { label: CONTENT_TYPE_LABELS.manga, value: 'manga' as ContentType, icon: bookOutline },
                 { label: CONTENT_TYPE_LABELS.anime, value: 'anime' as ContentType, icon: tvOutline },
                 { label: CONTENT_TYPE_LABELS.novel, value: 'novel' as ContentType, icon: libraryOutline },
+            ],
+            catalogStatusOptions: [
+                { label: 'Todos', value: null as ContentCatalogStatus | null, color: '#00d4aa' },
+                ...Object.entries(CATALOG_STATUS_LABELS).map(([value, label]) => ({
+                    value: value as ContentCatalogStatus,
+                    label,
+                    color: CATALOG_STATUS_COLORS[value as ContentCatalogStatus],
+                })),
             ],
             compassOutline, addCircleOutline, settingsOutline, pencilOutline,
         };
@@ -141,8 +190,11 @@ export default defineComponent({
         async loadContents() {
             this.loading = true;
             try {
-                this.contents = await contentService.getAll();
-                this.applyFilters();
+                this.contents = await contentService.getAll({
+                    type: this.activeType ?? undefined,
+                    status: this.activeCatalogStatus ?? undefined,
+                    search: this.query || undefined,
+                });
             } catch {
                 // non-blocking
             } finally {
@@ -152,33 +204,18 @@ export default defineComponent({
 
         setType(type: ContentType | null) {
             this.activeType = type;
-            this.applyFilters();
+            this.loadContents();
         },
 
-        filterContents() {
-            this.applyFilters();
-        },
-
-        applyFilters() {
-            let result = [...this.contents];
-            if (this.activeType) {
-                result = result.filter((c) => c.type === this.activeType);
-            }
-            if (this.query.trim()) {
-                const q = this.query.toLowerCase();
-                result = result.filter((c) => c.name.toLowerCase().includes(q));
-            }
-            this.filtered = result;
+        setCatalogStatus(status: ContentCatalogStatus | null) {
+            this.activeCatalogStatus = status;
+            this.loadContents();
         },
 
         onSearch(ev: Event) {
             this.query = (ev as CustomEvent).detail.value ?? '';
-            this.applyFilters();
-        },
-
-        clearSearch() {
-            this.query = '';
-            this.applyFilters();
+            if (this.searchTimer) clearTimeout(this.searchTimer);
+            this.searchTimer = setTimeout(() => this.loadContents(), 400);
         },
 
         addToLibrary(content: Content) {
@@ -200,12 +237,33 @@ export default defineComponent({
         unitLabel(type: ContentType): string {
             return UNIT_LABEL[type]?.plural ?? 'capítulos';
         },
+
+        catalogStatusColor(status: ContentCatalogStatus): string {
+            return CATALOG_STATUS_COLORS[status] ?? '#5a6480';
+        },
+
+        catalogStatusLabel(status: ContentCatalogStatus): string {
+            return CATALOG_STATUS_LABELS[status] ?? status;
+        },
+
+        formatRelativeDate(dateStr: string): string {
+            const diff = Date.now() - new Date(dateStr).getTime();
+            const mins = Math.floor(diff / 60000);
+            if (mins < 1) return 'agora';
+            if (mins < 60) return `há ${mins}min`;
+            const hours = Math.floor(mins / 60);
+            if (hours < 24) return `há ${hours}h`;
+            const days = Math.floor(hours / 24);
+            if (days < 30) return `há ${days}d`;
+            return new Date(dateStr).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+        },
     },
 });
 </script>
 
 <style scoped>
 .btn-outline { --border-radius: 12px; --color: var(--neon-accent); --border-color: var(--neon-accent); }
+.btn-outline-muted { --border-radius: 12px; --color: #5a6480; --border-color: #222840; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -221,7 +279,6 @@ export default defineComponent({
     padding-top: 0;
     padding-bottom: 4px;
 }
-
 
 .settings-btn {
     --border-radius: 10px;
