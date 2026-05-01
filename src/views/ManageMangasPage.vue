@@ -111,9 +111,7 @@
                     <div v-if="meta.last_page > 1" class="flex items-center justify-center gap-4 mt-5 py-2">
                         <button
                             class="w-9 h-9 rounded-xl border flex items-center justify-center transition-colors"
-                            :class="meta.current_page <= 1
-                                ? 'border-neon-border text-neon-border opacity-40 cursor-not-allowed'
-                                : 'border-neon-border text-neon-muted'"
+                            :class="meta.current_page <= 1 ? 'border-neon-border text-neon-border opacity-40 cursor-not-allowed' : 'border-neon-border text-neon-muted'"
                             :disabled="meta.current_page <= 1"
                             @click="goToPage(meta.current_page - 1)"
                         >
@@ -125,9 +123,7 @@
                         </span>
                         <button
                             class="w-9 h-9 rounded-xl border flex items-center justify-center transition-colors"
-                            :class="meta.current_page >= meta.last_page
-                                ? 'border-neon-border text-neon-border opacity-40 cursor-not-allowed'
-                                : 'border-neon-border text-neon-muted'"
+                            :class="meta.current_page >= meta.last_page ? 'border-neon-border text-neon-border opacity-40 cursor-not-allowed' : 'border-neon-border text-neon-muted'"
                             :disabled="meta.current_page >= meta.last_page"
                             @click="goToPage(meta.current_page + 1)"
                         >
@@ -145,126 +141,295 @@
             </IonFabButton>
         </IonFab>
 
-        <!-- Modal criar / editar -->
+        <!-- ====== MODAL CRIAR / EDITAR ====== -->
         <IonModal :is-open="isModalOpen" @didDismiss="closeModal" :initial-breakpoint="1" :breakpoints="[0, 1]">
             <IonHeader>
                 <IonToolbar>
-                    <IonTitle>{{ editingId ? 'Editar' : 'Novo Conteúdo' }}</IonTitle>
+                    <IonTitle>{{ editingId ? 'Editar Conteúdo' : 'Novo Conteúdo' }}</IonTitle>
                     <IonButtons slot="end">
                         <IonButton fill="clear" @click="closeModal">Cancelar</IonButton>
                     </IonButtons>
                 </IonToolbar>
             </IonHeader>
+
             <IonContent class="modal-content">
-                <div class="px-5 pt-5 pb-10">
-
-                    <!-- Nome -->
-                    <div class="mb-4">
-                        <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-2">Nome</span>
-                        <IonInput
-                            v-model="form.name"
-                            placeholder="Título da série..."
-                            fill="outline"
-                            class="neon-input"
-                        />
-                    </div>
-
-                    <!-- Nomes alternativos -->
-                    <div class="mb-4">
-                        <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-1">Nomes Alternativos</span>
-                        <span class="block text-[10px] text-neon-muted mb-2">Separe por vírgula (ex: One Piece, ワンピース)</span>
-                        <IonInput
-                            v-model="alternativeNamesInput"
-                            placeholder="Nome 1, Nome 2, ..."
-                            fill="outline"
-                            class="neon-input"
-                        />
-                    </div>
-
-                    <!-- Tipo -->
-                    <div class="mb-4">
-                        <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-2">Tipo</span>
-                        <div class="grid grid-cols-3 gap-2">
-                            <IonButton
-                                v-for="opt in typeOptions"
-                                :key="opt.value"
-                                expand="block"
-                                fill="outline"
-                                class="type-btn"
-                                :style="form.type === opt.value ? typeActiveStyle(opt.value) : { '--background': '#141825', '--color': '#5a6480', '--border-color': '#222840' }"
-                                @click="form.type = opt.value"
-                            >{{ opt.label }}</IonButton>
-                        </div>
-                    </div>
-
-                    <!-- Status de publicação -->
-                    <div class="mb-4">
-                        <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-2">Status de Publicação</span>
-                        <div class="grid grid-cols-2 gap-2">
-                            <IonButton
-                                v-for="opt in catalogStatusOptions"
-                                :key="opt.value"
-                                expand="block"
-                                fill="outline"
-                                class="type-btn"
-                                :style="form.status === opt.value
-                                    ? { '--background': opt.color + '22', '--color': opt.color, '--border-color': opt.color + '88' }
-                                    : { '--background': '#141825', '--color': '#5a6480', '--border-color': '#222840' }"
-                                @click="form.status = opt.value"
-                            >{{ opt.label }}</IonButton>
-                        </div>
-                    </div>
+                <div class="px-5 pt-5 pb-12">
 
                     <!-- Capa -->
-                    <div class="mb-4">
-                        <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-2">Capa</span>
+                    <div class="mb-5">
                         <div
-                            class="w-full rounded-xl overflow-hidden bg-neon-elevated border-2 border-dashed border-neon-border flex items-center justify-center cursor-pointer transition-colors active:border-neon-accent/40"
-                            :class="(coverPreview || form.cover) ? 'h-[180px] border-neon-accent/20' : 'h-[140px]'"
+                            class="w-full rounded-[14px] overflow-hidden bg-neon-elevated border-2 border-dashed border-neon-border flex items-center justify-center cursor-pointer transition-colors active:border-neon-accent/40"
+                            :class="(coverPreview || form.cover) ? 'h-[160px] border-solid border-neon-accent/20' : 'h-[110px]'"
                             @click="triggerCoverPick"
                         >
                             <img v-if="coverPreview || form.cover" :src="coverPreview || form.cover" class="w-full h-full object-cover" alt="Capa" />
-                            <div v-else class="flex flex-col items-center gap-3 p-4 text-center">
-                                <div class="w-12 h-12 rounded-2xl bg-neon-surface border border-neon-border flex items-center justify-center">
-                                    <IonIcon :icon="imageOutline" class="text-[24px] text-neon-muted" />
+                            <div v-else class="flex items-center gap-3 p-4 text-center">
+                                <div class="w-10 h-10 rounded-xl bg-neon-surface border border-neon-border flex items-center justify-center">
+                                    <IonIcon :icon="imageOutline" class="text-[20px] text-neon-muted" />
                                 </div>
-                                <div>
+                                <div class="text-left">
                                     <p class="text-sm font-semibold text-neon-text m-0">Selecionar Capa</p>
-                                    <p class="text-xs text-neon-muted m-0 mt-0.5">Toque para escolher uma imagem</p>
+                                    <p class="text-xs text-neon-muted m-0 mt-0.5">Toque para escolher</p>
                                 </div>
                             </div>
                         </div>
-                        <input ref="coverInput" type="file" accept="image/*" class="hidden" @change="onCoverSelected" />
                         <p v-if="coverPreview || form.cover" class="text-[11px] text-neon-muted mt-1.5 text-center cursor-pointer" @click="triggerCoverPick">
                             Toque para alterar
                         </p>
+                        <input ref="coverInput" type="file" accept="image/*" class="hidden" @change="onCoverSelected" />
                     </div>
 
-                    <!-- Total de unidades -->
-                    <div class="mb-6">
-                        <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-2">
-                            Total de {{ unitLabel }} (opcional)
-                        </span>
-                        <IonInput
-                            :value="form.total_units ?? ''"
-                            type="number"
-                            inputmode="numeric"
-                            placeholder="Opcional"
-                            :min="0"
+                    <!-- ── Seção: Informações principais ── -->
+                    <div class="section-label">Informações principais</div>
+                    <div class="section-card mb-4">
+                        <!-- Nome -->
+                        <div class="mb-4">
+                            <span class="field-label">Nome *</span>
+                            <IonInput v-model="form.name" placeholder="Título da obra..." fill="outline" class="neon-input" />
+                        </div>
+
+                        <!-- Tipo -->
+                        <div class="mb-4">
+                            <span class="field-label">Tipo *</span>
+                            <div class="grid grid-cols-5 gap-1.5">
+                                <button
+                                    v-for="opt in typeOptions"
+                                    :key="opt.value"
+                                    class="h-[38px] rounded-[10px] text-[11px] font-bold border transition-colors"
+                                    :style="form.type === opt.value ? typeActiveStyle(opt.value) : { background: '#141825', color: '#5a6480', borderColor: '#222840' }"
+                                    @click="form.type = opt.value"
+                                >{{ opt.label }}</button>
+                            </div>
+                        </div>
+
+                        <!-- Status de publicação -->
+                        <div>
+                            <span class="field-label">Status de Publicação</span>
+                            <div class="grid grid-cols-2 gap-1.5">
+                                <button
+                                    v-for="opt in catalogStatusOptions"
+                                    :key="opt.value"
+                                    class="h-[38px] rounded-[10px] text-[12px] font-semibold border transition-colors"
+                                    :style="form.status === opt.value
+                                        ? { background: opt.color + '22', color: opt.color, borderColor: opt.color + '88' }
+                                        : { background: '#141825', color: '#5a6480', borderColor: '#222840' }"
+                                    @click="form.status = form.status === opt.value ? null : opt.value"
+                                >{{ opt.label }}</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ── Seção: Unidades (dinâmica por tipo) ── -->
+                    <template v-if="form.type !== 'movie'">
+                        <div class="section-label">{{ unitsSectionLabel }}</div>
+                        <div class="section-card mb-4">
+                            <!-- Total de episódios / capítulos -->
+                            <div :class="form.type === 'tv' || form.type === 'anime' ? 'mb-4' : ''">
+                                <span class="field-label">Total de {{ UNIT_LABEL[form.type]?.plural }} (opcional)</span>
+                                <IonInput
+                                    :value="form.total_units ?? ''"
+                                    type="number"
+                                    inputmode="numeric"
+                                    placeholder="Opcional"
+                                    :min="0"
+                                    fill="outline"
+                                    class="neon-input"
+                                    @ionInput="form.total_units = ($event as CustomEvent).detail.value ? Number(($event as CustomEvent).detail.value) : null"
+                                />
+                            </div>
+
+                            <!-- Temporadas (só TV) -->
+                            <div v-if="form.type === 'tv'" class="mb-4">
+                                <span class="field-label">Temporadas (opcional)</span>
+                                <IonInput
+                                    :value="form.total_seasons ?? ''"
+                                    type="number"
+                                    inputmode="numeric"
+                                    placeholder="Opcional"
+                                    :min="1"
+                                    fill="outline"
+                                    class="neon-input"
+                                    @ionInput="form.total_seasons = ($event as CustomEvent).detail.value ? Number(($event as CustomEvent).detail.value) : null"
+                                />
+                            </div>
+
+                            <!-- Duração por episódio (anime/tv) -->
+                            <div v-if="form.type === 'anime' || form.type === 'tv'">
+                                <span class="field-label">Duração por episódio — min (opcional)</span>
+                                <IonInput
+                                    :value="form.duration ?? ''"
+                                    type="number"
+                                    inputmode="numeric"
+                                    placeholder="Ex: 24"
+                                    :min="1"
+                                    fill="outline"
+                                    class="neon-input"
+                                    @ionInput="form.duration = ($event as CustomEvent).detail.value ? Number(($event as CustomEvent).detail.value) : null"
+                                />
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- Duração para filmes -->
+                    <template v-if="form.type === 'movie'">
+                        <div class="section-label">Duração</div>
+                        <div class="section-card mb-4">
+                            <span class="field-label">Duração — min *</span>
+                            <IonInput
+                                :value="form.duration ?? ''"
+                                type="number"
+                                inputmode="numeric"
+                                placeholder="Ex: 120"
+                                :min="1"
+                                fill="outline"
+                                class="neon-input"
+                                @ionInput="form.duration = ($event as CustomEvent).detail.value ? Number(($event as CustomEvent).detail.value) : null"
+                            />
+                        </div>
+                    </template>
+
+                    <!-- ── Seção: Sinopse ── -->
+                    <div class="section-label">Sinopse</div>
+                    <div class="section-card mb-4">
+                        <IonTextarea
+                            v-model="form.synopsis"
+                            placeholder="Descrição da obra..."
                             fill="outline"
+                            :auto-grow="true"
+                            :rows="3"
                             class="neon-input"
-                            @ionInput="form.total_units = ($event as CustomEvent).detail.value ? Number(($event as CustomEvent).detail.value) : null"
+                            style="--border-radius: 12px; --padding-start: 14px; --padding-end: 14px; --padding-top: 12px; --padding-bottom: 12px;"
                         />
                     </div>
 
+                    <!-- ── Seção: Gêneros ── -->
+                    <div class="section-label">Gêneros</div>
+                    <div class="section-card mb-4">
+                        <div class="flex gap-2 mb-3">
+                            <IonInput
+                                v-model="newGenreInput"
+                                placeholder="Ex: Ação, Romance..."
+                                fill="outline"
+                                class="neon-input flex-1"
+                                @keyup.enter="addGenre"
+                            />
+                            <button
+                                class="w-[52px] h-[52px] rounded-[12px] flex items-center justify-center flex-shrink-0 border transition-colors"
+                                style="background: rgba(0,212,170,0.1); border-color: rgba(0,212,170,0.3); color: #00d4aa"
+                                @click="addGenre"
+                            >
+                                <IonIcon :icon="addOutline" class="text-[20px]" />
+                            </button>
+                        </div>
+                        <div v-if="form.genres.length" class="flex flex-wrap gap-1.5">
+                            <div
+                                v-for="(genre, i) in form.genres"
+                                :key="i"
+                                class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold"
+                                style="background: rgba(0,212,170,0.1); color: #00d4aa; border: 1px solid rgba(0,212,170,0.25)"
+                            >
+                                {{ genre }}
+                                <button class="flex items-center opacity-60 active:opacity-100" @click="removeGenre(i)">
+                                    <IonIcon :icon="closeOutline" class="text-[14px]" />
+                                </button>
+                            </div>
+                        </div>
+                        <p v-else class="text-[11px] text-neon-muted m-0">Nenhum gênero adicionado.</p>
+                    </div>
+
+                    <!-- ── Seção: Metadados ── -->
+                    <div class="section-label">Metadados</div>
+                    <div class="section-card mb-4">
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <div>
+                                <span class="field-label">Ano de lançamento</span>
+                                <IonInput
+                                    :value="form.release_year ?? ''"
+                                    type="number"
+                                    inputmode="numeric"
+                                    placeholder="Ex: 2020"
+                                    fill="outline"
+                                    class="neon-input"
+                                    @ionInput="form.release_year = ($event as CustomEvent).detail.value ? Number(($event as CustomEvent).detail.value) : null"
+                                />
+                            </div>
+                            <div>
+                                <span class="field-label">Rating (0–10)</span>
+                                <IonInput
+                                    :value="form.rating ?? ''"
+                                    type="number"
+                                    inputmode="decimal"
+                                    placeholder="Ex: 8.5"
+                                    :min="0"
+                                    :max="10"
+                                    step="0.1"
+                                    fill="outline"
+                                    class="neon-input"
+                                    @ionInput="form.rating = ($event as CustomEvent).detail.value ? Number(($event as CustomEvent).detail.value) : null"
+                                />
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <span class="field-label">País</span>
+                                <IonInput v-model="form.country" placeholder="Ex: JP" fill="outline" class="neon-input" />
+                            </div>
+                            <div>
+                                <span class="field-label">Idioma original</span>
+                                <IonInput v-model="form.original_language" placeholder="Ex: ja" fill="outline" class="neon-input" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ── Seção: Nomes alternativos ── -->
+                    <div class="section-label">
+                        Nomes alternativos
+                        <span class="ml-1.5 text-neon-muted font-normal normal-case tracking-normal text-[11px]">{{ form.alternative_names.length }}/50</span>
+                    </div>
+                    <div class="section-card mb-6">
+                        <div
+                            v-for="(_, i) in form.alternative_names"
+                            :key="i"
+                            class="flex items-center gap-2 mb-2"
+                        >
+                            <IonInput
+                                :value="form.alternative_names[i]"
+                                placeholder="Nome alternativo..."
+                                fill="outline"
+                                class="neon-input flex-1"
+                                @ionInput="updateAltName(i, ($event as CustomEvent).detail.value ?? '')"
+                            />
+                            <button
+                                class="w-[52px] h-[52px] rounded-[12px] flex items-center justify-center flex-shrink-0 border transition-colors"
+                                style="background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.2); color: #ef4444"
+                                @click="removeAltName(i)"
+                            >
+                                <IonIcon :icon="closeOutline" class="text-[18px]" />
+                            </button>
+                        </div>
+                        <button
+                            v-if="form.alternative_names.length < 50"
+                            class="w-full h-[44px] rounded-[12px] border border-dashed flex items-center justify-center gap-2 text-sm font-semibold transition-colors active:border-neon-accent/50 active:text-neon-accent"
+                            style="border-color: #222840; color: #5a6480"
+                            @click="addAltName"
+                        >
+                            <IonIcon :icon="addOutline" />
+                            Adicionar nome
+                        </button>
+                        <p v-if="form.alternative_names.length === 0" class="text-[11px] text-neon-muted m-0 mt-1">
+                            Nenhum nome alternativo.
+                        </p>
+                    </div>
+
+                    <!-- Botão salvar -->
                     <IonButton
                         expand="block"
                         class="btn-primary"
-                        :disabled="saving || !form.name.trim()"
+                        :disabled="saving || !form.name.trim() || (form.type === 'movie' && !form.duration)"
                         @click="editingId ? updateContent() : createContent()"
                     >
                         <IonSpinner v-if="saving" name="crescent" />
-                        <span v-else>{{ editingId ? 'Atualizar' : 'Adicionar ao Acervo' }}</span>
+                        <span v-else>{{ editingId ? 'Salvar alterações' : 'Adicionar ao Acervo' }}</span>
                     </IonButton>
                 </div>
             </IonContent>
@@ -276,13 +441,13 @@
 import { defineComponent } from 'vue';
 import {
     IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
-    IonButtons, IonBackButton, IonButton, IonIcon, IonSpinner, IonInput,
-    IonFab, IonFabButton, IonModal, IonSearchbar,
+    IonButtons, IonBackButton, IonButton, IonIcon, IonSpinner,
+    IonInput, IonTextarea, IonFab, IonFabButton, IonModal, IonSearchbar,
     toastController, alertController,
 } from '@ionic/vue';
 import {
     bookOutline, tvOutline, libraryOutline, filmOutline, desktopOutline,
-    pencilOutline, trashOutline, imageOutline, addOutline,
+    pencilOutline, trashOutline, imageOutline, addOutline, closeOutline,
     chevronBackOutline, chevronForwardOutline,
 } from 'ionicons/icons';
 import {
@@ -301,12 +466,31 @@ const TYPE_ICONS: Record<ContentType, string> = {
 
 const EMPTY_META: ContentMeta = { current_page: 1, last_page: 1, per_page: 50, total: 0, from: 0, to: 0 };
 
+function emptyForm() {
+    return {
+        name: '',
+        type: 'manga' as ContentType,
+        cover: '',
+        status: null as ContentCatalogStatus | null,
+        total_units: null as number | null,
+        total_seasons: null as number | null,
+        duration: null as number | null,
+        synopsis: '',
+        genres: [] as string[],
+        release_year: null as number | null,
+        rating: null as number | null,
+        country: '',
+        original_language: '',
+        alternative_names: [] as string[],
+    };
+}
+
 export default defineComponent({
     name: 'ManageMangasPage',
     components: {
         IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
-        IonButtons, IonBackButton, IonButton, IonIcon, IonSpinner, IonInput,
-        IonFab, IonFabButton, IonModal, IonSearchbar,
+        IonButtons, IonBackButton, IonButton, IonIcon, IonSpinner,
+        IonInput, IonTextarea, IonFab, IonFabButton, IonModal, IonSearchbar,
     },
     data() {
         return {
@@ -319,14 +503,8 @@ export default defineComponent({
             filterSearch: '',
             searchTimer: null as ReturnType<typeof setTimeout> | null,
             editingId: null as number | null,
-            alternativeNamesInput: '',
-            form: {
-                name: '',
-                type: 'manga' as ContentType,
-                cover: '',
-                total_units: null as number | null,
-                status: null as ContentCatalogStatus | null,
-            },
+            form: emptyForm(),
+            newGenreInput: '',
             coverFile: null as File | null,
             coverPreview: '' as string,
             typeOptions: Object.entries(CONTENT_TYPE_LABELS).map(([value, label]) => ({
@@ -342,13 +520,33 @@ export default defineComponent({
             CONTENT_TYPE_LABELS,
             CATALOG_STATUS_LABELS,
             UNIT_LABEL,
-            bookOutline, pencilOutline, trashOutline, imageOutline, addOutline,
+            bookOutline, pencilOutline, trashOutline, imageOutline, addOutline, closeOutline,
             chevronBackOutline, chevronForwardOutline,
         };
     },
     computed: {
-        unitLabel(): string {
-            return UNIT_LABEL[this.form.type]?.plural ?? 'unidades';
+        unitsSectionLabel(): string {
+            const map: Partial<Record<ContentType, string>> = {
+                tv: 'Episódios e Temporadas',
+                anime: 'Episódios',
+                manga: 'Capítulos',
+                novel: 'Capítulos',
+            };
+            return map[this.form.type] ?? 'Unidades';
+        },
+    },
+    watch: {
+        'form.type'(newType: ContentType, oldType: ContentType) {
+            if (newType === 'movie') {
+                this.form.total_units = null;
+                this.form.total_seasons = null;
+            }
+            if (newType !== 'tv' && oldType === 'tv') {
+                this.form.total_seasons = null;
+            }
+            if (newType === 'manga' || newType === 'novel') {
+                this.form.duration = null;
+            }
         },
     },
     async ionViewWillEnter() {
@@ -399,48 +597,87 @@ export default defineComponent({
                 this.form = {
                     name: content.name,
                     type: content.type,
-                    cover: content.cover || '',
-                    total_units: content.total_units || null,
-                    status: content.status || null,
+                    cover: content.cover ?? '',
+                    status: content.status ?? null,
+                    total_units: content.total_units ?? null,
+                    total_seasons: content.total_seasons ?? null,
+                    duration: content.duration ?? null,
+                    synopsis: content.synopsis ?? '',
+                    genres: [...(content.genres ?? [])],
+                    release_year: content.release_year ?? null,
+                    rating: content.rating ?? null,
+                    country: content.country ?? '',
+                    original_language: content.original_language ?? '',
+                    alternative_names: [...(content.alternative_names ?? [])],
                 };
-                this.alternativeNamesInput = content.alternative_names?.join(', ') ?? '';
-                this.coverFile = null;
-                if (this.coverPreview) URL.revokeObjectURL(this.coverPreview);
-                this.coverPreview = '';
             } else {
                 this.editingId = null;
-                this.resetForm();
+                this.form = emptyForm();
             }
+            this.newGenreInput = '';
+            this.coverFile = null;
+            if (this.coverPreview) URL.revokeObjectURL(this.coverPreview);
+            this.coverPreview = '';
             this.isModalOpen = true;
         },
 
         closeModal() {
             this.isModalOpen = false;
             this.editingId = null;
-            this.resetForm();
+            this.form = emptyForm();
+            this.newGenreInput = '';
+            this.coverFile = null;
+            if (this.coverPreview) URL.revokeObjectURL(this.coverPreview);
+            this.coverPreview = '';
         },
 
-        parseAlternativeNames(): string[] {
-            return this.alternativeNamesInput
-                .split(',')
-                .map((n) => n.trim())
-                .filter(Boolean);
+        addGenre() {
+            const g = this.newGenreInput.trim();
+            if (!g || this.form.genres.includes(g)) return;
+            this.form.genres.push(g);
+            this.newGenreInput = '';
+        },
+
+        removeGenre(index: number) {
+            this.form.genres.splice(index, 1);
+        },
+
+        addAltName() {
+            if (this.form.alternative_names.length >= 50) return;
+            this.form.alternative_names.push('');
+        },
+
+        removeAltName(index: number) {
+            this.form.alternative_names.splice(index, 1);
+        },
+
+        updateAltName(index: number, value: string) {
+            this.form.alternative_names.splice(index, 1, value);
+        },
+
+        buildPayload(): Partial<Omit<Content, 'id'>> {
+            return {
+                name: this.form.name.trim(),
+                type: this.form.type,
+                status: this.form.status ?? undefined,
+                total_units: this.form.total_units ?? undefined,
+                total_seasons: this.form.total_seasons ?? undefined,
+                duration: this.form.duration ?? undefined,
+                synopsis: this.form.synopsis.trim() || undefined,
+                genres: this.form.genres,
+                release_year: this.form.release_year ?? undefined,
+                rating: this.form.rating ?? undefined,
+                country: this.form.country.trim() || undefined,
+                original_language: this.form.original_language.trim() || undefined,
+                alternative_names: this.form.alternative_names.filter(Boolean),
+            };
         },
 
         async createContent() {
             if (!this.form.name.trim()) return;
             this.saving = true;
             try {
-                await contentService.create(
-                    {
-                        name: this.form.name.trim(),
-                        type: this.form.type,
-                        total_units: this.form.total_units || undefined,
-                        status: this.form.status || undefined,
-                        alternative_names: this.parseAlternativeNames(),
-                    },
-                    this.coverFile ?? undefined,
-                );
+                await contentService.create(this.buildPayload() as Omit<Content, 'id'>, this.coverFile ?? undefined);
                 this.meta.current_page = 1;
                 await this.loadContents();
                 this.closeModal();
@@ -456,20 +693,10 @@ export default defineComponent({
             if (!this.editingId || !this.form.name.trim()) return;
             this.saving = true;
             try {
-                await contentService.update(
-                    this.editingId,
-                    {
-                        name: this.form.name.trim(),
-                        type: this.form.type,
-                        total_units: this.form.total_units ?? undefined,
-                        status: this.form.status ?? undefined,
-                        alternative_names: this.parseAlternativeNames(),
-                    },
-                    this.coverFile ?? undefined,
-                );
+                await contentService.update(this.editingId, this.buildPayload(), this.coverFile ?? undefined);
                 await this.loadContents();
                 this.closeModal();
-                await this.showToast('Atualizado!', 'success');
+                await this.showToast('Conteúdo atualizado!', 'success');
             } catch {
                 await this.showToast('Falha ao atualizar.', 'danger');
             } finally {
@@ -499,14 +726,6 @@ export default defineComponent({
             }
         },
 
-        resetForm() {
-            this.form = { name: '', type: 'manga', cover: '', total_units: null, status: null };
-            this.alternativeNamesInput = '';
-            this.coverFile = null;
-            if (this.coverPreview) URL.revokeObjectURL(this.coverPreview);
-            this.coverPreview = '';
-        },
-
         triggerCoverPick() {
             (this.$refs.coverInput as HTMLInputElement).click();
         },
@@ -527,11 +746,11 @@ export default defineComponent({
 
         typeActiveStyle(type: ContentType): Record<string, string> {
             const map: Record<ContentType, Record<string, string>> = {
-                manga: { '--background': 'rgba(0,212,170,0.15)', '--color': '#00d4aa', '--border-color': 'rgba(0,212,170,0.5)' },
-                anime: { '--background': 'rgba(123,143,245,0.15)', '--color': '#7b8ff5', '--border-color': 'rgba(123,143,245,0.5)' },
-                novel: { '--background': 'rgba(255,162,107,0.15)', '--color': '#ffa26b', '--border-color': 'rgba(255,162,107,0.5)' },
-                movie: { '--background': 'rgba(248,113,113,0.15)', '--color': '#f87171', '--border-color': 'rgba(248,113,113,0.5)' },
-                tv: { '--background': 'rgba(167,139,250,0.15)', '--color': '#a78bfa', '--border-color': 'rgba(167,139,250,0.5)' },
+                manga:  { background: 'rgba(0,212,170,0.15)',   color: '#00d4aa', borderColor: 'rgba(0,212,170,0.5)' },
+                anime:  { background: 'rgba(123,143,245,0.15)', color: '#7b8ff5', borderColor: 'rgba(123,143,245,0.5)' },
+                novel:  { background: 'rgba(255,162,107,0.15)', color: '#ffa26b', borderColor: 'rgba(255,162,107,0.5)' },
+                movie:  { background: 'rgba(248,113,113,0.15)', color: '#f87171', borderColor: 'rgba(248,113,113,0.5)' },
+                tv:     { background: 'rgba(167,139,250,0.15)', color: '#a78bfa', borderColor: 'rgba(167,139,250,0.5)' },
             };
             return map[type] ?? {};
         },
@@ -547,8 +766,8 @@ export default defineComponent({
 <style scoped>
 .ion-header .toolbar-background { border-bottom: 1px solid #222840; }
 
-.btn-primary { --background: var(--neon-accent); --color: #000; --border-radius: 12px; font-weight: 700; height: 48px; }
-.btn-outline { --border-radius: 12px; --color: var(--neon-accent); --border-color: var(--neon-accent); }
+.btn-primary  { --background: var(--neon-accent); --color: #000; --border-radius: 12px; font-weight: 700; height: 48px; }
+.btn-outline  { --border-radius: 12px; --color: var(--neon-accent); --border-color: var(--neon-accent); }
 
 .neon-input {
     --background: #1a2035;
@@ -576,14 +795,6 @@ export default defineComponent({
     padding-bottom: 0;
 }
 
-.type-btn {
-    --border-radius: 12px;
-    --border-width: 1px;
-    --letter-spacing: 0;
-    height: 46px;
-    margin: 0;
-}
-
 .icon-btn {
     --border-radius: 10px;
     --border-width: 1px;
@@ -594,8 +805,34 @@ export default defineComponent({
     height: 34px;
     margin: 0;
 }
-.edit-btn { --color: #8b5cf6; --border-color: #222840; }
+.edit-btn   { --color: #8b5cf6; --border-color: #222840; }
 .delete-btn { --color: #ef4444; --border-color: rgba(239,68,68,0.3); }
 
 .modal-content { --background: #0b0f1a; }
+
+.section-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--neon-muted, #5a6480);
+    margin-bottom: 10px;
+}
+
+.section-card {
+    background: #141825;
+    border: 1px solid #222840;
+    border-radius: 14px;
+    padding: 16px;
+}
+
+.field-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--neon-muted, #5a6480);
+    margin-bottom: 8px;
+}
 </style>

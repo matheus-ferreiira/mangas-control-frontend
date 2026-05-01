@@ -157,7 +157,15 @@ export const contentService = {
         formData.append('name', payload.name);
         formData.append('type', payload.type);
         if (payload.total_units != null) formData.append('total_units', String(payload.total_units));
+        if (payload.total_seasons != null) formData.append('total_seasons', String(payload.total_seasons));
+        if (payload.duration != null) formData.append('duration', String(payload.duration));
         if (payload.status) formData.append('status', payload.status);
+        if (payload.synopsis) formData.append('synopsis', payload.synopsis);
+        if (payload.release_year != null) formData.append('release_year', String(payload.release_year));
+        if (payload.rating != null) formData.append('rating', String(payload.rating));
+        if (payload.country) formData.append('country', payload.country);
+        if (payload.original_language) formData.append('original_language', payload.original_language);
+        if (payload.genres?.length) payload.genres.forEach((g) => formData.append('genres[]', g));
         if (payload.alternative_names?.length) {
             payload.alternative_names.forEach((n) => formData.append('alternative_names[]', n));
         }
@@ -174,7 +182,29 @@ export const contentService = {
         if (payload.total_units !== undefined) {
             formData.append('total_units', payload.total_units != null ? String(payload.total_units) : '');
         }
+        if (payload.total_seasons !== undefined) {
+            formData.append('total_seasons', payload.total_seasons != null ? String(payload.total_seasons) : '');
+        }
+        if (payload.duration !== undefined) {
+            formData.append('duration', payload.duration != null ? String(payload.duration) : '');
+        }
         if (payload.status !== undefined) formData.append('status', payload.status ?? '');
+        if (payload.synopsis !== undefined) formData.append('synopsis', payload.synopsis ?? '');
+        if (payload.release_year !== undefined) {
+            formData.append('release_year', payload.release_year != null ? String(payload.release_year) : '');
+        }
+        if (payload.rating !== undefined) {
+            formData.append('rating', payload.rating != null ? String(payload.rating) : '');
+        }
+        if (payload.country !== undefined) formData.append('country', payload.country ?? '');
+        if (payload.original_language !== undefined) formData.append('original_language', payload.original_language ?? '');
+        if (payload.genres !== undefined) {
+            if (payload.genres.length) {
+                payload.genres.forEach((g) => formData.append('genres[]', g));
+            } else {
+                formData.append('genres', '');
+            }
+        }
         if (payload.alternative_names !== undefined) {
             if (payload.alternative_names.length) {
                 payload.alternative_names.forEach((n) => formData.append('alternative_names[]', n));
