@@ -64,6 +64,8 @@ export interface Content {
     source?: 'jikan' | 'tmdb' | null;
     external_id?: string | null;
     is_adult?: boolean;
+    is_in_library?: boolean;
+    origin_type?: string;
     duration?: number;
     trailer_url?: string;
     trailer_embed_url?: string;

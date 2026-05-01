@@ -88,10 +88,13 @@
             <!-- +1 button (not for movies) -->
             <button
                 v-if="!isMovie"
+                :disabled="atLimit"
                 style="width: 34px; height: 34px; border-radius: 17px; border: 1px solid #1e2640; cursor: pointer; font-size: 20px; font-weight: 700; flex-shrink: 0; align-self: center; display: flex; align-items: center; justify-content: center; transition: all 0.2s;"
-                :style="plusActive
-                    ? { background: '#00d4aa', color: '#000', transform: 'scale(1.2)', borderColor: '#00d4aa' }
-                    : { background: '#141825', color: '#00d4aa' }"
+                :style="atLimit
+                    ? { background: '#141825', color: '#2a3450', borderColor: '#1e2640', cursor: 'not-allowed' }
+                    : plusActive
+                        ? { background: '#00d4aa', color: '#000', transform: 'scale(1.2)', borderColor: '#00d4aa' }
+                        : { background: '#141825', color: '#00d4aa' }"
                 @click.stop="handlePlus"
             >+</button>
         </div>
@@ -188,9 +191,15 @@ export default defineComponent({
             return UNIT_LABEL[this.contentType]?.short ?? 'cap.';
         },
         progressPct(): number {
+            if (this.item.progress_percent != null) return this.item.progress_percent;
             const total = this.item.content?.total_units;
             if (!total) return 0;
             return Math.min(Math.round((this.item.current_units / total) * 100), 100);
+        },
+        atLimit(): boolean {
+            const total = this.item.content?.total_units;
+            if (!total) return false;
+            return this.item.current_units >= total;
         },
         genres(): string[] {
             return this.item.content?.genres ?? [];
