@@ -26,11 +26,11 @@
                     <div
                         v-for="opt in [{ label: 'Todos', value: null, icon: null }, ...typeOptions]"
                         :key="opt.value ?? 'all'"
-                        class="flex-1 flex items-center justify-center gap-1.5 h-9 rounded-[9px] text-[12px] font-bold transition-colors cursor-pointer select-none"
+                        class="flex-1 flex items-center justify-center gap-1 h-9 rounded-[9px] text-[11px] font-bold transition-colors cursor-pointer select-none"
                         :class="filterType === opt.value ? 'bg-neon-accent text-black' : 'text-neon-muted'"
-                        @click="filterType = opt.value as any; applyFilter()"
+                        @click="setFilterType(opt.value as any)"
                     >
-                        <IonIcon v-if="opt.icon" :icon="opt.icon" class="text-[14px]" />
+                        <IonIcon v-if="opt.icon" :icon="opt.icon" class="text-[13px]" />
                         {{ opt.label }}
                     </div>
                 </div>
@@ -38,7 +38,10 @@
                 <!-- List header -->
                 <div class="flex items-center gap-2.5 mb-3.5">
                     <h2 class="text-lg font-extrabold text-neon-text m-0">Acervo</h2>
-                    <span v-if="filteredContents.length" class="bg-neon-accent/12 border border-neon-accent/20 text-neon-accent rounded-full px-2.5 py-0.5 text-xs font-bold">{{ filteredContents.length }}</span>
+                    <span
+                        v-if="meta.total > 0"
+                        class="bg-neon-accent/12 border border-neon-accent/20 text-neon-accent rounded-full px-2.5 py-0.5 text-xs font-bold"
+                    >{{ meta.total }}</span>
                 </div>
 
                 <!-- Loading -->
@@ -47,11 +50,13 @@
                 </div>
 
                 <!-- Empty -->
-                <div v-else-if="filteredContents.length === 0" class="text-center py-12">
+                <div v-else-if="contents.length === 0" class="text-center py-12">
                     <div class="w-16 h-16 bg-neon-surface border border-neon-border rounded-2xl flex items-center justify-center mx-auto mb-4">
                         <IonIcon :icon="bookOutline" class="text-[32px] text-neon-muted" />
                     </div>
-                    <p class="text-sm text-neon-muted m-0 mb-4">Nenhum item no acervo ainda.</p>
+                    <p class="text-sm text-neon-muted m-0 mb-4">
+                        {{ filterSearch || filterType ? 'Nenhum resultado encontrado.' : 'Nenhum item no acervo ainda.' }}
+                    </p>
                     <IonButton fill="outline" class="btn-outline" @click="openModal(null)">
                         <IonIcon slot="start" :icon="addOutline" />
                         Adicionar primeiro
@@ -61,7 +66,7 @@
                 <!-- List -->
                 <div v-else>
                     <div
-                        v-for="content in filteredContents"
+                        v-for="content in contents"
                         :key="content.id"
                         class="flex items-center gap-3 bg-neon-surface border border-neon-border rounded-[14px] p-3 mb-2.5"
                     >
@@ -88,7 +93,9 @@
                             <span v-if="content.alternative_names?.length" class="text-[10px] text-neon-muted truncate">
                                 {{ content.alternative_names.slice(0, 2).join(' · ') }}
                             </span>
-                            <span v-if="content.total_units" class="text-xs text-neon-muted">{{ content.total_units }} {{ UNIT_LABEL[content.type].plural }}</span>
+                            <span v-if="content.total_units" class="text-xs text-neon-muted">
+                                {{ content.total_units }} {{ UNIT_LABEL[content.type]?.plural ?? 'unidades' }}
+                            </span>
                         </div>
                         <div class="flex gap-2 flex-shrink-0">
                             <IonButton fill="outline" class="icon-btn edit-btn" @click="openModal(content)">
@@ -98,6 +105,34 @@
                                 <IonIcon slot="icon-only" :icon="trashOutline" />
                             </IonButton>
                         </div>
+                    </div>
+
+                    <!-- Paginação -->
+                    <div v-if="meta.last_page > 1" class="flex items-center justify-center gap-4 mt-5 py-2">
+                        <button
+                            class="w-9 h-9 rounded-xl border flex items-center justify-center transition-colors"
+                            :class="meta.current_page <= 1
+                                ? 'border-neon-border text-neon-border opacity-40 cursor-not-allowed'
+                                : 'border-neon-border text-neon-muted'"
+                            :disabled="meta.current_page <= 1"
+                            @click="goToPage(meta.current_page - 1)"
+                        >
+                            <IonIcon :icon="chevronBackOutline" />
+                        </button>
+                        <span class="text-sm text-neon-muted">
+                            <span class="text-neon-text font-bold">{{ meta.current_page }}</span>
+                            &nbsp;/&nbsp;{{ meta.last_page }}
+                        </span>
+                        <button
+                            class="w-9 h-9 rounded-xl border flex items-center justify-center transition-colors"
+                            :class="meta.current_page >= meta.last_page
+                                ? 'border-neon-border text-neon-border opacity-40 cursor-not-allowed'
+                                : 'border-neon-border text-neon-muted'"
+                            :disabled="meta.current_page >= meta.last_page"
+                            @click="goToPage(meta.current_page + 1)"
+                        >
+                            <IonIcon :icon="chevronForwardOutline" />
+                        </button>
                     </div>
                 </div>
             </div>
@@ -222,7 +257,12 @@
                         />
                     </div>
 
-                    <IonButton expand="block" class="btn-primary" :disabled="saving || !form.name.trim()" @click="editingId ? updateContent() : createContent()">
+                    <IonButton
+                        expand="block"
+                        class="btn-primary"
+                        :disabled="saving || !form.name.trim()"
+                        @click="editingId ? updateContent() : createContent()"
+                    >
                         <IonSpinner v-if="saving" name="crescent" />
                         <span v-else>{{ editingId ? 'Atualizar' : 'Adicionar ao Acervo' }}</span>
                     </IonButton>
@@ -240,9 +280,13 @@ import {
     IonFab, IonFabButton, IonModal, IonSearchbar,
     toastController, alertController,
 } from '@ionic/vue';
-import { bookOutline, tvOutline, libraryOutline, pencilOutline, trashOutline, imageOutline, addOutline } from 'ionicons/icons';
 import {
-    contentService, Content, ContentType, ContentCatalogStatus,
+    bookOutline, tvOutline, libraryOutline, filmOutline, desktopOutline,
+    pencilOutline, trashOutline, imageOutline, addOutline,
+    chevronBackOutline, chevronForwardOutline,
+} from 'ionicons/icons';
+import {
+    contentService, Content, ContentType, ContentCatalogStatus, ContentMeta,
     CONTENT_TYPE_LABELS, CONTENT_TYPE_COLORS, UNIT_LABEL,
     CATALOG_STATUS_LABELS, CATALOG_STATUS_COLORS,
 } from '@/services/contentService';
@@ -251,7 +295,11 @@ const TYPE_ICONS: Record<ContentType, string> = {
     manga: bookOutline,
     anime: tvOutline,
     novel: libraryOutline,
+    movie: filmOutline,
+    tv: desktopOutline,
 };
+
+const EMPTY_META: ContentMeta = { current_page: 1, last_page: 1, per_page: 50, total: 0, from: 0, to: 0 };
 
 export default defineComponent({
     name: 'ManageMangasPage',
@@ -266,9 +314,10 @@ export default defineComponent({
             saving: false,
             isModalOpen: false,
             contents: [] as Content[],
-            filteredContents: [] as Content[],
+            meta: { ...EMPTY_META } as ContentMeta,
             filterType: null as ContentType | null,
             filterSearch: '',
+            searchTimer: null as ReturnType<typeof setTimeout> | null,
             editingId: null as number | null,
             alternativeNamesInput: '',
             form: {
@@ -294,6 +343,7 @@ export default defineComponent({
             CATALOG_STATUS_LABELS,
             UNIT_LABEL,
             bookOutline, pencilOutline, trashOutline, imageOutline, addOutline,
+            chevronBackOutline, chevronForwardOutline,
         };
     },
     computed: {
@@ -308,8 +358,16 @@ export default defineComponent({
         async loadContents() {
             this.loading = true;
             try {
-                this.contents = await contentService.getAll();
-                this.applyFilter();
+                const result = await contentService.getAll({
+                    type: this.filterType ?? undefined,
+                    search: this.filterSearch.trim() || undefined,
+                    sort: 'name',
+                    order: 'asc',
+                    per_page: 50,
+                    page: this.meta.current_page,
+                });
+                this.contents = result.items;
+                this.meta = result.meta;
             } catch {
                 // non-blocking
             } finally {
@@ -319,20 +377,20 @@ export default defineComponent({
 
         onSearch(ev: Event) {
             this.filterSearch = (ev as CustomEvent).detail.value ?? '';
-            this.applyFilter();
+            this.meta.current_page = 1;
+            if (this.searchTimer) clearTimeout(this.searchTimer);
+            this.searchTimer = setTimeout(() => this.loadContents(), 400);
         },
 
-        applyFilter() {
-            let result = [...this.contents];
-            if (this.filterType) result = result.filter((c) => c.type === this.filterType);
-            if (this.filterSearch.trim()) {
-                const q = this.filterSearch.toLowerCase();
-                result = result.filter((c) =>
-                    c.name.toLowerCase().includes(q) ||
-                    c.alternative_names?.some((n) => n.toLowerCase().includes(q))
-                );
-            }
-            this.filteredContents = result;
+        setFilterType(type: ContentType | null) {
+            this.filterType = type;
+            this.meta.current_page = 1;
+            this.loadContents();
+        },
+
+        async goToPage(page: number) {
+            this.meta.current_page = page;
+            await this.loadContents();
         },
 
         openModal(content: Content | null) {
@@ -373,7 +431,7 @@ export default defineComponent({
             if (!this.form.name.trim()) return;
             this.saving = true;
             try {
-                const content = await contentService.create(
+                await contentService.create(
                     {
                         name: this.form.name.trim(),
                         type: this.form.type,
@@ -383,8 +441,8 @@ export default defineComponent({
                     },
                     this.coverFile ?? undefined,
                 );
-                this.contents.unshift(content);
-                this.applyFilter();
+                this.meta.current_page = 1;
+                await this.loadContents();
                 this.closeModal();
                 await this.showToast('Item adicionado ao acervo!', 'success');
             } catch {
@@ -398,7 +456,7 @@ export default defineComponent({
             if (!this.editingId || !this.form.name.trim()) return;
             this.saving = true;
             try {
-                const updated = await contentService.update(
+                await contentService.update(
                     this.editingId,
                     {
                         name: this.form.name.trim(),
@@ -409,9 +467,7 @@ export default defineComponent({
                     },
                     this.coverFile ?? undefined,
                 );
-                const idx = this.contents.findIndex((c) => c.id === this.editingId);
-                if (idx !== -1) this.contents[idx] = updated;
-                this.applyFilter();
+                await this.loadContents();
                 this.closeModal();
                 await this.showToast('Atualizado!', 'success');
             } catch {
@@ -436,8 +492,7 @@ export default defineComponent({
         async deleteContent(id: number) {
             try {
                 await contentService.delete(id);
-                this.contents = this.contents.filter((c) => c.id !== id);
-                this.applyFilter();
+                await this.loadContents();
                 await this.showToast('Item excluído.', 'success');
             } catch {
                 await this.showToast('Falha ao excluir.', 'danger');
@@ -473,8 +528,10 @@ export default defineComponent({
         typeActiveStyle(type: ContentType): Record<string, string> {
             const map: Record<ContentType, Record<string, string>> = {
                 manga: { '--background': 'rgba(0,212,170,0.15)', '--color': '#00d4aa', '--border-color': 'rgba(0,212,170,0.5)' },
-                anime: { '--background': 'rgba(139,92,246,0.15)', '--color': '#8b5cf6', '--border-color': 'rgba(139,92,246,0.5)' },
-                novel: { '--background': 'rgba(245,158,11,0.15)', '--color': '#f59e0b', '--border-color': 'rgba(245,158,11,0.5)' },
+                anime: { '--background': 'rgba(123,143,245,0.15)', '--color': '#7b8ff5', '--border-color': 'rgba(123,143,245,0.5)' },
+                novel: { '--background': 'rgba(255,162,107,0.15)', '--color': '#ffa26b', '--border-color': 'rgba(255,162,107,0.5)' },
+                movie: { '--background': 'rgba(248,113,113,0.15)', '--color': '#f87171', '--border-color': 'rgba(248,113,113,0.5)' },
+                tv: { '--background': 'rgba(167,139,250,0.15)', '--color': '#a78bfa', '--border-color': 'rgba(167,139,250,0.5)' },
             };
             return map[type] ?? {};
         },

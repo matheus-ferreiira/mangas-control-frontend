@@ -362,8 +362,10 @@ export default defineComponent({
         typeActiveStyle(type: ContentType): Record<string, string> {
             const map: Record<ContentType, Record<string, string>> = {
                 manga: { '--background': 'rgba(0,212,170,0.15)', '--color': '#00d4aa', '--border-color': 'rgba(0,212,170,0.5)' },
-                anime: { '--background': 'rgba(139,92,246,0.15)', '--color': '#8b5cf6', '--border-color': 'rgba(139,92,246,0.5)' },
-                novel: { '--background': 'rgba(245,158,11,0.15)', '--color': '#f59e0b', '--border-color': 'rgba(245,158,11,0.5)' },
+                anime: { '--background': 'rgba(123,143,245,0.15)', '--color': '#7b8ff5', '--border-color': 'rgba(123,143,245,0.5)' },
+                novel: { '--background': 'rgba(255,162,107,0.15)', '--color': '#ffa26b', '--border-color': 'rgba(255,162,107,0.5)' },
+                movie: { '--background': 'rgba(248,113,113,0.15)', '--color': '#f87171', '--border-color': 'rgba(248,113,113,0.5)' },
+                tv: { '--background': 'rgba(167,139,250,0.15)', '--color': '#a78bfa', '--border-color': 'rgba(167,139,250,0.5)' },
             };
             return map[type] ?? {};
         },

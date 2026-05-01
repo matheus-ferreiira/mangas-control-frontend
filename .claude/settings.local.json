@@ -4,7 +4,15 @@
       "Bash(npm install *)",
       "Bash(npm run *)",
       "Bash(npx tsc *)",
-      "Bash(npx vite *)"
+      "Bash(npx vite *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(npx vue-tsc *)",
+      "WebFetch(domain:api.anthropic.com)",
+      "Bash(cp \"webfetch-1777585862278-jvpsoa.bin\" design.gz)",
+      "Bash(gunzip -f design.gz)",
+      "Bash(tar xf *)",
+      "Bash(tar xvf *)"
     ]
   }
 }

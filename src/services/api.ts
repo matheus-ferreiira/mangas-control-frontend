@@ -5,6 +5,17 @@ const api = axios.create({
     headers: {
         Accept: 'application/json',
     },
+    paramsSerializer: (params) => {
+        const search = new URLSearchParams();
+        for (const [key, val] of Object.entries(params)) {
+            if (Array.isArray(val)) {
+                val.forEach((v) => search.append(`${key}[]`, String(v)));
+            } else if (val != null) {
+                search.set(key, String(val));
+            }
+        }
+        return search.toString();
+    },
 });
 
 api.interceptors.request.use((config) => {
