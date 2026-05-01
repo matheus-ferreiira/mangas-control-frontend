@@ -168,9 +168,10 @@
                                             inputmode="numeric"
                                             class="unit-input"
                                             min="0"
+                                            :max="item.content?.total_units ?? undefined"
                                             ref="unitsField"
                                             @ionBlur="saveUnits"
-                                            @ionInput="unitsInput = Number(($event as CustomEvent).detail.value) || 0"
+                                            @ionInput="unitsInput = Math.min(Number(($event as CustomEvent).detail.value) || 0, item.content?.total_units ?? Infinity)"
                                         />
                                         <span
                                             v-else
@@ -179,8 +180,11 @@
                                         >{{ item.current_units }}</span>
                                     </div>
                                     <button
-                                        style="width: 36px; height: 36px; border-radius: 10px; border: 1px solid #00d4aa; background: #00d4aa; color: #000; font-size: 20px; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;"
-                                        :disabled="saving"
+                                        style="width: 36px; height: 36px; border-radius: 10px; font-size: 20px; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: all 0.2s;"
+                                        :style="atLimit
+                                            ? { border: '1px solid #1e2640', background: '#141825', color: '#2a3450', cursor: 'not-allowed' }
+                                            : { border: '1px solid #00d4aa', background: '#00d4aa', color: '#000' }"
+                                        :disabled="saving || atLimit"
                                         @click="increment"
                                     >+</button>
                                 </div>
@@ -355,6 +359,11 @@ export default defineComponent({
             if (!total) return 0;
             return Math.min(Math.round((current / total) * 100), 100);
         },
+        atLimit(): boolean {
+            const total = this.item?.content?.total_units;
+            if (!total) return false;
+            return (this.item?.current_units ?? 0) >= total;
+        },
         headerImage(): string {
             return this.fullContent?.background || this.fullContent?.cover || this.item?.content?.cover || '';
         },
@@ -408,7 +417,10 @@ export default defineComponent({
             if (!this.item) return;
             this.saving = true;
             try { this.patchItem(await userContentService.increment(this.item.id)); }
-            catch { await this.showError('Falha ao atualizar progresso.'); }
+            catch (err: any) {
+                const msg = err?.response?.data?.message ?? 'Falha ao atualizar progresso.';
+                await this.showError(msg);
+            }
             finally { this.saving = false; }
         },
 
