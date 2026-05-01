@@ -90,7 +90,23 @@
                     </div>
                 </div>
 
-                <template v-if="selectedContent">
+                <!-- Already in library warning -->
+                <div
+                    v-if="selectedContent?.is_in_library"
+                    style="margin-bottom: 20px; background: rgba(0,212,170,0.08); border: 1px solid rgba(0,212,170,0.25); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 12px;"
+                >
+                    <span style="font-size: 20px; flex-shrink: 0;">✓</span>
+                    <div style="flex: 1; min-width: 0;">
+                        <div style="font-size: 13px; font-weight: 700; color: #00d4aa; margin-bottom: 2px;">Já está na sua biblioteca</div>
+                        <div style="font-size: 11px; color: #4a5470;">Este conteúdo já foi adicionado ao seu registro.</div>
+                    </div>
+                    <button
+                        style="flex-shrink: 0; height: 34px; padding: 0 14px; border-radius: 10px; border: 1px solid rgba(0,212,170,0.4); background: rgba(0,212,170,0.12); color: #00d4aa; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap;"
+                        @click="$router.push('/tabs/library')"
+                    >Ver na biblioteca</button>
+                </div>
+
+                <template v-if="selectedContent && !selectedContent.is_in_library">
                     <!-- Status -->
                     <div style="margin-bottom: 20px;">
                         <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.08em; color: #4a5470; text-transform: uppercase; margin-bottom: 8px;">Status</div>
@@ -262,7 +278,7 @@ export default defineComponent({
             return this.selectedContent?.type === 'tv' || this.selectedContent?.type === 'anime';
         },
         canSubmit(): boolean {
-            return !!this.form.content_id;
+            return !!this.form.content_id && !this.selectedContent?.is_in_library;
         },
         availableStatuses() {
             const type = this.selectedContent?.type ?? 'manga';
