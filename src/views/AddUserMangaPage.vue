@@ -85,10 +85,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div v-if="contentSearch && !searchResults.length && !searchLoading" style="font-size: 12px; color: #4a5470; text-align: center; margin-top: 12px;">
-                            Não encontrado.
-                            <span style="color: #00d4aa; cursor: pointer;" @click="$router.push('/manage-contents')">Adicionar ao acervo</span>
-                        </div>
                     </div>
                 </div>
 
@@ -199,8 +195,9 @@ import {
 } from '@ionic/vue';
 import { bookOutline, tvOutline, libraryOutline, filmOutline, desktopOutline } from 'ionicons/icons';
 import { contentService, Content, ContentType, CONTENT_TYPE_LABELS, UNIT_LABEL } from '@/services/contentService';
-import { siteService, Site } from '@/services/siteService';
+import { userSiteService, UserSite } from '@/services/userSiteService';
 import { userContentService, ContentStatus, STATUS_LABELS, getStatusLabel } from '@/services/userContentService';
+import { authStore } from '@/store/auth';
 
 const TYPE_ICONS: Record<ContentType, string> = {
     manga: bookOutline,

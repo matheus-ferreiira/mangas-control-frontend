@@ -59,7 +59,7 @@ const routes: Array<RouteRecordRaw> = [
     {
         path: '/manage-contents',
         component: () => import('@/views/ManageMangasPage.vue'),
-        meta: { requiresAuth: true },
+        meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
         path: '/content-requests',
@@ -89,6 +89,14 @@ router.beforeEach((to) => {
     }
     if (to.path === '/login' && token) {
         return '/tabs/library';
+    }
+    if (to.meta.requiresAdmin) {
+        try {
+            const user = JSON.parse(localStorage.getItem('auth_user') || 'null');
+            if (user?.role !== 'admin') return '/tabs/library';
+        } catch {
+            return '/tabs/library';
+        }
     }
 });
 
