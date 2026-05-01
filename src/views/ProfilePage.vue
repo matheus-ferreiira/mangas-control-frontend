@@ -58,12 +58,61 @@
                     <span class="flex-1 text-[15px] font-semibold text-neon-text">{{ isAdmin ? 'Solicitações de Conteúdo' : 'Sugerir Conteúdo' }}</span>
                     <IonIcon :icon="chevronForwardOutline" class="text-neon-muted text-lg" />
                 </div>
-                <div class="bg-neon-surface border border-neon-border rounded-[14px] p-3.5 mb-2 flex items-center gap-3.5 cursor-pointer transition-colors active:border-neon-accent" @click="$router.push('/tabs/sources')">
-                    <div class="w-[38px] h-[38px] rounded-[10px] flex items-center justify-center text-xl flex-shrink-0" style="background: rgba(139,92,246,0.12); color: #8b5cf6">
-                        <IonIcon :icon="cloudDownloadOutline" />
+                <!-- Minhas Fontes inline -->
+                <div style="margin-bottom: 8px;">
+                    <div
+                        style="background: #1a2035; border: 1px solid #1e2640; border-radius: 14px; padding: 14px 14px 10px;"
+                    >
+                        <!-- Section header -->
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(139,92,246,0.12); color: #8b5cf6; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
+                                    <IonIcon :icon="cloudDownloadOutline" />
+                                </div>
+                                <span style="font-size: 15px; font-weight: 600; color: #eef2ff;">Minhas Fontes</span>
+                            </div>
+                            <button
+                                style="width: 32px; height: 32px; border-radius: 10px; border: 1px solid #1e2640; background: transparent; color: #00d4aa; font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;"
+                                @click="openSiteModal(null)"
+                            >+</button>
+                        </div>
+
+                        <!-- Sites list -->
+                        <div v-if="sitesLoading" style="text-align: center; padding: 10px 0;">
+                            <IonSpinner name="crescent" style="width: 20px; height: 20px; color: #4a5470;" />
+                        </div>
+                        <div v-else-if="sites.length === 0" style="text-align: center; padding: 8px 0;">
+                            <span style="font-size: 12px; color: #4a5470;">Nenhuma fonte cadastrada</span>
+                        </div>
+                        <div v-else style="display: flex; flex-direction: column; gap: 6px;">
+                            <div
+                                v-for="site in sites"
+                                :key="site.id"
+                                style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; border: 1px solid #1e2640; background: #141825;"
+                            >
+                                <!-- Favorite indicator -->
+                                <button
+                                    style="background: none; border: none; cursor: pointer; font-size: 16px; padding: 0; flex-shrink: 0; line-height: 1;"
+                                    :style="{ opacity: site.is_favorite ? 1 : 0.3 }"
+                                    @click="toggleFavorite(site)"
+                                >★</button>
+                                <!-- Info -->
+                                <div style="flex: 1; min-width: 0;">
+                                    <div style="font-size: 13px; font-weight: 700; color: #eef2ff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ site.name }}</div>
+                                    <div style="font-size: 10px; color: #4a5470; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ site.url }}</div>
+                                </div>
+                                <!-- Edit / Delete -->
+                                <button
+                                    style="width: 28px; height: 28px; border-radius: 8px; border: 1px solid #1e2640; background: transparent; color: #4a5470; font-size: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;"
+                                    @click="openSiteModal(site)"
+                                >✏</button>
+                                <button
+                                    style="width: 28px; height: 28px; border-radius: 8px; border: 1px solid rgba(239,68,68,0.2); background: transparent; color: #ef4444; font-size: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;"
+                                    @click="deleteSite(site)"
+                                >×</button>
+                            </div>
+                        </div>
                     </div>
-                    <span class="flex-1 text-[15px] font-semibold text-neon-text">Minhas Fontes</span>
-                    <IonIcon :icon="chevronForwardOutline" class="text-neon-muted text-lg" />
                 </div>
 
                 <!-- Instalar App -->
@@ -94,13 +143,62 @@
                 <p class="text-center text-[11px] text-neon-muted mt-6">© 2025 Content Tracker · v1.0.0</p>
             </div>
         </IonContent>
+
+        <!-- Site modal -->
+        <IonModal
+            :is-open="siteModalOpen"
+            :initial-breakpoint="0.72"
+            :breakpoints="[0, 0.72, 1]"
+            :handle="true"
+            @didDismiss="siteModalOpen = false"
+        >
+            <IonContent style="--background: #141825;">
+                <div style="padding: 8px 20px 40px;">
+                    <div style="font-size: 16px; font-weight: 800; color: #eef2ff; margin-bottom: 16px;">
+                        {{ editingSite ? 'Editar Fonte' : 'Nova Fonte' }}
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <div style="font-size: 10px; font-weight: 800; color: #4a5470; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">Nome</div>
+                        <input
+                            v-model="siteForm.name"
+                            placeholder="Ex: MangaDex"
+                            style="width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid #1e2640; background: #1a2035; color: #eef2ff; font-size: 14px; outline: none; box-sizing: border-box;"
+                        />
+                    </div>
+                    <div style="margin-bottom: 16px;">
+                        <div style="font-size: 10px; font-weight: 800; color: #4a5470; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;">URL</div>
+                        <input
+                            v-model="siteForm.url"
+                            placeholder="https://mangadex.org"
+                            type="url"
+                            style="width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid #1e2640; background: #1a2035; color: #eef2ff; font-size: 14px; outline: none; box-sizing: border-box;"
+                        />
+                    </div>
+                    <div
+                        style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-radius: 12px; border: 1px solid #1e2640; background: #1a2035; margin-bottom: 20px; cursor: pointer;"
+                        @click="siteForm.is_favorite = !siteForm.is_favorite"
+                    >
+                        <span style="font-size: 13px; font-weight: 600; color: #eef2ff;">Marcar como favorita</span>
+                        <div :style="toggleStyle(siteForm.is_favorite)">
+                            <div :style="toggleKnobStyle(siteForm.is_favorite)"></div>
+                        </div>
+                    </div>
+                    <button
+                        :disabled="!siteForm.name.trim() || !siteForm.url.trim() || siteSaving"
+                        style="width: 100%; padding: 14px; border-radius: 14px; border: none; font-size: 14px; font-weight: 800; cursor: pointer; transition: opacity 0.2s;"
+                        :style="{ background: '#00d4aa', color: '#000', opacity: (!siteForm.name.trim() || !siteForm.url.trim()) ? 0.5 : 1 }"
+                        @click="saveSite"
+                    >{{ siteSaving ? 'Salvando...' : (editingSite ? 'Salvar' : 'Adicionar') }}</button>
+                </div>
+            </IonContent>
+        </IonModal>
     </IonPage>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 import {
-    IonPage, IonContent, IonIcon, alertController,
+    IonPage, IonContent, IonIcon, IonModal, IonSpinner, alertController, toastController,
 } from '@ionic/vue';
 import {
     bookOutline, cloudDownloadOutline, chevronForwardOutline, logOutOutline, downloadOutline, addCircleOutline,
@@ -108,15 +206,27 @@ import {
 import { authStore } from '@/store/auth';
 import { authService } from '@/services/authService';
 import { userContentService, UserContent } from '@/services/userContentService';
+import { userSiteService, UserSite } from '@/services/userSiteService';
+
+function emptySiteForm() {
+    return { name: '', url: '', is_favorite: false };
+}
 
 export default defineComponent({
     name: 'ProfilePage',
-    components: { IonPage, IonContent, IonIcon },
+    components: { IonPage, IonContent, IonIcon, IonModal, IonSpinner },
     data() {
         return {
             userContents: [] as UserContent[],
             canInstall: false,
             deferredPrompt: null as any,
+            // Sites
+            sites: [] as UserSite[],
+            sitesLoading: false,
+            siteModalOpen: false,
+            siteSaving: false,
+            editingSite: null as UserSite | null,
+            siteForm: emptySiteForm(),
             bookOutline, cloudDownloadOutline, chevronForwardOutline, logOutOutline, downloadOutline, addCircleOutline,
         };
     },
@@ -151,8 +261,100 @@ export default defineComponent({
         } catch {
             // non-blocking
         }
+        await this.loadSites();
     },
     methods: {
+        async loadSites() {
+            this.sitesLoading = true;
+            try {
+                this.sites = await userSiteService.getAll();
+            } catch {
+                // non-blocking
+            } finally {
+                this.sitesLoading = false;
+            }
+        },
+
+        openSiteModal(site: UserSite | null) {
+            this.editingSite = site;
+            this.siteForm = site
+                ? { name: site.name, url: site.url, is_favorite: site.is_favorite }
+                : emptySiteForm();
+            this.siteModalOpen = true;
+        },
+
+        async saveSite() {
+            if (!this.siteForm.name.trim() || !this.siteForm.url.trim()) return;
+            this.siteSaving = true;
+            try {
+                if (this.editingSite) {
+                    const updated = await userSiteService.update(this.editingSite.id, this.siteForm);
+                    const idx = this.sites.findIndex((s) => s.id === this.editingSite!.id);
+                    if (idx >= 0) this.sites.splice(idx, 1, updated);
+                } else {
+                    const created = await userSiteService.create(this.siteForm);
+                    this.sites.push(created);
+                    this.sites.sort((a, b) => (b.is_favorite ? 1 : 0) - (a.is_favorite ? 1 : 0));
+                }
+                this.siteModalOpen = false;
+            } catch {
+                const toast = await toastController.create({ message: 'Falha ao salvar fonte.', duration: 2000, color: 'danger', position: 'top' });
+                await toast.present();
+            } finally {
+                this.siteSaving = false;
+            }
+        },
+
+        async toggleFavorite(site: UserSite) {
+            try {
+                const updated = await userSiteService.toggleFavorite(site);
+                const idx = this.sites.findIndex((s) => s.id === site.id);
+                if (idx >= 0) this.sites.splice(idx, 1, updated);
+                this.sites.sort((a, b) => (b.is_favorite ? 1 : 0) - (a.is_favorite ? 1 : 0));
+            } catch {
+                // silencioso
+            }
+        },
+
+        async deleteSite(site: UserSite) {
+            const alert = await alertController.create({
+                header: 'Remover fonte',
+                message: `Remover "${site.name}"?`,
+                buttons: [
+                    { text: 'Cancelar', role: 'cancel' },
+                    {
+                        text: 'Remover', role: 'destructive',
+                        handler: async () => {
+                            try {
+                                await userSiteService.delete(site.id);
+                                this.sites = this.sites.filter((s) => s.id !== site.id);
+                            } catch {
+                                const toast = await toastController.create({ message: 'Falha ao remover.', duration: 2000, color: 'danger', position: 'top' });
+                                await toast.present();
+                            }
+                        },
+                    },
+                ],
+            });
+            await alert.present();
+        },
+
+        toggleStyle(active: boolean): Record<string, string> {
+            return {
+                width: '44px', height: '26px', borderRadius: '13px', position: 'relative',
+                background: active ? '#00d4aa' : '#1e2640',
+                transition: 'background 0.2s', flexShrink: '0',
+            };
+        },
+
+        toggleKnobStyle(active: boolean): Record<string, string> {
+            return {
+                position: 'absolute', top: '3px', borderRadius: '10px',
+                left: active ? '21px' : '3px', width: '20px', height: '20px',
+                background: '#fff', transition: 'left 0.2s', boxShadow: '0 1px 4px rgba(0,0,0,0.3)',
+            };
+        },
+
         async confirmLogout() {
             const alert = await alertController.create({
                 header: 'Sair',
@@ -164,6 +366,7 @@ export default defineComponent({
             });
             await alert.present();
         },
+
         async installPwa() {
             if (!this.deferredPrompt) return;
             this.deferredPrompt.prompt();
@@ -173,6 +376,7 @@ export default defineComponent({
                 this.deferredPrompt = null;
             }
         },
+
         async logout() {
             try {
                 await authService.logout();
