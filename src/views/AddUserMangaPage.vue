@@ -34,6 +34,7 @@
                             <div v-if="selectedContent.genres?.length" style="display: flex; gap: 4px; flex-wrap: wrap;">
                                 <span v-for="g in selectedContent.genres.slice(0, 3)" :key="g" style="font-size: 9px; color: #4a5470; background: #141825; padding: 2px 6px; border-radius: 4px; border: 1px solid #1e2640;">{{ g }}</span>
                             </div>
+                            <div v-if="selectedContent.alternative_names?.length" style="font-size: 10px; color: #4a5470; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ selectedContent.alternative_names.slice(0, 2).join(' · ') }}</div>
                             <div v-if="selectedContent.synopsis" style="font-size: 11px; color: #5a6480; margin-top: 6px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">{{ selectedContent.synopsis }}</div>
                             <!-- Type-specific info -->
                             <div style="font-size: 10px; color: #4a5470; margin-top: 4px;">
@@ -77,10 +78,11 @@
                                 </div>
                                 <div style="flex: 1; min-width: 0;">
                                     <div style="font-size: 13px; font-weight: 700; color: #eef2ff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ c.name }}</div>
-                                    <div style="display: flex; align-items: center; gap: 6px; margin-top: 2px;">
+                                    <div style="display: flex; align-items: center; gap: 6px; margin-top: 2px; flex-wrap: wrap;">
                                         <span :style="getTypeBadgeStyle(c.type)">{{ getTypeLabel(c.type) }}</span>
                                         <span v-if="c.total_units" style="font-size: 10px; color: #4a5470;">{{ c.total_units }} {{ getUnitShort(c.type) }}</span>
                                         <span v-if="c.rating != null" style="font-size: 10px; color: #f59e0b;">★ {{ c.rating }}</span>
+                                        <span v-if="c.is_in_library" style="font-size: 9px; font-weight: 800; color: #00d4aa; background: rgba(0,212,170,0.12); padding: 2px 7px; border-radius: 20px; letter-spacing: 0.04em;">✓ Na lista</span>
                                     </div>
                                 </div>
                             </div>
@@ -136,9 +138,10 @@
                                 inputmode="numeric"
                                 placeholder="0"
                                 :min="0"
+                                :max="selectedContent.total_units ?? undefined"
                                 fill="outline"
                                 class="neon-input"
-                                @ionInput="form.current_units = Number(($event as CustomEvent).detail.value) || 0"
+                                @ionInput="form.current_units = Math.min(Number(($event as CustomEvent).detail.value) || 0, selectedContent.total_units ?? Infinity)"
                             />
                         </div>
                     </template>
@@ -345,8 +348,11 @@ export default defineComponent({
                 await toast.present();
                 this.resetForm();
                 this.$router.push('/tabs/library');
-            } catch {
-                const toast = await toastController.create({ message: 'Falha ao adicionar.', duration: 2000, color: 'danger', position: 'top' });
+            } catch (err: any) {
+                const apiMsg = err?.response?.data?.errors?.content_id?.[0]
+                    ?? err?.response?.data?.message
+                    ?? 'Falha ao adicionar.';
+                const toast = await toastController.create({ message: apiMsg, duration: 3000, color: 'danger', position: 'top' });
                 await toast.present();
             } finally {
                 this.saving = false;

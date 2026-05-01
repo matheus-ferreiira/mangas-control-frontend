@@ -97,15 +97,25 @@
                     <div style="font-size: 12px; color: #4a5470;">Tente ajustar os filtros ou explore o acervo</div>
                 </div>
 
-                <!-- Cards list -->
+                <!-- Grouped cards list -->
                 <div v-else>
-                    <ContentCard
-                        v-for="item in sortedFiltered"
-                        :key="item.id"
-                        :item="item"
-                        @click="$router.push(`/content/${item.id}`)"
-                        @plusOne="incrementItem"
-                    />
+                    <template v-for="group in groupedItems" :key="group.status">
+                        <div v-if="group.items.length" style="margin-bottom: 6px;">
+                            <!-- Group header -->
+                            <div style="display: flex; align-items: center; gap: 7px; padding: 6px 4px 8px; position: relative;">
+                                <span :style="{ width: '7px', height: '7px', borderRadius: '50%', flexShrink: '0', background: group.color, boxShadow: `0 0 6px ${group.color}` }"></span>
+                                <span style="font-size: 11px; font-weight: 800; color: #7a87a8; text-transform: uppercase; letter-spacing: 0.06em;">{{ group.label }}</span>
+                                <span style="font-size: 10px; font-weight: 700; color: #3a4460; background: #141825; border: 1px solid #1e2640; border-radius: 10px; padding: 1px 7px;">{{ group.items.length }}</span>
+                            </div>
+                            <ContentCard
+                                v-for="item in group.items"
+                                :key="item.id"
+                                :item="item"
+                                @click="$router.push(`/content/${item.id}`)"
+                                @plusOne="incrementItem"
+                            />
+                        </div>
+                    </template>
                 </div>
             </div>
         </IonContent>
@@ -302,6 +312,16 @@ const STATUS_OPTIONS = [
     { value: 'plan_to_read' as ContentStatus, label: 'Quero Ler',   color: '#8b5cf6' },
 ];
 
+const STATUS_GROUP_ORDER: ContentStatus[] = ['reading', 'plan_to_read', 'completed', 'paused', 'dropped'];
+
+const STATUS_GROUP_META: Record<ContentStatus, { label: string; videoLabel: string; color: string }> = {
+    reading:      { label: 'Lendo',          videoLabel: 'Assistindo',       color: '#3b82f6' },
+    plan_to_read: { label: 'Quero Ler',      videoLabel: 'Quero Assistir',   color: '#8b5cf6' },
+    completed:    { label: 'Finalizados',    videoLabel: 'Finalizados',      color: '#10b981' },
+    paused:       { label: 'Pausado',        videoLabel: 'Pausado',          color: '#f59e0b' },
+    dropped:      { label: 'Abandonado',     videoLabel: 'Abandonado',       color: '#ef4444' },
+};
+
 const CAT_STATUS_MAP: Record<string, { label: string; color: string }> = {
     ongoing:   { label: 'Em andamento', color: '#00d4aa' },
     completed: { label: 'Completo',     color: '#10b981' },
@@ -433,6 +453,22 @@ export default defineComponent({
                     default: return 0;
                 }
             });
+        },
+        groupedItems(): { status: ContentStatus; label: string; color: string; items: UserContent[] }[] {
+            const isVideo = (type?: string) => type === 'anime' || type === 'movie' || type === 'tv';
+            return STATUS_GROUP_ORDER
+                .map((status) => {
+                    const meta = STATUS_GROUP_META[status];
+                    const items = this.sortedFiltered.filter(i => i.status === status);
+                    const useVideoLabel = items.length > 0 && items.every(i => isVideo(i.content?.type));
+                    return {
+                        status,
+                        label: useVideoLabel ? meta.videoLabel : meta.label,
+                        color: meta.color,
+                        items,
+                    };
+                })
+                .filter(g => g.items.length > 0);
         },
         sortBtnStyle(): Record<string, string> {
             const active = !this.isSortDefault;

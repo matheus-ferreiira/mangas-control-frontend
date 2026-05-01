@@ -122,6 +122,7 @@
                                         <span :style="typeBadgeStyle(content.type)">{{ typeLabel(content.type) }}</span>
                                         <span v-if="content.status" :style="catStatusBadgeStyle(content.status)">{{ catalogStatusLabel(content.status) }}</span>
                                         <span v-if="content.score && content.score >= 9" style="font-size: 9px; font-weight: 800; color: #f59e0b; background: rgba(245,158,11,0.15); padding: 2px 6px; border-radius: 20px; letter-spacing: 0.04em; flex-shrink: 0;">TOP</span>
+                                        <span v-if="content.is_in_library" style="font-size: 9px; font-weight: 800; color: #00d4aa; background: rgba(0,212,170,0.12); padding: 2px 6px; border-radius: 20px; letter-spacing: 0.04em; flex-shrink: 0;">✓ Na lista</span>
                                     </div>
 
                                     <!-- Title -->
@@ -163,9 +164,9 @@
                                         @click.stop="$router.push('/manage-contents')"
                                     >✏</button>
                                     <button
-                                        :style="addBtnStyle(content.id)"
+                                        :style="addBtnStyle(content)"
                                         @click.stop="addToLibrary(content)"
-                                    >{{ '+' }}</button>
+                                    >{{ content.is_in_library ? '✓' : '+' }}</button>
                                 </div>
                             </div>
                         </div>
@@ -716,7 +717,15 @@ export default defineComponent({
             };
         },
 
-        addBtnStyle(id: number): Record<string, string> {
+        addBtnStyle(content: any): Record<string, string> {
+            if (content.is_in_library) {
+                return {
+                    width: '32px', height: '32px', borderRadius: '10px', cursor: 'pointer',
+                    border: '1px solid rgba(0,212,170,0.4)', background: 'rgba(0,212,170,0.1)',
+                    color: '#00d4aa', fontSize: '14px', display: 'flex', alignItems: 'center',
+                    justifyContent: 'center', transition: 'all 0.2s',
+                };
+            }
             return {
                 width: '32px', height: '32px', borderRadius: '10px', cursor: 'pointer',
                 border: '1px solid #1e2640', background: 'transparent', color: '#4a5470',

@@ -26,6 +26,7 @@ export interface UserContent {
     user_site_id?: number;
     current_units: number;
     current_season?: number;
+    progress_percent?: number | null;
     rating?: number | null;
     status: ContentStatus;
     last_unit_update?: string;
