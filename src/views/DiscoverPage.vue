@@ -102,7 +102,7 @@
                     <template v-for="content in contents" :key="content.id">
                         <!-- CatalogCard -->
                         <div style="background: #1a2035; border: 1px solid #1e2640; border-radius: 16px; margin-bottom: 10px; overflow: hidden;">
-                            <div style="display: flex; gap: 12px; padding: 14px; cursor: pointer; align-items: flex-start;" @click="addToLibrary(content)">
+                            <div style="display: flex; gap: 12px; padding: 14px; cursor: pointer; align-items: flex-start;" @click="openDetail(content)">
                                 <!-- Cover 44px -->
                                 <div style="flex-shrink: 0; border-radius: 8px; overflow: hidden; width: 44px; height: 62px; background: #141825; display: flex; align-items: center; justify-content: center;">
                                     <img
@@ -380,7 +380,7 @@
 import { defineComponent } from 'vue';
 import {
     IonPage, IonContent, IonInfiniteScroll, IonInfiniteScrollContent,
-    IonModal, IonHeader, IonFooter,
+    IonModal, IonHeader, IonFooter, toastController,
 } from '@ionic/vue';
 import {
     contentService, Content, ContentType, ContentCatalogStatus, ContentSortField, ContentMeta,
@@ -644,7 +644,22 @@ export default defineComponent({
             if (q.sort) this.sortById = String(q.sort);
         },
 
-        addToLibrary(content: Content) {
+        openDetail(content: Content) {
+            this.$router.push(`/catalog/${content.id}`);
+        },
+
+        async addToLibrary(content: Content) {
+            if (content.is_in_library) {
+                const toast = await toastController.create({
+                    message: 'Já está na sua biblioteca.',
+                    duration: 1800,
+                    color: 'success',
+                    position: 'top',
+                });
+                await toast.present();
+                this.$router.push('/tabs/library');
+                return;
+            }
             this.$router.push({ path: '/tabs/add', query: { content_id: content.id } });
         },
 

@@ -12,7 +12,8 @@
       "Bash(cp \"webfetch-1777585862278-jvpsoa.bin\" design.gz)",
       "Bash(gunzip -f design.gz)",
       "Bash(tar xf *)",
-      "Bash(tar xvf *)"
+      "Bash(tar xvf *)",
+      "WebFetch(domain:content-cosmos-app.lovable.app)"
     ]
   }
 }

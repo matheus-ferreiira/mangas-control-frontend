@@ -3,26 +3,14 @@
         <IonTabs>
             <IonRouterOutlet></IonRouterOutlet>
             <IonTabBar slot="bottom">
-                <IonTabButton tab="library" href="/tabs/library">
-                    <IonIcon :icon="libraryOutline" />
-                    <IonLabel>Biblioteca</IonLabel>
-                </IonTabButton>
-
                 <IonTabButton tab="discover" href="/tabs/discover">
                     <IonIcon :icon="compassOutline" />
                     <IonLabel>Descobrir</IonLabel>
                 </IonTabButton>
 
-                <IonTabButton tab="add" href="/tabs/add" class="tab-fab">
-                    <div class="fab-circle">
-                        <IonIcon :icon="addOutline" class="fab-icon" />
-                    </div>
-                    <IonLabel>Adicionar</IonLabel>
-                </IonTabButton>
-
-                <IonTabButton tab="sources" href="/tabs/sources">
-                    <IonIcon :icon="cloudDownloadOutline" />
-                    <IonLabel>Fontes</IonLabel>
+                <IonTabButton tab="library" href="/tabs/library">
+                    <IonIcon :icon="libraryOutline" />
+                    <IonLabel>Biblioteca</IonLabel>
                 </IonTabButton>
 
                 <IonTabButton tab="profile" href="/tabs/profile">
@@ -40,13 +28,13 @@ import {
     IonPage, IonTabs, IonTabBar, IonTabButton,
     IonLabel, IonIcon, IonRouterOutlet,
 } from '@ionic/vue';
-import { libraryOutline, compassOutline, addOutline, cloudDownloadOutline, personOutline } from 'ionicons/icons';
+import { libraryOutline, compassOutline, addOutline, personOutline } from 'ionicons/icons';
 
 export default defineComponent({
     name: 'TabsPage',
     components: { IonPage, IonTabs, IonTabBar, IonTabButton, IonLabel, IonIcon, IonRouterOutlet },
     data() {
-        return { libraryOutline, compassOutline, addOutline, cloudDownloadOutline, personOutline };
+        return { libraryOutline, compassOutline, addOutline, personOutline };
     },
 });
 </script>

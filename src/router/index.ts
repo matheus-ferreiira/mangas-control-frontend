@@ -5,7 +5,7 @@ import TabsPage from '../views/TabsPage.vue';
 const routes: Array<RouteRecordRaw> = [
     {
         path: '/',
-        redirect: '/tabs/library',
+        redirect: '/tabs/discover',
     },
     {
         path: '/login',
@@ -54,6 +54,11 @@ const routes: Array<RouteRecordRaw> = [
     {
         path: '/content/:id',
         component: () => import('@/views/MangaDetailPage.vue'),
+        meta: { requiresAuth: true },
+    },
+    {
+        path: '/catalog/:id',
+        component: () => import('@/views/CatalogDetailPage.vue'),
         meta: { requiresAuth: true },
     },
     {
