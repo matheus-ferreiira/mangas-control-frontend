@@ -133,8 +133,18 @@ export default defineComponent({
                 const res = await authService.login(this.emailForm.email, this.emailForm.password);
                 authStore.setAuth(res.token, res.user);
                 this.$router.replace('/tabs/library');
-            } catch {
-                const toast = await toastController.create({ message: 'Email ou senha incorretos.', duration: 2500, color: 'danger', position: 'top' });
+            } catch (err: any) {
+                const status = err?.response?.status;
+                const serverMsg = err?.response?.data?.message as string | undefined;
+                let message = 'Email ou senha incorretos.';
+                if (serverMsg) {
+                    message = serverMsg;
+                } else if (status === 404) {
+                    message = 'Usuário não encontrado.';
+                } else if (status === 401) {
+                    message = 'Senha inválida.';
+                }
+                const toast = await toastController.create({ message, duration: 2500, color: 'danger', position: 'top' });
                 await toast.present();
             } finally {
                 this.loading = false;

@@ -23,6 +23,7 @@ export interface UserContent {
     user_id?: number;
     content_id: number;
     site_id?: number;
+    user_site_id?: number;
     current_units: number;
     current_season?: number;
     rating?: number | null;
@@ -58,6 +59,12 @@ export interface UserContent {
         name: string;
         url: string;
     };
+    user_site?: {
+        id: number;
+        name: string;
+        url: string;
+        is_favorite: boolean;
+    };
 }
 
 export const userContentService = {
@@ -74,7 +81,9 @@ export const userContentService = {
     async create(payload: {
         content_id: number;
         site_id?: number;
+        user_site_id?: number;
         current_units?: number;
+        current_season?: number;
         status: ContentStatus;
         rating?: number;
     }): Promise<UserContent> {
@@ -84,7 +93,7 @@ export const userContentService = {
 
     async update(
         id: number,
-        payload: Partial<Pick<UserContent, 'current_units' | 'current_season' | 'status' | 'site_id' | 'rating'>>
+        payload: Partial<Pick<UserContent, 'current_units' | 'current_season' | 'status' | 'site_id' | 'user_site_id' | 'rating'>>
     ): Promise<UserContent> {
         const { data } = await api.patch(`/user-contents/${id}`, payload);
         return data as UserContent;

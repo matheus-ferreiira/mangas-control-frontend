@@ -2,7 +2,6 @@
     <IonPage class="[--background:#0b0f1a]">
         <IonContent :fullscreen="true" class="[--background:#0b0f1a]">
             <div class="px-6 pt-14 pb-10">
-                <!-- Logo mark -->
                 <div class="flex justify-center mb-6">
                     <div class="w-[60px] h-[60px] bg-neon-accent/12 rounded-[18px] flex items-center justify-center border border-neon-accent/20">
                         <IonIcon :icon="bookSharp" class="text-[32px] text-neon-accent" />
@@ -12,9 +11,7 @@
                 <h2 class="text-[24px] font-extrabold text-neon-text m-0 mb-1 text-center">Criar conta</h2>
                 <p class="text-sm text-neon-muted text-center m-0 mb-6">Junte-se ao Neon Curator</p>
 
-                <!-- Form card -->
                 <div class="bg-neon-surface border border-neon-border rounded-[20px] p-6">
-
                     <div class="mb-3">
                         <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-1.5">Nome completo</span>
                         <IonInput v-model="form.name" placeholder="Seu nome" fill="outline" class="neon-input" />
@@ -30,9 +27,23 @@
                         <IonInput v-model="form.email" type="email" placeholder="seu@email.com" fill="outline" class="neon-input" />
                     </div>
 
-                    <div class="mb-5">
+                    <div class="mb-3">
                         <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-1.5">Senha</span>
                         <IonInput v-model="form.password" type="password" placeholder="Mínimo 8 caracteres" fill="outline" class="neon-input" />
+                    </div>
+
+                    <div class="mb-5">
+                        <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-1.5">Confirmar senha</span>
+                        <IonInput
+                            v-model="form.password_confirmation"
+                            type="password"
+                            placeholder="Repita a senha"
+                            fill="outline"
+                            class="neon-input"
+                            :class="passwordMismatch ? 'input-error' : ''"
+                            @keyup.enter="register"
+                        />
+                        <p v-if="passwordMismatch" class="text-[11px] text-[#ef4444] mt-1.5 ml-1">As senhas não coincidem.</p>
                     </div>
 
                     <IonButton
@@ -68,13 +79,23 @@ export default defineComponent({
     data() {
         return {
             loading: false,
-            form: { name: '', username: '', email: '', password: '' },
+            form: { name: '', username: '', email: '', password: '', password_confirmation: '' },
             bookSharp,
         };
     },
     computed: {
+        passwordMismatch(): boolean {
+            return !!(this.form.password_confirmation && this.form.password !== this.form.password_confirmation);
+        },
         canSubmit(): boolean {
-            return !!(this.form.name.trim() && this.form.username.trim() && this.form.email.trim() && this.form.password.length >= 8);
+            return !!(
+                this.form.name.trim() &&
+                this.form.username.trim() &&
+                this.form.email.trim() &&
+                this.form.password.length >= 8 &&
+                this.form.password_confirmation &&
+                this.form.password === this.form.password_confirmation
+            );
         },
     },
     methods: {
@@ -87,11 +108,18 @@ export default defineComponent({
                     username: this.form.username.trim(),
                     email: this.form.email.trim(),
                     password: this.form.password,
+                    password_confirmation: this.form.password_confirmation,
                 });
                 authStore.setAuth(res.token, res.user);
                 this.$router.replace('/tabs/library');
             } catch (err: any) {
-                const message = err?.response?.data?.message ?? 'Falha ao criar conta. Tente novamente.';
+                const data = err?.response?.data;
+                const message =
+                    data?.errors?.email?.[0] ??
+                    data?.errors?.username?.[0] ??
+                    data?.errors?.password?.[0] ??
+                    data?.message ??
+                    'Falha ao criar conta. Tente novamente.';
                 const toast = await toastController.create({ message, duration: 3000, color: 'danger', position: 'top' });
                 await toast.present();
             } finally {
@@ -116,5 +144,10 @@ export default defineComponent({
     --padding-end: 16px;
     min-height: 50px;
     width: 100%;
+}
+
+.input-error {
+    --border-color: #ef4444;
+    --highlight-color-focused: #ef4444;
 }
 </style>

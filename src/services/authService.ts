@@ -25,6 +25,7 @@ export const authService = {
         username: string;
         email: string;
         password: string;
+        password_confirmation: string;
     }): Promise<{ token: string; user: User }> {
         const { data } = await api.post('/auth/register', payload);
         return { token: data.access_token as string, user: data.user as User };
