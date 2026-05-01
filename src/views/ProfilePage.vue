@@ -16,10 +16,12 @@
                     </div>
                     <div class="text-[18px] font-extrabold text-neon-text">{{ user?.name || 'Curador' }}</div>
                     <div class="text-[12px] text-neon-muted">{{ user?.email }}</div>
-                    <div class="px-3.5 py-1.5 rounded-full text-[11px] font-bold text-neon-accent border"
-                        style="background: rgba(0,212,170,0.1); border-color: rgba(0,212,170,0.3)">
-                        🏆 Arquivista Digital
-                    </div>
+                    <div
+                        class="px-3.5 py-1.5 rounded-full text-[11px] font-bold border"
+                        :style="isAdmin
+                            ? { background: 'rgba(245,158,11,0.12)', borderColor: 'rgba(245,158,11,0.3)', color: '#f59e0b' }
+                            : { background: 'rgba(0,212,170,0.1)', borderColor: 'rgba(0,212,170,0.3)', color: '#00d4aa' }"
+                    >{{ isAdmin ? '⚡ Administrador' : '📚 Leitor' }}</div>
                 </div>
 
                 <!-- Stats grid -->
@@ -40,25 +42,27 @@
 
                 <!-- Gerenciamento -->
                 <div class="text-[10px] font-bold uppercase tracking-[0.1em] text-neon-muted mb-2.5">Gerenciamento</div>
-                <div class="bg-neon-surface border border-neon-border rounded-[14px] p-3.5 mb-2 flex items-center gap-3.5 cursor-pointer transition-colors active:border-neon-accent" @click="$router.push('/manage-mangas')">
+                <!-- Admin only: catalog management -->
+                <div v-if="isAdmin" class="bg-neon-surface border border-neon-border rounded-[14px] p-3.5 mb-2 flex items-center gap-3.5 cursor-pointer transition-colors active:border-neon-accent" @click="$router.push('/manage-mangas')">
                     <div class="w-[38px] h-[38px] rounded-[10px] flex items-center justify-center text-xl flex-shrink-0" style="background: rgba(0,212,170,0.12); color: #00d4aa">
                         <IonIcon :icon="bookOutline" />
                     </div>
-                    <span class="flex-1 text-[15px] font-semibold text-neon-text">Catálogo de Mangás</span>
+                    <span class="flex-1 text-[15px] font-semibold text-neon-text">Catálogo de Obras</span>
                     <IonIcon :icon="chevronForwardOutline" class="text-neon-muted text-lg" />
                 </div>
+                <!-- All users: content requests (admins manage them, users create them) -->
                 <div class="bg-neon-surface border border-neon-border rounded-[14px] p-3.5 mb-2 flex items-center gap-3.5 cursor-pointer transition-colors active:border-neon-accent" @click="$router.push('/content-requests')">
                     <div class="w-[38px] h-[38px] rounded-[10px] flex items-center justify-center text-xl flex-shrink-0" style="background: rgba(59,130,246,0.12); color: #3b82f6">
                         <IonIcon :icon="addCircleOutline" />
                     </div>
-                    <span class="flex-1 text-[15px] font-semibold text-neon-text">Solicitações de Conteúdo</span>
+                    <span class="flex-1 text-[15px] font-semibold text-neon-text">{{ isAdmin ? 'Solicitações de Conteúdo' : 'Sugerir Conteúdo' }}</span>
                     <IonIcon :icon="chevronForwardOutline" class="text-neon-muted text-lg" />
                 </div>
                 <div class="bg-neon-surface border border-neon-border rounded-[14px] p-3.5 mb-2 flex items-center gap-3.5 cursor-pointer transition-colors active:border-neon-accent" @click="$router.push('/tabs/sources')">
                     <div class="w-[38px] h-[38px] rounded-[10px] flex items-center justify-center text-xl flex-shrink-0" style="background: rgba(139,92,246,0.12); color: #8b5cf6">
                         <IonIcon :icon="cloudDownloadOutline" />
                     </div>
-                    <span class="flex-1 text-[15px] font-semibold text-neon-text">Gerenciar Fontes</span>
+                    <span class="flex-1 text-[15px] font-semibold text-neon-text">Minhas Fontes</span>
                     <IonIcon :icon="chevronForwardOutline" class="text-neon-muted text-lg" />
                 </div>
 
@@ -129,6 +133,7 @@ export default defineComponent({
     },
     computed: {
         user() { return authStore.user; },
+        isAdmin(): boolean { return authStore.user?.role === 'admin'; },
         userInitial(): string {
             return (authStore.user?.name ?? '').charAt(0).toUpperCase() || 'U';
         },

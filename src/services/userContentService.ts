@@ -12,8 +12,9 @@ export const STATUS_LABELS: Record<ContentStatus, string> = {
 };
 
 export function getStatusLabel(status: ContentStatus, type: ContentType = 'manga'): string {
-    if (status === 'reading' && type === 'anime') return 'Assistindo';
-    if (status === 'plan_to_read' && type === 'anime') return 'Quero Assistir';
+    const isVideo = type === 'anime' || type === 'movie' || type === 'tv';
+    if (status === 'reading' && isVideo) return 'Assistindo';
+    if (status === 'plan_to_read' && isVideo) return 'Quero Assistir';
     return STATUS_LABELS[status] ?? status;
 }
 
@@ -23,18 +24,34 @@ export interface UserContent {
     content_id: number;
     site_id?: number;
     current_units: number;
+    current_season?: number;
     rating?: number | null;
     status: ContentStatus;
     last_unit_update?: string;
+    last_interacted_at?: string;
     content?: {
         id: number;
         name: string;
         alternative_names?: string[];
         cover?: string;
+        background?: string;
         type: ContentType;
         total_units?: number;
+        total_seasons?: number;
         status?: ContentCatalogStatus;
         last_unit_update?: string;
+        genres?: string[];
+        score?: number;
+        rating?: number;
+        release_year?: number;
+        votes_count?: number;
+        synopsis?: string;
+        duration_formatted?: string;
+        trailer_url?: string;
+        trailer_embed_url?: string;
+        country?: string;
+        original_language?: string;
+        is_adult?: boolean;
     };
     site?: {
         id: number;
@@ -67,7 +84,7 @@ export const userContentService = {
 
     async update(
         id: number,
-        payload: Partial<Pick<UserContent, 'current_units' | 'status' | 'site_id' | 'rating'>>
+        payload: Partial<Pick<UserContent, 'current_units' | 'current_season' | 'status' | 'site_id' | 'rating'>>
     ): Promise<UserContent> {
         const { data } = await api.patch(`/user-contents/${id}`, payload);
         return data as UserContent;

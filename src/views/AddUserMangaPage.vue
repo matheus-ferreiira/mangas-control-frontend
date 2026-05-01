@@ -1,148 +1,188 @@
 <template>
     <IonPage>
         <IonContent :fullscreen="true">
-            <div class="px-4 pb-24 page-top">
+            <div style="padding: 0 16px 96px; padding-top: max(16px, env(safe-area-inset-top, 16px));">
                 <!-- Header -->
-                <div class="mb-4">
-                    <div class="text-[20px] font-extrabold text-neon-text tracking-[-0.02em] mb-0.5">Adicionar</div>
-                    <div class="text-[12px] text-neon-muted">Adicione uma obra à sua biblioteca</div>
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 20px; font-weight: 800; color: #eef2ff; letter-spacing: -0.02em; margin-bottom: 2px;">Adicionar à Biblioteca</div>
+                    <div style="font-size: 12px; color: #4a5470;">Busque e adicione uma obra ao seu registro</div>
                 </div>
 
-                <!-- Content search -->
-                <div class="mb-4">
-                    <div class="text-[10px] font-bold uppercase tracking-[0.08em] text-neon-muted mb-1.5">Conteúdo</div>
+                <!-- Content search / selected -->
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.08em; color: #4a5470; text-transform: uppercase; margin-bottom: 8px;">Obra</div>
 
-                    <!-- Selected content -->
-                    <div v-if="selectedContent" class="flex items-center gap-3 bg-neon-surface border rounded-xl p-3" style="border-color: rgba(0,212,170,0.4)">
-                        <div class="w-10 h-[54px] rounded-lg overflow-hidden flex-shrink-0">
-                            <img v-if="selectedContent.cover" :src="selectedContent.cover" class="w-full h-full object-cover" />
-                            <div v-else class="w-full h-full bg-neon-elevated flex items-center justify-center text-neon-muted">
-                                <IonIcon :icon="typeIcon(selectedContent.type)" class="text-xl" />
+                    <!-- Selected card -->
+                    <div v-if="selectedContent" style="background: #1a2035; border: 1px solid rgba(0,212,170,0.35); border-radius: 14px; padding: 14px; display: flex; gap: 12px;">
+                        <div style="flex-shrink: 0; width: 60px; height: 84px; border-radius: 8px; overflow: hidden; background: #141825; display: flex; align-items: center; justify-content: center;">
+                            <img v-if="selectedContent.cover" :src="selectedContent.cover" style="width: 100%; height: 100%; object-fit: cover;" />
+                            <IonIcon v-else :icon="getTypeIcon(selectedContent.type)" style="font-size: 24px; color: #4a5470;" />
+                        </div>
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 4px;">
+                                <div style="font-size: 15px; font-weight: 800; color: #eef2ff; line-height: 1.3; flex: 1; min-width: 0;">{{ selectedContent.name }}</div>
+                                <button
+                                    style="width: 28px; height: 28px; border-radius: 8px; border: 1px solid #1e2640; background: #141825; color: #8892aa; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"
+                                    @click="clearContent"
+                                >×</button>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 6px;">
+                                <span :style="getTypeBadgeStyle(selectedContent.type)">{{ getTypeLabel(selectedContent.type) }}</span>
+                                <span v-if="selectedContent.release_year" style="font-size: 11px; color: #4a5470;">{{ selectedContent.release_year }}</span>
+                                <span v-if="selectedContent.rating != null" style="font-size: 11px; color: #f59e0b;">★ {{ selectedContent.rating }}</span>
+                            </div>
+                            <div v-if="selectedContent.genres?.length" style="display: flex; gap: 4px; flex-wrap: wrap;">
+                                <span v-for="g in selectedContent.genres.slice(0, 3)" :key="g" style="font-size: 9px; color: #4a5470; background: #141825; padding: 2px 6px; border-radius: 4px; border: 1px solid #1e2640;">{{ g }}</span>
+                            </div>
+                            <div v-if="selectedContent.synopsis" style="font-size: 11px; color: #5a6480; margin-top: 6px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">{{ selectedContent.synopsis }}</div>
+                            <!-- Type-specific info -->
+                            <div style="font-size: 10px; color: #4a5470; margin-top: 4px;">
+                                <template v-if="selectedContent.type === 'movie'">
+                                    <span v-if="selectedContent.duration_formatted">{{ selectedContent.duration_formatted }}</span>
+                                </template>
+                                <template v-else-if="selectedContent.type === 'tv'">
+                                    <span v-if="selectedContent.total_seasons">{{ selectedContent.total_seasons }} temp. · </span>
+                                    <span v-if="selectedContent.total_units">{{ selectedContent.total_units }} ep.</span>
+                                    <span v-else>Em andamento</span>
+                                </template>
+                                <template v-else>
+                                    <span v-if="selectedContent.total_units">{{ selectedContent.total_units }} {{ getUnitShort(selectedContent.type) }}</span>
+                                    <span v-else>Em andamento</span>
+                                </template>
                             </div>
                         </div>
-                        <div class="flex-1 min-w-0">
-                            <span class="block text-sm font-bold text-neon-text truncate">{{ selectedContent.name }}</span>
-                            <span class="text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded mt-0.5 inline-block" :class="typeColorClass(selectedContent.type)">
-                                {{ typeLabel(selectedContent.type) }}
-                            </span>
-                        </div>
-                        <IonButton fill="outline" class="clear-btn" @click="clearContent">
-                            <IonIcon slot="icon-only" :icon="closeOutline" />
-                        </IonButton>
                     </div>
 
                     <!-- Search -->
                     <div v-else>
-                        <IonSearchbar
-                            :value="contentSearch"
-                            placeholder="Buscar no acervo..."
-                            show-clear-button="focus"
-                            class="neon-search"
-                            @ionInput="contentSearch = ($event as CustomEvent).detail.value ?? ''"
-                        />
-                        <div v-if="filteredContents.length" class="mt-1 bg-neon-surface border border-neon-border rounded-xl overflow-hidden max-h-52 overflow-y-auto">
+                        <div style="position: relative;">
+                            <input
+                                v-model="contentSearch"
+                                type="text"
+                                placeholder="Buscar no acervo..."
+                                style="width: 100%; box-sizing: border-box; background: #141825; border: 1px solid #1e2640; border-radius: 12px; padding: 12px 16px; font-size: 14px; color: #eef2ff; outline: none;"
+                                @input="onContentSearch"
+                            />
+                        </div>
+                        <div v-if="searchResults.length" style="margin-top: 4px; background: #141825; border: 1px solid #1e2640; border-radius: 12px; overflow: hidden; max-height: 240px; overflow-y: auto;">
                             <div
-                                v-for="c in filteredContents"
+                                v-for="c in searchResults"
                                 :key="c.id"
-                                class="flex items-center gap-3 px-3 py-2.5 cursor-pointer transition-colors hover:bg-neon-elevated active:bg-neon-elevated border-b border-neon-border last:border-b-0"
+                                style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; cursor: pointer; border-bottom: 1px solid #1e2640;"
                                 @click="selectContent(c)"
                             >
-                                <div class="w-8 h-11 rounded-md overflow-hidden flex-shrink-0">
-                                    <img v-if="c.cover" :src="c.cover" class="w-full h-full object-cover" />
-                                    <div v-else class="w-full h-full bg-neon-elevated flex items-center justify-center text-neon-muted">
-                                        <IonIcon :icon="typeIcon(c.type)" />
-                                    </div>
+                                <div style="width: 36px; height: 50px; border-radius: 6px; overflow: hidden; flex-shrink: 0; background: #0b0f1a; display: flex; align-items: center; justify-content: center;">
+                                    <img v-if="c.cover" :src="c.cover" style="width: 100%; height: 100%; object-fit: cover;" />
+                                    <IonIcon v-else :icon="getTypeIcon(c.type)" style="font-size: 18px; color: #4a5470;" />
                                 </div>
-                                <div class="flex-1 min-w-0">
-                                    <span class="block text-sm font-semibold text-neon-text truncate">{{ c.name }}</span>
-                                    <div class="flex items-center gap-1.5 mt-0.5">
-                                        <span class="text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded" :class="typeColorClass(c.type)">
-                                            {{ typeLabel(c.type) }}
-                                        </span>
-                                        <span v-if="c.total_units" class="text-xs text-neon-muted">{{ c.total_units }} {{ unitShort(c.type) }}</span>
+                                <div style="flex: 1; min-width: 0;">
+                                    <div style="font-size: 13px; font-weight: 700; color: #eef2ff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ c.name }}</div>
+                                    <div style="display: flex; align-items: center; gap: 6px; margin-top: 2px;">
+                                        <span :style="getTypeBadgeStyle(c.type)">{{ getTypeLabel(c.type) }}</span>
+                                        <span v-if="c.total_units" style="font-size: 10px; color: #4a5470;">{{ c.total_units }} {{ getUnitShort(c.type) }}</span>
+                                        <span v-if="c.rating != null" style="font-size: 10px; color: #f59e0b;">★ {{ c.rating }}</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <p v-if="contentSearch && !filteredContents.length" class="text-xs text-neon-muted mt-2 text-center">
-                            Não encontrado. <a class="text-neon-accent cursor-pointer" @click="$router.push('/manage-contents')">Adicionar ao acervo</a>
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Site -->
-                <div class="mb-4">
-                    <div class="text-[10px] font-bold uppercase tracking-[0.08em] text-neon-muted mb-1.5">Fonte de Leitura *</div>
-                    <IonSelect
-                        v-model="form.site_id"
-                        placeholder="Selecionar fonte..."
-                        fill="outline"
-                        interface="action-sheet"
-                        class="neon-select"
-                    >
-                        <IonSelectOption v-for="s in sites" :key="s.id" :value="s.id">{{ s.name }}</IonSelectOption>
-                    </IonSelect>
-                </div>
-
-                <!-- Status -->
-                <div class="mb-4">
-                    <div class="text-[10px] font-bold uppercase tracking-[0.08em] text-neon-muted mb-1.5">Status</div>
-                    <div class="flex flex-wrap gap-1.5">
-                        <div
-                            v-for="s in statuses"
-                            :key="s.value"
-                            class="flex items-center gap-1.5 h-7 px-3 rounded-full text-[11px] font-bold whitespace-nowrap cursor-pointer select-none border transition-colors"
-                            :style="form.status === s.value
-                                ? { background: statusColor(s.value) + '22', color: statusColor(s.value), borderColor: statusColor(s.value) + '66' }
-                                : { background: '#141825', color: '#5a6480', borderColor: '#222840' }"
-                            @click="form.status = s.value"
-                        >
-                            <span
-                                class="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                                :style="form.status === s.value ? { background: statusColor(s.value) } : { background: '#4a5570' }"
-                            ></span>
-                            {{ s.label }}
+                        <div v-if="contentSearch && !searchResults.length && !searchLoading" style="font-size: 12px; color: #4a5470; text-align: center; margin-top: 12px;">
+                            Não encontrado.
+                            <span style="color: #00d4aa; cursor: pointer;" @click="$router.push('/manage-contents')">Adicionar ao acervo</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Current units -->
-                <div class="mb-4">
-                    <div class="text-[10px] font-bold uppercase tracking-[0.08em] text-neon-muted mb-1.5">
-                        {{ selectedContent ? unitPlural(selectedContent.type) : 'Progresso' }} atual
+                <template v-if="selectedContent">
+                    <!-- Status -->
+                    <div style="margin-bottom: 20px;">
+                        <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.08em; color: #4a5470; text-transform: uppercase; margin-bottom: 8px;">Status</div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                            <div
+                                v-for="s in availableStatuses"
+                                :key="s.value"
+                                style="display: flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border-radius: 20px; font-size: 11px; font-weight: 700; cursor: pointer; border: 1px solid; transition: all 0.15s; white-space: nowrap;"
+                                :style="form.status === s.value
+                                    ? { background: getStatusColor(s.value) + '22', color: getStatusColor(s.value), borderColor: getStatusColor(s.value) + '88' }
+                                    : { background: '#141825', color: '#5a6480', borderColor: '#222840' }"
+                                @click="form.status = s.value"
+                            >
+                                <span style="width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;" :style="{ background: form.status === s.value ? getStatusColor(s.value) : '#4a5570' }"></span>
+                                {{ s.label }}
+                            </div>
+                        </div>
                     </div>
-                    <IonInput
-                        :value="form.current_units"
-                        type="number"
-                        inputmode="numeric"
-                        placeholder="0"
-                        :min="0"
-                        fill="outline"
-                        class="neon-input"
-                        @ionInput="form.current_units = Number(($event as CustomEvent).detail.value) || 0"
-                    />
-                </div>
 
-                <!-- Rating -->
-                <div class="mb-6">
-                    <div class="text-[10px] font-bold uppercase tracking-[0.08em] text-neon-muted mb-1.5">Avaliação (opcional, 0–10)</div>
-                    <div class="flex flex-wrap gap-1.5">
-                        <div
-                            v-for="n in ratingOptions"
-                            :key="n"
-                            class="w-8 h-8 flex items-center justify-center rounded-lg text-[12px] font-bold cursor-pointer select-none border transition-colors"
-                            :style="form.rating === n
-                                ? { background: '#f59e0b22', color: '#f59e0b', borderColor: '#f59e0b66' }
-                                : { background: '#141825', color: '#5a6480', borderColor: '#222840' }"
-                            @click="form.rating = (form.rating === n ? null : n)"
-                        >{{ n }}</div>
+                    <!-- Progress (not for movie) -->
+                    <template v-if="!isMovie">
+                        <!-- Current season (TV/Anime) -->
+                        <div v-if="isTv" style="margin-bottom: 16px;">
+                            <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.08em; color: #4a5470; text-transform: uppercase; margin-bottom: 8px;">Temporada atual</div>
+                            <IonInput
+                                :value="form.current_season"
+                                type="number"
+                                inputmode="numeric"
+                                placeholder="1"
+                                :min="1"
+                                fill="outline"
+                                class="neon-input"
+                                @ionInput="form.current_season = Number(($event as CustomEvent).detail.value) || 1"
+                            />
+                        </div>
+
+                        <!-- Current units -->
+                        <div style="margin-bottom: 20px;">
+                            <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.08em; color: #4a5470; text-transform: uppercase; margin-bottom: 8px;">
+                                {{ isTv ? 'Episódio atual' : (selectedContent.type === 'anime' ? 'Episódio atual' : 'Capítulo atual') }}
+                            </div>
+                            <IonInput
+                                :value="form.current_units"
+                                type="number"
+                                inputmode="numeric"
+                                placeholder="0"
+                                :min="0"
+                                fill="outline"
+                                class="neon-input"
+                                @ionInput="form.current_units = Number(($event as CustomEvent).detail.value) || 0"
+                            />
+                        </div>
+                    </template>
+
+                    <!-- Rating -->
+                    <div style="margin-bottom: 20px;">
+                        <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.08em; color: #4a5470; text-transform: uppercase; margin-bottom: 8px;">Avaliação (opcional)</div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                            <div
+                                v-for="n in ratingOptions"
+                                :key="n"
+                                style="width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer; border: 1px solid; transition: all 0.15s;"
+                                :style="form.rating === n
+                                    ? { background: 'rgba(245,158,11,0.15)', color: '#f59e0b', borderColor: 'rgba(245,158,11,0.4)' }
+                                    : { background: '#141825', color: '#5a6480', borderColor: '#222840' }"
+                                @click="form.rating = (form.rating === n ? null : n)"
+                            >{{ n }}</div>
+                        </div>
                     </div>
-                </div>
 
-                <IonButton expand="block" :disabled="saving || !canSubmit" @click="addContent" class="btn-primary mb-3">
-                    <IonSpinner v-if="saving" name="crescent" />
-                    <template v-else>Adicionar à Biblioteca</template>
-                </IonButton>
+                    <!-- Site (optional) -->
+                    <div style="margin-bottom: 24px;">
+                        <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.08em; color: #4a5470; text-transform: uppercase; margin-bottom: 8px;">Fonte <span style="color: #2e3650; font-weight: 600;">(opcional)</span></div>
+                        <IonSelect
+                            v-model="form.site_id"
+                            placeholder="Sem fonte"
+                            fill="outline"
+                            interface="action-sheet"
+                            class="neon-select"
+                        >
+                            <IonSelectOption value="">Sem fonte</IonSelectOption>
+                            <IonSelectOption v-for="s in sites" :key="s.id" :value="s.id">{{ s.name }}</IonSelectOption>
+                        </IonSelect>
+                    </div>
+
+                    <IonButton expand="block" :disabled="saving || !canSubmit" @click="addContent" class="btn-primary" style="margin-bottom: 10px;">
+                        <IonSpinner v-if="saving" name="crescent" />
+                        <template v-else>Adicionar à Biblioteca</template>
+                    </IonButton>
+                </template>
 
                 <IonButton expand="block" class="btn-cancel" @click="discard">Descartar</IonButton>
             </div>
@@ -154,11 +194,11 @@
 import { defineComponent } from 'vue';
 import {
     IonPage, IonContent,
-    IonButton, IonIcon, IonSpinner, IonInput, IonSelect, IonSelectOption, IonSearchbar,
+    IonButton, IonIcon, IonSpinner, IonInput, IonSelect, IonSelectOption,
     toastController,
 } from '@ionic/vue';
-import { bookOutline, tvOutline, libraryOutline, closeOutline } from 'ionicons/icons';
-import { contentService, Content, ContentType, CONTENT_TYPE_LABELS, CONTENT_TYPE_COLORS, UNIT_LABEL } from '@/services/contentService';
+import { bookOutline, tvOutline, libraryOutline, filmOutline, desktopOutline } from 'ionicons/icons';
+import { contentService, Content, ContentType, CONTENT_TYPE_LABELS, UNIT_LABEL } from '@/services/contentService';
 import { siteService, Site } from '@/services/siteService';
 import { userContentService, ContentStatus, STATUS_LABELS, getStatusLabel } from '@/services/userContentService';
 
@@ -166,6 +206,16 @@ const TYPE_ICONS: Record<ContentType, string> = {
     manga: bookOutline,
     anime: tvOutline,
     novel: libraryOutline,
+    movie: filmOutline,
+    tv: desktopOutline,
+};
+
+const TYPE_BADGE_STYLES: Record<ContentType, { color: string }> = {
+    manga:  { color: '#00d4aa' },
+    anime:  { color: '#8b5cf6' },
+    novel:  { color: '#f59e0b' },
+    movie:  { color: '#ec4899' },
+    tv:     { color: '#06b6d4' },
 };
 
 const STATUS_COLORS: Record<string, string> = {
@@ -176,13 +226,18 @@ const STATUS_COLORS: Record<string, string> = {
     plan_to_read: '#8b5cf6',
 };
 
+const MOVIE_STATUSES: ContentStatus[] = ['plan_to_read', 'reading', 'completed'];
+
 export default defineComponent({
     name: 'AddUserMangaPage',
-    components: { IonPage, IonContent, IonButton, IonIcon, IonSpinner, IonInput, IonSelect, IonSelectOption, IonSearchbar },
+    components: { IonPage, IonContent, IonButton, IonIcon, IonSpinner, IonInput, IonSelect, IonSelectOption },
     data() {
         return {
             saving: false,
-            contents: [] as Content[],
+            searchResults: [] as Content[],
+            searchLoading: false,
+            selectedContentData: null as Content | null,
+            searchTimer: null as ReturnType<typeof setTimeout> | null,
             sites: [] as Site[],
             contentSearch: '',
             ratingOptions: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
@@ -191,61 +246,86 @@ export default defineComponent({
                 site_id: '' as string | number,
                 status: 'plan_to_read' as ContentStatus,
                 current_units: 0,
+                current_season: 1,
                 rating: null as number | null,
             },
-            closeOutline,
         };
     },
     computed: {
-        filteredContents(): Content[] {
-            if (!this.contentSearch.trim()) return [];
-            const q = this.contentSearch.toLowerCase();
-            return this.contents.filter((c) => c.name.toLowerCase().includes(q)).slice(0, 8);
-        },
         selectedContent(): Content | null {
-            if (!this.form.content_id) return null;
-            return this.contents.find((c) => c.id === this.form.content_id) ?? null;
+            return this.selectedContentData;
+        },
+        isMovie(): boolean {
+            return this.selectedContent?.type === 'movie';
+        },
+        isTv(): boolean {
+            return this.selectedContent?.type === 'tv' || this.selectedContent?.type === 'anime';
         },
         canSubmit(): boolean {
-            return !!(this.form.content_id && this.form.site_id);
+            return !!this.form.content_id;
         },
-        statuses() {
+        availableStatuses() {
             const type = this.selectedContent?.type ?? 'manga';
-            return Object.entries(STATUS_LABELS).map(([value]) => ({
-                value: value as ContentStatus,
-                label: getStatusLabel(value as ContentStatus, type),
-            }));
+            const keys: ContentStatus[] = this.isMovie ? MOVIE_STATUSES : (Object.keys(STATUS_LABELS) as ContentStatus[]);
+            return keys.map((value) => ({ value, label: getStatusLabel(value, type) }));
         },
     },
     async ionViewWillEnter() {
-        await this.loadData();
+        await this.loadSites();
         this.resetForm();
         const contentId = this.$route.query.content_id;
-        if (contentId) this.form.content_id = Number(contentId);
+        if (contentId) {
+            await this.loadContentById(Number(contentId));
+        }
     },
     methods: {
-        async loadData() {
+        async loadSites() {
             try {
-                const [contents, sites] = await Promise.all([contentService.getAll(), siteService.getAll()]);
-                this.contents = contents;
+                const sites = await siteService.getAll();
                 this.sites = Array.isArray(sites) ? sites : (sites as any)?.data ?? [];
-            } catch {
-                // non-blocking
-            }
+            } catch { /* non-blocking */ }
+        },
+
+        async loadContentById(id: number) {
+            const content = await contentService.getById(id);
+            if (content) this.selectContent(content);
+            else this.form.content_id = id;
+        },
+
+        onContentSearch() {
+            if (this.searchTimer) clearTimeout(this.searchTimer);
+            this.searchTimer = setTimeout(() => this.doSearch(), 350);
+        },
+
+        async doSearch() {
+            if (!this.contentSearch.trim()) { this.searchResults = []; return; }
+            this.searchLoading = true;
+            try {
+                const result = await contentService.getAll({ search: this.contentSearch, per_page: 8 });
+                this.searchResults = result.items;
+            } catch { this.searchResults = []; }
+            finally { this.searchLoading = false; }
         },
 
         selectContent(content: Content) {
+            this.selectedContentData = content;
             this.form.content_id = content.id;
             this.contentSearch = '';
+            this.searchResults = [];
+            if (content.type === 'movie') this.form.status = 'plan_to_read';
         },
 
         clearContent() {
+            this.selectedContentData = null;
             this.form.content_id = null;
             this.contentSearch = '';
+            this.searchResults = [];
         },
 
         resetForm() {
-            this.form = { content_id: null, site_id: '', status: 'plan_to_read', current_units: 0, rating: null };
+            this.form = { content_id: null, site_id: '', status: 'plan_to_read', current_units: 0, current_season: 1, rating: null };
+            this.selectedContentData = null;
+            this.searchResults = [];
             this.contentSearch = '';
         },
 
@@ -253,13 +333,17 @@ export default defineComponent({
             if (!this.canSubmit) return;
             this.saving = true;
             try {
-                await userContentService.create({
+                const payload: any = {
                     content_id: this.form.content_id!,
-                    site_id: Number(this.form.site_id),
                     status: this.form.status,
-                    current_units: this.form.current_units,
-                    ...(this.form.rating != null ? { rating: this.form.rating } : {}),
-                });
+                };
+                if (this.form.site_id) payload.site_id = Number(this.form.site_id);
+                if (!this.isMovie) {
+                    payload.current_units = this.form.current_units;
+                    if (this.isTv) payload.current_season = this.form.current_season;
+                }
+                if (this.form.rating != null) payload.rating = this.form.rating;
+                await userContentService.create(payload);
                 const toast = await toastController.create({ message: 'Adicionado à biblioteca!', duration: 2000, color: 'success', position: 'top' });
                 await toast.present();
                 this.resetForm();
@@ -277,57 +361,32 @@ export default defineComponent({
             this.$router.push('/tabs/library');
         },
 
-        statusColor(value: string): string {
-            return STATUS_COLORS[value] ?? '#5a6480';
+        getStatusColor(value: string): string { return STATUS_COLORS[value] ?? '#5a6480'; },
+        getTypeIcon(type: ContentType): string { return TYPE_ICONS[type] ?? bookOutline; },
+        getTypeLabel(type: ContentType): string { return CONTENT_TYPE_LABELS[type] ?? type; },
+        getUnitShort(type: ContentType): string { return UNIT_LABEL[type]?.short ?? 'cap.'; },
+        getTypeBadgeStyle(type: ContentType): Record<string, string> {
+            const col = TYPE_BADGE_STYLES[type]?.color ?? '#00d4aa';
+            return {
+                fontSize: '9px', fontWeight: '800', letterSpacing: '0.07em',
+                color: col, background: col + '20',
+                padding: '2px 7px', borderRadius: '20px',
+            };
         },
-
-        typeIcon(type: ContentType): string { return TYPE_ICONS[type] ?? bookOutline; },
-        typeColorClass(type: ContentType): string { return CONTENT_TYPE_COLORS[type] ?? ''; },
-        typeLabel(type: ContentType): string { return CONTENT_TYPE_LABELS[type] ?? type; },
-        unitShort(type: ContentType): string { return UNIT_LABEL[type]?.short ?? 'cap.'; },
-        unitPlural(type: ContentType): string { return UNIT_LABEL[type]?.plural ?? 'capítulos'; },
     },
 });
 </script>
 
 <style scoped>
-.btn-primary { --background: var(--neon-accent); --color: #000; --border-radius: 12px; font-weight: 700; height: 50px; }
-.btn-cancel { --background: #1a2035; --color: #f0f4ff; --border-radius: 12px; height: 50px; }
-
-.neon-search {
-    --background: #141825;
-    --color: #f0f4ff;
-    --placeholder-color: #5a6480;
-    --icon-color: #5a6480;
-    --clear-button-color: #5a6480;
-    --border-radius: 10px;
-    --box-shadow: 0 0 0 1px #222840;
-    padding-inline: 0;
-    padding-top: 0;
-    padding-bottom: 4px;
-}
-
-
-.clear-btn {
-    --border-radius: 8px;
-    --background: #1a2035;
-    --color: #8892aa;
-    --border-color: #222840;
-    --border-width: 1px;
-    --height: 32px;
-    --padding-start: 0;
-    --padding-end: 0;
-    width: 32px;
-    margin: 0;
-    flex-shrink: 0;
-}
+.btn-primary { --background: #00d4aa; --color: #000; --border-radius: 14px; font-weight: 700; height: 50px; }
+.btn-cancel { --background: #1a2035; --color: #8892aa; --border-radius: 14px; height: 50px; }
 
 .neon-input {
     --background: #1a2035;
-    --color: #f0f4ff;
+    --color: #eef2ff;
     --placeholder-color: #4a5570;
-    --border-color: #222840;
-    --border-radius: 10px;
+    --border-color: #1e2640;
+    --border-radius: 12px;
     --highlight-color-focused: #00d4aa;
     --padding-start: 14px;
     --padding-end: 14px;
@@ -337,10 +396,10 @@ export default defineComponent({
 
 .neon-select {
     --background: #1a2035;
-    --color: #f0f4ff;
+    --color: #eef2ff;
     --placeholder-color: #4a5570;
-    --border-color: #222840;
-    --border-radius: 10px;
+    --border-color: #1e2640;
+    --border-radius: 12px;
     --highlight-color-focused: #00d4aa;
     --padding-start: 14px;
     --padding-end: 14px;
