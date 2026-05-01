@@ -216,7 +216,6 @@ import { bookOutline, tvOutline, libraryOutline, filmOutline, desktopOutline } f
 import { contentService, Content, ContentType, CONTENT_TYPE_LABELS, UNIT_LABEL } from '@/services/contentService';
 import { userSiteService, UserSite } from '@/services/userSiteService';
 import { userContentService, ContentStatus, STATUS_LABELS, getStatusLabel } from '@/services/userContentService';
-import { authStore } from '@/store/auth';
 
 const TYPE_ICONS: Record<ContentType, string> = {
     manga: bookOutline,
@@ -254,7 +253,7 @@ export default defineComponent({
             searchLoading: false,
             selectedContentData: null as Content | null,
             searchTimer: null as ReturnType<typeof setTimeout> | null,
-            sites: [] as Site[],
+            sites: [] as UserSite[],
             contentSearch: '',
             ratingOptions: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
             form: {
@@ -297,7 +296,7 @@ export default defineComponent({
     methods: {
         async loadSites() {
             try {
-                const sites = await siteService.getAll();
+                const sites = await userSiteService.getAll();
                 this.sites = Array.isArray(sites) ? sites : (sites as any)?.data ?? [];
             } catch { /* non-blocking */ }
         },
