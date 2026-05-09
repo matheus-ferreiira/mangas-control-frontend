@@ -6,14 +6,30 @@
             </IonRefresher>
 
             <div style="padding: 0 0 100px;">
-                <!-- Header -->
-                <div style="padding: 20px 18px 12px;">
-                    <div style="font-size: 11px; color: #6b738a; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 2px;">ATIVIDADE</div>
-                    <div style="font-size: 24px; font-weight: 900; color: #eef0f5; letter-spacing: -0.03em; line-height: 1.1;">Histórico</div>
+                <!-- ─── Header ─── -->
+                <div style="padding: 20px 18px 0;">
+                    <div style="font-size: 10px; color: #6b738a; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px;">ATIVIDADE</div>
+                    <div style="font-size: 26px; font-weight: 900; color: #eef0f5; letter-spacing: -0.03em; line-height: 1.1;">Histórico</div>
+
+                    <!-- Stats row -->
+                    <div v-if="!loading && allItems.length > 0" style="display: flex; gap: 8px; margin-top: 14px;">
+                        <div style="flex: 1; background: transparent; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 11px 10px; text-align: center;">
+                            <div style="font-size: 20px; font-weight: 900; color: #f97316; letter-spacing: -0.03em; line-height: 1;">{{ stats.streak }}</div>
+                            <div style="font-size: 9px; color: #6b738a; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 4px;">Streak dias</div>
+                        </div>
+                        <div style="flex: 1; background: transparent; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 11px 10px; text-align: center;">
+                            <div style="font-size: 20px; font-weight: 900; color: #60a5fa; letter-spacing: -0.03em; line-height: 1;">{{ stats.thisWeek }}</div>
+                            <div style="font-size: 9px; color: #6b738a; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 4px;">Esta semana</div>
+                        </div>
+                        <div style="flex: 1; background: transparent; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 11px 10px; text-align: center;">
+                            <div :style="{ fontSize: '20px', fontWeight: '900', color: typeColor(stats.favType), letterSpacing: '-0.03em', lineHeight: '1' }">{{ favTypeLabel }}</div>
+                            <div style="font-size: 9px; color: #6b738a; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 4px;">Fav. tipo</div>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Type filter chips -->
-                <div v-if="!loading && allItems.length > 0" class="no-scrollbar" style="overflow-x: auto; padding: 0 18px 14px;">
+                <!-- ─── Type chips ─── -->
+                <div v-if="!loading && allItems.length > 0" class="no-scrollbar" style="overflow-x: auto; padding: 16px 18px 14px;">
                     <div style="display: flex; gap: 6px; min-width: max-content;">
                         <button
                             v-for="chip in typeChips"
@@ -24,65 +40,88 @@
                     </div>
                 </div>
 
-                <!-- Loading skeleton -->
-                <div v-if="loading" style="padding: 0 18px;">
-                    <div v-for="i in 6" :key="i" style="background: #1a1f2e; border: 1px solid #262d40; border-radius: 12px; margin-bottom: 8px; display: flex; gap: 12px; padding: 10px; align-items: center;" :style="{ opacity: 1 - i * 0.12 }">
-                        <div style="width: 42px; height: 60px; border-radius: 6px; background: #222837; flex-shrink: 0;"></div>
-                        <div style="flex: 1; display: flex; flex-direction: column; gap: 7px;">
-                            <div style="height: 12px; border-radius: 4px; width: 35%;" class="skeleton"></div>
+                <!-- ─── Loading skeleton ─── -->
+                <div v-if="loading" style="padding: 16px 18px 0;">
+                    <div v-for="i in 6" :key="i" :style="{ background: 'transparent', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '14px', marginBottom: '8px', display: 'flex', gap: '14px', padding: '12px 14px', alignItems: 'center', opacity: 1 - i * 0.12 }">
+                        <div style="width: 54px; height: 76px; border-radius: 8px; background: rgba(255,255,255,0.05); flex-shrink: 0;"></div>
+                        <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+                            <div style="height: 18px; border-radius: 20px; width: 80px;" class="skeleton"></div>
                             <div style="height: 14px; border-radius: 4px; width: 65%;" class="skeleton"></div>
-                            <div style="height: 11px; border-radius: 4px; width: 50%;" class="skeleton"></div>
+                            <div style="height: 12px; border-radius: 4px; width: 40%;" class="skeleton"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Empty state -->
+                <!-- ─── Empty state ─── -->
                 <div v-else-if="allItems.length === 0" style="text-align: center; padding: 64px 28px;">
-                    <div style="width: 72px; height: 72px; border-radius: 36px; background: #1a1f2e; border: 1px solid #262d40; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6b738a" stroke-width="1.7" stroke-linecap="round"><path d="M3 12h4l3-7 4 14 3-7h4"/></svg>
+                    <div style="width: 72px; height: 72px; border-radius: 36px; background: transparent; border: 1px solid rgba(255,255,255,0.07); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4a5169" stroke-width="1.7" stroke-linecap="round"><path d="M3 12h4l3-7 4 14 3-7h4"/></svg>
                     </div>
                     <div style="font-size: 15px; font-weight: 700; color: #eef0f5; margin-bottom: 6px;">Nenhuma atividade ainda</div>
                     <div style="font-size: 12px; color: #6b738a; line-height: 1.6;">Adicione itens à biblioteca e registre seu progresso</div>
                 </div>
 
-                <!-- Timeline grouped by day -->
-                <div v-else style="padding: 0 18px;">
+                <!-- ─── Timeline ─── -->
+                <div v-else style="padding: 0 16px;">
                     <template v-for="group in groupedActivity" :key="group.day">
                         <div style="margin-bottom: 24px;">
-                            <div style="font-size: 10px; color: #6b738a; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px;">{{ group.day }}</div>
+                            <!-- Day header -->
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; padding: 0 2px;">
+                                <span style="font-size: 10px; color: #9aa3b8; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap;">{{ group.day }}</span>
+                                <div style="flex: 1; height: 1px; background: linear-gradient(to right, #1e2535, transparent);"></div>
+                                <span style="font-size: 10px; color: #4a5169; font-weight: 600; white-space: nowrap;">{{ group.items.length }}x</span>
+                            </div>
+
+                            <!-- Activity card with glassmorphism -->
                             <div
                                 v-for="item in group.items"
                                 :key="item.id"
-                                style="display: flex; gap: 14px; padding: 12px 14px; border-radius: 14px; cursor: pointer; margin-bottom: 8px; align-items: center; background: #1a1f2e; border: 1px solid #262d40; animation: fadeIn 0.2s ease;"
+                                style="position: relative; border-radius: 14px; overflow: hidden; cursor: pointer; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.06); animation: fadeIn 0.2s ease;"
                                 @click="$router.push(`/catalog/${item.contentId}`)"
                             >
-                                <!-- Cover -->
-                                <div :style="coverStyle(item.type)">
+                                <!-- Blurred cover backdrop -->
+                                <div v-if="item.cover" style="position: absolute; inset: 0; overflow: hidden;">
                                     <img
-                                        v-if="item.cover"
                                         :src="item.cover"
-                                        :alt="item.title"
-                                        style="width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 7px;"
+                                        style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(20px); transform: scale(1.12); opacity: 0.22;"
                                     />
-                                    <span v-else style="font-size: 16px; font-weight: 900; color: inherit;">{{ typeShort(item.type) }}</span>
                                 </div>
+                                <!-- Dark overlay -->
+                                <div style="position: absolute; inset: 0; background: rgba(7,10,17,0.84);"></div>
 
-                                <!-- Info -->
-                                <div style="flex: 1; min-width: 0;">
-                                    <div style="display: flex; align-items: center; gap: 5px; margin-bottom: 5px;">
-                                        <span :style="eventIconStyle(item.eventType)">
-                                            <component :is="'span'" v-html="eventIcon(item.eventType)"></component>
-                                        </span>
-                                        <span :style="{ fontSize: '11px', fontWeight: '700', color: eventColor(item.eventType) }">{{ eventLabel(item.eventType) }}</span>
-                                        <span style="font-size: 11px; color: #4a5169;">·</span>
-                                        <span style="font-size: 11px; color: #6b738a;">{{ item.timeAgo }}</span>
+                                <!-- Content -->
+                                <div style="position: relative; display: flex; gap: 12px; padding: 12px 14px; align-items: center;">
+                                    <!-- Cover thumbnail -->
+                                    <div :style="coverStyle(item.type)">
+                                        <img
+                                            v-if="item.cover"
+                                            :src="item.cover"
+                                            :alt="item.title"
+                                            style="width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 8px;"
+                                        />
+                                        <span v-else style="font-size: 18px; font-weight: 900; color: inherit;">{{ typeShort(item.type) }}</span>
+                                        <!-- Type dot -->
+                                        <div :style="{ position: 'absolute', top: '5px', right: '5px', width: '7px', height: '7px', borderRadius: '50%', background: typeColor(item.type), boxShadow: '0 0 0 2px rgba(13,17,23,0.7)' }"></div>
                                     </div>
-                                    <div style="font-size: 14px; font-weight: 800; color: #eef0f5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.01em;">{{ item.title }}</div>
-                                    <div style="font-size: 12px; color: #9aa3b8; margin-top: 3px;">{{ item.description }}</div>
-                                </div>
 
-                                <!-- Chevron -->
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b738a" stroke-width="1.7" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg>
+                                    <!-- Info -->
+                                    <div style="flex: 1; min-width: 0;">
+                                        <div style="margin-bottom: 5px;">
+                                            <span :style="eventBadgeStyle(item.eventType)">
+                                                {{ eventIcon(item.eventType) }} {{ eventLabel(item.eventType) }}
+                                            </span>
+                                        </div>
+                                        <div style="font-size: 14px; font-weight: 800; color: #eef0f5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.01em; margin-bottom: 3px;">{{ item.title }}</div>
+                                        <div style="display: flex; align-items: center; gap: 6px;">
+                                            <span style="font-size: 12px; color: #9aa3b8;">{{ item.description }}</span>
+                                            <span style="font-size: 11px; color: #4a5169;">·</span>
+                                            <span style="font-size: 11px; color: #6b738a;">{{ item.timeAgo }}</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Chevron -->
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4a5169" stroke-width="1.7" stroke-linecap="round" style="flex-shrink: 0;"><path d="m9 6 6 6-6 6"/></svg>
+                                </div>
                             </div>
                         </div>
                     </template>
@@ -111,8 +150,9 @@ interface ActivityItem {
     dayKey: string;
 }
 
-const TYPE_SHORT: Record<string, string> = { manga: 'M', anime: 'A', novel: 'N', movie: 'F', tv: 'S' };
-const TYPE_COLOR: Record<string, string> = { manga: '#5eead4', anime: '#a78bfa', novel: '#fbbf24', movie: '#f472b6', tv: '#22d3ee' };
+const TYPE_SHORT: Record<string, string>  = { manga: 'M', anime: 'A', novel: 'N', movie: 'F', tv: 'S' };
+const TYPE_COLORS: Record<string, string> = { manga: '#5eead4', anime: '#a78bfa', novel: '#fbbf24', movie: '#f472b6', tv: '#22d3ee' };
+const TYPE_LABELS: Record<string, string> = { manga: 'Manga', anime: 'Anime', novel: 'Novel', movie: 'Filme', tv: 'Série' };
 
 function fmtTimeAgo(iso: string): string {
     const d = (Date.now() - new Date(iso).getTime()) / 1000;
@@ -145,15 +185,42 @@ export default defineComponent({
         };
     },
     computed: {
+        stats(): { streak: number; thisWeek: number; favType: string } {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const daySet = new Set(
+                this.allItems.map(i => {
+                    const d = new Date(i.sortDate);
+                    d.setHours(0, 0, 0, 0);
+                    return d.getTime();
+                })
+            );
+            let streak = 0;
+            let cur = today.getTime();
+            while (daySet.has(cur)) { streak++; cur -= 86400000; }
+
+            const weekAgo = Date.now() - 7 * 86400000;
+            const thisWeek = this.allItems.filter(i => i.sortDate > weekAgo).length;
+
+            const typeCount: Record<string, number> = {};
+            for (const i of this.allItems) { typeCount[i.type] = (typeCount[i.type] ?? 0) + 1; }
+            const favType = Object.entries(typeCount).sort((a, b) => b[1] - a[1])[0]?.[0] ?? '';
+
+            return { streak, thisWeek, favType };
+        },
+        favTypeLabel(): string {
+            const t = this.stats.favType;
+            return t ? (TYPE_LABELS[t] ?? t) : '–';
+        },
         typeChips(): { value: ContentType | null; label: string; color: string }[] {
-            const TYPE_COLORS: Record<string, string> = { manga: '#5eead4', anime: '#a78bfa', novel: '#fbbf24', movie: '#f472b6', tv: '#22d3ee' };
-            const TYPE_LABELS: Record<string, string> = { manga: 'Manga', anime: 'Anime', novel: 'Novel', movie: 'Filme', tv: 'Série' };
             const present = new Set(this.allItems.map(i => i.type));
             const chips: { value: ContentType | null; label: string; color: string }[] = [
                 { value: null, label: 'Todos', color: '#5eead4' },
             ];
             for (const t of ['manga', 'anime', 'novel', 'movie', 'tv']) {
-                if (present.has(t)) chips.push({ value: t as ContentType, label: TYPE_LABELS[t], color: TYPE_COLORS[t] });
+                if (present.has(t)) {
+                    chips.push({ value: t as ContentType, label: TYPE_LABELS[t], color: TYPE_COLORS[t] });
+                }
             }
             return chips;
         },
@@ -227,28 +294,7 @@ export default defineComponent({
             await this.loadActivity();
             (event.target as HTMLIonRefresherElement).complete();
         },
-        typeChipStyle(val: ContentType | null): Record<string, string> {
-            const active = this.activeType === val;
-            const TYPE_COLORS: Record<string, string> = { manga: '#5eead4', anime: '#a78bfa', novel: '#fbbf24', movie: '#f472b6', tv: '#22d3ee' };
-            const col = val ? (TYPE_COLORS[val] ?? '#5eead4') : '#5eead4';
-            return {
-                padding: '6px 13px', borderRadius: '20px', border: 'none', cursor: 'pointer',
-                fontSize: '12px', fontWeight: '700',
-                background: active ? col : '#1a1f2e',
-                color: active ? '#0d1117' : '#9aa3b8',
-                outline: active ? 'none' : '1px solid #262d40',
-                transition: 'all 0.15s', flexShrink: '0',
-            };
-        },
-        coverStyle(type: string): Record<string, string> {
-            const col = TYPE_COLOR[type] ?? '#5eead4';
-            return {
-                width: '54px', height: '76px', borderRadius: '7px', flexShrink: '0',
-                background: `linear-gradient(135deg, ${col}22, #222837)`,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: col, overflow: 'hidden', position: 'relative',
-            };
-        },
+        typeColor(type: string): string { return TYPE_COLORS[type] ?? '#5eead4'; },
         typeShort(type: string): string { return TYPE_SHORT[type] ?? '?'; },
         eventColor(t: ActivityItem['eventType']): string {
             const m: Record<string, string> = {
@@ -268,8 +314,37 @@ export default defineComponent({
             };
             return m[t] ?? '·';
         },
-        eventIconStyle(t: ActivityItem['eventType']): Record<string, string> {
-            return { fontSize: '10px', color: this.eventColor(t), fontWeight: '700' };
+        eventBadgeStyle(t: ActivityItem['eventType']): Record<string, string> {
+            const col = this.eventColor(t);
+            return {
+                display: 'inline-flex', alignItems: 'center', gap: '4px',
+                padding: '3px 8px', borderRadius: '20px',
+                background: col + '20',
+                color: col,
+                fontSize: '10px', fontWeight: '700',
+            };
+        },
+        coverStyle(type: string): Record<string, string> {
+            const col = TYPE_COLORS[type] ?? '#5eead4';
+            return {
+                width: '66px', height: '94px', borderRadius: '8px', flexShrink: '0',
+                background: `linear-gradient(135deg, ${col}22, #1a1f2e)`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: col, overflow: 'hidden', position: 'relative',
+                boxShadow: '0 4px 16px rgba(0,0,0,0.5)',
+            };
+        },
+        typeChipStyle(val: ContentType | null): Record<string, string> {
+            const active = this.activeType === val;
+            const col = val ? (TYPE_COLORS[val] ?? '#5eead4') : '#5eead4';
+            return {
+                padding: '6px 13px', borderRadius: '20px', border: 'none', cursor: 'pointer',
+                fontSize: '12px', fontWeight: '700',
+                background: active ? col : 'transparent',
+                color: active ? '#0d1117' : '#9aa3b8',
+                outline: active ? 'none' : '1px solid rgba(255,255,255,0.09)',
+                transition: 'all 0.15s', flexShrink: '0',
+            };
         },
     },
 });
@@ -278,14 +353,17 @@ export default defineComponent({
 <style scoped>
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
 .skeleton {
-    background: #222837;
+    background: rgba(255,255,255,0.06);
     animation: pulse 1.4s ease-in-out infinite;
 }
+
 @keyframes pulse {
     0%, 100% { opacity: 1; }
     50%       { opacity: 0.4; }
 }
+
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(3px); }
     to   { opacity: 1; transform: translateY(0); }

@@ -2,54 +2,84 @@
     <IonPage>
         <IonContent :fullscreen="true">
             <div style="padding: 0 16px 96px; padding-top: max(16px, env(safe-area-inset-top, 16px));">
+
                 <!-- Header -->
-                <div style="margin-bottom: 20px;">
-                    <div style="font-size: 20px; font-weight: 800; color: #eef2ff; letter-spacing: -0.02em; margin-bottom: 2px;">Adicionar à Biblioteca</div>
-                    <div style="font-size: 12px; color: #4a5470;">Busque e adicione uma obra ao seu registro</div>
+                <div style="margin-bottom: 24px;">
+                    <div style="font-size: 22px; font-weight: 900; color: #eef0f5; letter-spacing: -0.03em; margin-bottom: 3px;">Adicionar à Biblioteca</div>
+                    <div style="font-size: 12px; color: #4a5169;">Busque e configure seu registro</div>
                 </div>
 
-                <!-- Content search / selected -->
+                <!-- ── Obra section ── -->
                 <div style="margin-bottom: 20px;">
-                    <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.08em; color: #4a5470; text-transform: uppercase; margin-bottom: 8px;">Obra</div>
+                    <div :style="sectionLabelStyle">Obra</div>
 
-                    <!-- Selected card -->
-                    <div v-if="selectedContent" style="background: #1a2035; border: 1px solid rgba(0,212,170,0.35); border-radius: 14px; padding: 14px; display: flex; gap: 12px;">
-                        <div style="flex-shrink: 0; width: 60px; height: 84px; border-radius: 8px; overflow: hidden; background: #141825; display: flex; align-items: center; justify-content: center;">
-                            <img v-if="selectedContent.cover" :src="selectedContent.cover" style="width: 100%; height: 100%; object-fit: cover;" />
-                            <IonIcon v-else :icon="getTypeIcon(selectedContent.type)" style="font-size: 24px; color: #4a5470;" />
+                    <!-- Selected content card — glassmorphism -->
+                    <div v-if="selectedContent" style="position: relative; border-radius: 16px; overflow: hidden;">
+                        <!-- Blurred cover backdrop -->
+                        <div style="position: absolute; inset: 0; overflow: hidden;">
+                            <img
+                                v-if="selectedContent.cover"
+                                :src="selectedContent.cover"
+                                style="width: 100%; height: 100%; object-fit: cover; filter: blur(22px); transform: scale(1.15); opacity: 0.28;"
+                            />
+                            <div style="position: absolute; inset: 0; background: linear-gradient(135deg, rgba(13,17,23,0.88) 0%, rgba(26,31,46,0.94) 100%);" />
                         </div>
-                        <div style="flex: 1; min-width: 0;">
-                            <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 4px;">
-                                <div style="font-size: 15px; font-weight: 800; color: #eef2ff; line-height: 1.3; flex: 1; min-width: 0;">{{ selectedContent.name }}</div>
-                                <button
-                                    style="width: 28px; height: 28px; border-radius: 8px; border: 1px solid #1e2640; background: #141825; color: #8892aa; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"
-                                    @click="clearContent"
-                                >×</button>
+                        <!-- Border accent using type color -->
+                        <div style="position: relative; display: flex; gap: 14px; padding: 16px; border: 1px solid rgba(255,255,255,0.07); border-radius: 16px;" :style="{ borderLeft: `3px solid ${selectedTypeColor}` }">
+                            <!-- Cover -->
+                            <div style="flex-shrink: 0; width: 88px; height: 124px; border-radius: 10px; overflow: hidden; box-shadow: 0 8px 28px rgba(0,0,0,0.65);">
+                                <img v-if="selectedContent.cover" :src="selectedContent.cover" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
+                                <div v-else style="width: 100%; height: 100%; background: #1a1f2e; display: flex; align-items: center; justify-content: center;">
+                                    <IonIcon :icon="getTypeIcon(selectedContent.type)" style="font-size: 32px; color: #4a5169;" />
+                                </div>
                             </div>
-                            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 6px;">
-                                <span :style="getTypeBadgeStyle(selectedContent.type)">{{ getTypeLabel(selectedContent.type) }}</span>
-                                <span v-if="selectedContent.release_year" style="font-size: 11px; color: #4a5470;">{{ selectedContent.release_year }}</span>
-                                <span v-if="selectedContent.rating != null" style="font-size: 11px; color: #f59e0b;">★ {{ selectedContent.rating }}</span>
-                            </div>
-                            <div v-if="selectedContent.genres?.length" style="display: flex; gap: 4px; flex-wrap: wrap;">
-                                <span v-for="g in selectedContent.genres.slice(0, 3)" :key="g" style="font-size: 9px; color: #4a5470; background: #141825; padding: 2px 6px; border-radius: 4px; border: 1px solid #1e2640;">{{ g }}</span>
-                            </div>
-                            <div v-if="selectedContent.alternative_names?.length" style="font-size: 10px; color: #4a5470; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ selectedContent.alternative_names.slice(0, 2).join(' · ') }}</div>
-                            <div v-if="selectedContent.synopsis" style="font-size: 11px; color: #5a6480; margin-top: 6px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">{{ selectedContent.synopsis }}</div>
-                            <!-- Type-specific info -->
-                            <div style="font-size: 10px; color: #4a5470; margin-top: 4px;">
-                                <template v-if="selectedContent.type === 'movie'">
-                                    <span v-if="selectedContent.duration_formatted">{{ selectedContent.duration_formatted }}</span>
-                                </template>
-                                <template v-else-if="selectedContent.type === 'tv'">
-                                    <span v-if="selectedContent.total_seasons">{{ selectedContent.total_seasons }} temp. · </span>
-                                    <span v-if="selectedContent.total_units">{{ selectedContent.total_units }} ep.</span>
-                                    <span v-else>Em andamento</span>
-                                </template>
-                                <template v-else>
-                                    <span v-if="selectedContent.total_units">{{ selectedContent.total_units }} {{ getUnitShort(selectedContent.type) }}</span>
-                                    <span v-else>Em andamento</span>
-                                </template>
+
+                            <!-- Info -->
+                            <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 7px;">
+                                <!-- Type badge + clear button -->
+                                <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                                    <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                                        <span :style="getTypeBadgeStyle(selectedContent.type)">{{ getTypeLabel(selectedContent.type) }}</span>
+                                        <span v-if="selectedContent.status" :style="catStatusBadgeStyle(selectedContent.status)">{{ catStatusText(selectedContent.status) }}</span>
+                                        <span v-if="selectedContent.is_adult" style="font-size: 9px; font-weight: 800; color: #f87171; background: rgba(248,113,113,0.12); padding: 2px 6px; border-radius: 20px;">+18</span>
+                                    </div>
+                                    <button
+                                        style="width: 26px; height: 26px; flex-shrink: 0; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.35); color: #9aa3b8; cursor: pointer; font-size: 16px; line-height: 1; display: flex; align-items: center; justify-content: center;"
+                                        @click="clearContent"
+                                    >×</button>
+                                </div>
+
+                                <!-- Title -->
+                                <div style="font-size: 16px; font-weight: 800; color: #eef0f5; line-height: 1.25; letter-spacing: -0.02em; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">{{ selectedContent.name }}</div>
+
+                                <!-- Meta row: year · score · units/duration -->
+                                <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                                    <span v-if="selectedContent.release_year" style="font-size: 11px; color: #6b738a;">{{ selectedContent.release_year }}</span>
+                                    <template v-if="selectedContent.score != null">
+                                        <span style="color: #2a3045; font-size: 10px;">·</span>
+                                        <span style="font-size: 11px; color: #fbbf24; font-weight: 700;">★ {{ selectedContent.score }}</span>
+                                    </template>
+                                    <template v-if="selectedContent.type === 'movie' && selectedContent.duration_formatted">
+                                        <span style="color: #2a3045; font-size: 10px;">·</span>
+                                        <span style="font-size: 11px; color: #6b738a;">{{ selectedContent.duration_formatted }}</span>
+                                    </template>
+                                    <template v-else-if="selectedContent.total_units">
+                                        <span style="color: #2a3045; font-size: 10px;">·</span>
+                                        <span style="font-size: 11px; color: #6b738a;">{{ selectedContent.total_units }} {{ getUnitShort(selectedContent.type) }}</span>
+                                    </template>
+                                </div>
+
+                                <!-- Genres -->
+                                <div v-if="selectedContent.genres?.length" style="display: flex; gap: 4px; flex-wrap: wrap;">
+                                    <span
+                                        v-for="g in selectedContent.genres.slice(0, 3)"
+                                        :key="g"
+                                        style="font-size: 9px; color: #6b738a; background: rgba(255,255,255,0.05); padding: 2px 7px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.07);"
+                                    >{{ g }}</span>
+                                </div>
+
+                                <!-- Synopsis preview -->
+                                <div v-if="selectedContent.synopsis" style="font-size: 11px; color: #5a6480; line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top: 2px;">{{ selectedContent.synopsis }}</div>
                             </div>
                         </div>
                     </div>
@@ -61,28 +91,28 @@
                                 v-model="contentSearch"
                                 type="text"
                                 placeholder="Buscar no acervo..."
-                                style="width: 100%; box-sizing: border-box; background: #141825; border: 1px solid #1e2640; border-radius: 12px; padding: 12px 16px; font-size: 14px; color: #eef2ff; outline: none;"
+                                style="width: 100%; box-sizing: border-box; background: #131826; border: 1.5px solid #1e2535; border-radius: 12px; padding: 12px 16px; font-size: 14px; color: #eef0f5; outline: none;"
                                 @input="onContentSearch"
                             />
                         </div>
-                        <div v-if="searchResults.length" style="margin-top: 4px; background: #141825; border: 1px solid #1e2640; border-radius: 12px; overflow: hidden; max-height: 240px; overflow-y: auto;">
+                        <div v-if="searchResults.length" style="margin-top: 4px; background: #131826; border: 1px solid #1e2535; border-radius: 12px; overflow: hidden; max-height: 260px; overflow-y: auto;">
                             <div
                                 v-for="c in searchResults"
                                 :key="c.id"
-                                style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; cursor: pointer; border-bottom: 1px solid #1e2640;"
+                                style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; cursor: pointer; border-bottom: 1px solid #1e2535; transition: background 0.12s;"
                                 @click="selectContent(c)"
                             >
-                                <div style="width: 36px; height: 50px; border-radius: 6px; overflow: hidden; flex-shrink: 0; background: #0b0f1a; display: flex; align-items: center; justify-content: center;">
-                                    <img v-if="c.cover" :src="c.cover" style="width: 100%; height: 100%; object-fit: cover;" />
-                                    <IonIcon v-else :icon="getTypeIcon(c.type)" style="font-size: 18px; color: #4a5470;" />
+                                <div style="width: 38px; height: 54px; border-radius: 6px; overflow: hidden; flex-shrink: 0; background: #0d1117; display: flex; align-items: center; justify-content: center;">
+                                    <img v-if="c.cover" :src="c.cover" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
+                                    <IonIcon v-else :icon="getTypeIcon(c.type)" style="font-size: 18px; color: #4a5169;" />
                                 </div>
                                 <div style="flex: 1; min-width: 0;">
-                                    <div style="font-size: 13px; font-weight: 700; color: #eef2ff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ c.name }}</div>
-                                    <div style="display: flex; align-items: center; gap: 6px; margin-top: 2px; flex-wrap: wrap;">
+                                    <div style="font-size: 13px; font-weight: 700; color: #eef0f5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px;">{{ c.name }}</div>
+                                    <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
                                         <span :style="getTypeBadgeStyle(c.type)">{{ getTypeLabel(c.type) }}</span>
-                                        <span v-if="c.total_units" style="font-size: 10px; color: #4a5470;">{{ c.total_units }} {{ getUnitShort(c.type) }}</span>
-                                        <span v-if="c.rating != null" style="font-size: 10px; color: #f59e0b;">★ {{ c.rating }}</span>
-                                        <span v-if="c.is_in_library" style="font-size: 9px; font-weight: 800; color: #00d4aa; background: rgba(0,212,170,0.12); padding: 2px 7px; border-radius: 20px; letter-spacing: 0.04em;">✓ Na lista</span>
+                                        <span v-if="c.score != null" style="font-size: 10px; color: #fbbf24; font-weight: 700;">★ {{ c.score }}</span>
+                                        <span v-if="c.total_units" style="font-size: 10px; color: #4a5169;">{{ c.total_units }} {{ getUnitShort(c.type) }}</span>
+                                        <span v-if="c.is_in_library" style="font-size: 9px; font-weight: 800; color: #34d399; background: rgba(52,211,153,0.12); padding: 2px 7px; border-radius: 20px;">✓ Na lista</span>
                                     </div>
                                 </div>
                             </div>
@@ -93,44 +123,44 @@
                 <!-- Already in library warning -->
                 <div
                     v-if="selectedContent?.is_in_library"
-                    style="margin-bottom: 20px; background: rgba(0,212,170,0.08); border: 1px solid rgba(0,212,170,0.25); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 12px;"
+                    style="margin-bottom: 20px; background: rgba(52,211,153,0.07); border: 1px solid rgba(52,211,153,0.2); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 12px;"
                 >
-                    <span style="font-size: 20px; flex-shrink: 0;">✓</span>
+                    <span style="font-size: 18px; flex-shrink: 0; color: #34d399;">✓</span>
                     <div style="flex: 1; min-width: 0;">
-                        <div style="font-size: 13px; font-weight: 700; color: #00d4aa; margin-bottom: 2px;">Já está na sua biblioteca</div>
-                        <div style="font-size: 11px; color: #4a5470;">Este conteúdo já foi adicionado ao seu registro.</div>
+                        <div style="font-size: 13px; font-weight: 700; color: #34d399; margin-bottom: 2px;">Já está na sua biblioteca</div>
+                        <div style="font-size: 11px; color: #4a5169;">Este conteúdo já foi adicionado ao seu registro.</div>
                     </div>
                     <button
-                        style="flex-shrink: 0; height: 34px; padding: 0 14px; border-radius: 10px; border: 1px solid rgba(0,212,170,0.4); background: rgba(0,212,170,0.12); color: #00d4aa; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap;"
+                        style="flex-shrink: 0; height: 34px; padding: 0 14px; border-radius: 10px; border: 1px solid rgba(52,211,153,0.35); background: rgba(52,211,153,0.1); color: #34d399; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap;"
                         @click="$router.push('/tabs/library')"
                     >Ver na biblioteca</button>
                 </div>
 
                 <template v-if="selectedContent && !selectedContent.is_in_library">
-                    <!-- Status -->
+                    <!-- ── Status ── -->
                     <div style="margin-bottom: 20px;">
-                        <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.08em; color: #4a5470; text-transform: uppercase; margin-bottom: 8px;">Status</div>
+                        <div :style="sectionLabelStyle">Status</div>
                         <div style="display: flex; flex-wrap: wrap; gap: 6px;">
                             <div
                                 v-for="s in availableStatuses"
                                 :key="s.value"
-                                style="display: flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border-radius: 20px; font-size: 11px; font-weight: 700; cursor: pointer; border: 1px solid; transition: all 0.15s; white-space: nowrap;"
+                                style="display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 13px; border-radius: 20px; font-size: 11px; font-weight: 700; cursor: pointer; border: 1px solid; transition: all 0.15s; white-space: nowrap;"
                                 :style="form.status === s.value
                                     ? { background: getStatusColor(s.value) + '22', color: getStatusColor(s.value), borderColor: getStatusColor(s.value) + '88' }
-                                    : { background: '#141825', color: '#5a6480', borderColor: '#222840' }"
+                                    : { background: '#131826', color: '#5a6480', borderColor: '#1e2535' }"
                                 @click="form.status = s.value"
                             >
-                                <span style="width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;" :style="{ background: form.status === s.value ? getStatusColor(s.value) : '#4a5570' }"></span>
+                                <span style="width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0;" :style="{ background: form.status === s.value ? getStatusColor(s.value) : '#2a3045' }"></span>
                                 {{ s.label }}
                             </div>
                         </div>
                     </div>
 
-                    <!-- Progress (not for movie) -->
+                    <!-- ── Progress (not for movie) ── -->
                     <template v-if="!isMovie">
                         <!-- Current season (TV/Anime) -->
                         <div v-if="isTv" style="margin-bottom: 16px;">
-                            <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.08em; color: #4a5470; text-transform: uppercase; margin-bottom: 8px;">Temporada atual</div>
+                            <div :style="sectionLabelStyle">Temporada atual</div>
                             <IonInput
                                 :value="form.current_season"
                                 type="number"
@@ -145,7 +175,7 @@
 
                         <!-- Current units -->
                         <div style="margin-bottom: 20px;">
-                            <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.08em; color: #4a5470; text-transform: uppercase; margin-bottom: 8px;">
+                            <div :style="sectionLabelStyle">
                                 {{ isTv ? 'Episódio atual' : (selectedContent.type === 'anime' ? 'Episódio atual' : 'Capítulo atual') }}
                             </div>
                             <IonInput
@@ -162,25 +192,28 @@
                         </div>
                     </template>
 
-                    <!-- Rating -->
+                    <!-- ── Rating ── -->
                     <div style="margin-bottom: 20px;">
-                        <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.08em; color: #4a5470; text-transform: uppercase; margin-bottom: 8px;">Avaliação (opcional)</div>
-                        <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                        <div :style="sectionLabelStyle">Avaliação <span style="font-weight: 600; color: #2a3045; text-transform: none; letter-spacing: 0;">(opcional)</span></div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 7px;">
                             <div
                                 v-for="n in ratingOptions"
                                 :key="n"
-                                style="width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer; border: 1px solid; transition: all 0.15s;"
+                                style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer; border: 1px solid; transition: all 0.15s;"
                                 :style="form.rating === n
-                                    ? { background: 'rgba(245,158,11,0.15)', color: '#f59e0b', borderColor: 'rgba(245,158,11,0.4)' }
-                                    : { background: '#141825', color: '#5a6480', borderColor: '#222840' }"
+                                    ? { background: ratingBg(n), color: ratingColor(n), borderColor: ratingColor(n) + '55' }
+                                    : { background: '#131826', color: '#5a6480', borderColor: '#1e2535' }"
                                 @click="form.rating = (form.rating === n ? null : n)"
                             >{{ n }}</div>
                         </div>
+                        <div v-if="form.rating != null" style="margin-top: 8px; font-size: 12px; color: #9aa3b8; font-weight: 600;">
+                            {{ ratingLabel(form.rating) }}
+                        </div>
                     </div>
 
-                    <!-- Site (optional) -->
-                    <div style="margin-bottom: 24px;">
-                        <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.08em; color: #4a5470; text-transform: uppercase; margin-bottom: 8px;">Fonte <span style="color: #2e3650; font-weight: 600;">(opcional)</span></div>
+                    <!-- ── Site ── -->
+                    <div style="margin-bottom: 28px;">
+                        <div :style="sectionLabelStyle">Fonte <span style="font-weight: 600; color: #2a3045; text-transform: none; letter-spacing: 0;">(opcional)</span></div>
                         <IonSelect
                             v-model="form.site_id"
                             placeholder="Sem fonte"
@@ -213,7 +246,10 @@ import {
     toastController,
 } from '@ionic/vue';
 import { bookOutline, tvOutline, libraryOutline, filmOutline, desktopOutline } from 'ionicons/icons';
-import { contentService, Content, ContentType, CONTENT_TYPE_LABELS, UNIT_LABEL } from '@/services/contentService';
+import {
+    contentService, Content, ContentType, ContentCatalogStatus,
+    CONTENT_TYPE_LABELS, CATALOG_STATUS_LABELS, CATALOG_STATUS_COLORS, UNIT_LABEL,
+} from '@/services/contentService';
 import { userSiteService, UserSite } from '@/services/userSiteService';
 import { userContentService, ContentStatus, STATUS_LABELS, getStatusLabel } from '@/services/userContentService';
 
@@ -225,20 +261,20 @@ const TYPE_ICONS: Record<ContentType, string> = {
     tv: desktopOutline,
 };
 
-const TYPE_BADGE_STYLES: Record<ContentType, { color: string }> = {
-    manga:  { color: '#00d4aa' },
-    anime:  { color: '#8b5cf6' },
-    novel:  { color: '#f59e0b' },
-    movie:  { color: '#ec4899' },
-    tv:     { color: '#06b6d4' },
+const TYPE_COLORS: Record<ContentType, string> = {
+    manga:  '#5eead4',
+    anime:  '#a78bfa',
+    novel:  '#fbbf24',
+    movie:  '#f472b6',
+    tv:     '#22d3ee',
 };
 
 const STATUS_COLORS: Record<string, string> = {
-    reading: '#3b82f6',
-    completed: '#10b981',
-    paused: '#f59e0b',
-    dropped: '#ef4444',
-    plan_to_read: '#8b5cf6',
+    reading:      '#60a5fa',
+    completed:    '#34d399',
+    paused:       '#fbbf24',
+    dropped:      '#f87171',
+    plan_to_read: '#a78bfa',
 };
 
 const MOVIE_STATUSES: ContentStatus[] = ['plan_to_read', 'reading', 'completed'];
@@ -270,6 +306,9 @@ export default defineComponent({
         selectedContent(): Content | null {
             return this.selectedContentData;
         },
+        selectedTypeColor(): string {
+            return TYPE_COLORS[this.selectedContent?.type ?? 'manga'] ?? '#5eead4';
+        },
         isMovie(): boolean {
             return this.selectedContent?.type === 'movie';
         },
@@ -283,6 +322,16 @@ export default defineComponent({
             const type = this.selectedContent?.type ?? 'manga';
             const keys: ContentStatus[] = this.isMovie ? MOVIE_STATUSES : (Object.keys(STATUS_LABELS) as ContentStatus[]);
             return keys.map((value) => ({ value, label: getStatusLabel(value, type) }));
+        },
+        sectionLabelStyle(): Record<string, string> {
+            return {
+                fontSize: '10px',
+                fontWeight: '800',
+                letterSpacing: '0.08em',
+                color: '#6b738a',
+                textTransform: 'uppercase',
+                marginBottom: '10px',
+            };
         },
     },
     async ionViewWillEnter() {
@@ -379,33 +428,66 @@ export default defineComponent({
             this.$router.push('/tabs/library');
         },
 
-        getStatusColor(value: string): string { return STATUS_COLORS[value] ?? '#5a6480'; },
+        getStatusColor(value: string): string { return STATUS_COLORS[value] ?? '#6b738a'; },
         getTypeIcon(type: ContentType): string { return TYPE_ICONS[type] ?? bookOutline; },
         getTypeLabel(type: ContentType): string { return CONTENT_TYPE_LABELS[type] ?? type; },
         getUnitShort(type: ContentType): string { return UNIT_LABEL[type]?.short ?? 'cap.'; },
-        getTypeBadgeStyle(type: ContentType): Record<string, string> {
-            const col = TYPE_BADGE_STYLES[type]?.color ?? '#00d4aa';
+
+        catStatusText(status: ContentCatalogStatus): string {
+            return CATALOG_STATUS_LABELS[status] ?? status;
+        },
+        catStatusBadgeStyle(status: ContentCatalogStatus): Record<string, string> {
+            const col = CATALOG_STATUS_COLORS[status] ?? '#6b738a';
             return {
-                fontSize: '9px', fontWeight: '800', letterSpacing: '0.07em',
-                color: col, background: col + '20',
+                fontSize: '9px', fontWeight: '700', letterSpacing: '0.04em',
+                color: col, background: col + '18',
                 padding: '2px 7px', borderRadius: '20px',
             };
+        },
+
+        getTypeBadgeStyle(type: ContentType): Record<string, string> {
+            const col = TYPE_COLORS[type] ?? '#5eead4';
+            return {
+                fontSize: '9px', fontWeight: '800', letterSpacing: '0.06em',
+                color: col, background: col + '1a',
+                padding: '2px 7px', borderRadius: '20px',
+            };
+        },
+
+        ratingBg(n: number): string {
+            if (n >= 9) return 'rgba(94,234,212,0.15)';
+            if (n >= 7) return 'rgba(96,165,250,0.15)';
+            if (n >= 5) return 'rgba(251,191,36,0.15)';
+            return 'rgba(248,113,113,0.12)';
+        },
+        ratingColor(n: number): string {
+            if (n >= 9) return '#5eead4';
+            if (n >= 7) return '#60a5fa';
+            if (n >= 5) return '#fbbf24';
+            return '#f87171';
+        },
+        ratingLabel(n: number): string {
+            const labels: Record<number, string> = {
+                0: 'Horrível', 1: 'Muito ruim', 2: 'Ruim', 3: 'Fraco', 4: 'Abaixo da média',
+                5: 'Mediano', 6: 'Bom', 7: 'Muito bom', 8: 'Ótimo', 9: 'Excelente', 10: 'Obra-prima',
+            };
+            return labels[n] ?? '';
         },
     },
 });
 </script>
 
 <style scoped>
-.btn-primary { --background: #00d4aa; --color: #000; --border-radius: 14px; font-weight: 700; height: 50px; }
-.btn-cancel { --background: #1a2035; --color: #8892aa; --border-radius: 14px; height: 50px; }
+.btn-primary { --background: #5eead4; --color: #0d1117; --border-radius: 14px; font-weight: 800; height: 50px; }
+.btn-cancel { --background: #1a1f2e; --color: #6b738a; --border-radius: 14px; height: 50px; }
 
 .neon-input {
-    --background: #1a2035;
-    --color: #eef2ff;
-    --placeholder-color: #4a5570;
-    --border-color: #1e2640;
+    --background: #131826;
+    --color: #eef0f5;
+    --placeholder-color: #4a5169;
+    --border-color: #1e2535;
     --border-radius: 12px;
-    --highlight-color-focused: #00d4aa;
+    --highlight-color-focused: #5eead4;
     --padding-start: 14px;
     --padding-end: 14px;
     min-height: 48px;
@@ -413,12 +495,12 @@ export default defineComponent({
 }
 
 .neon-select {
-    --background: #1a2035;
-    --color: #eef2ff;
-    --placeholder-color: #4a5570;
-    --border-color: #1e2640;
+    --background: #131826;
+    --color: #eef0f5;
+    --placeholder-color: #4a5169;
+    --border-color: #1e2535;
     --border-radius: 12px;
-    --highlight-color-focused: #00d4aa;
+    --highlight-color-focused: #5eead4;
     --padding-start: 14px;
     --padding-end: 14px;
     min-height: 48px;
