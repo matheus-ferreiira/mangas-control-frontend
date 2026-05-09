@@ -97,14 +97,14 @@ router.beforeEach((to) => {
         return '/login';
     }
     if (to.path === '/login' && token) {
-        return '/tabs/library';
+        return '/tabs/discover';
     }
     if (to.meta.requiresAdmin) {
         try {
             const user = JSON.parse(localStorage.getItem('auth_user') || 'null');
-            if (user?.role !== 'admin') return '/tabs/library';
+            if (user?.role !== 'admin') return '/tabs/discover';
         } catch {
-            return '/tabs/library';
+            return '/tabs/discover';
         }
     }
 });
