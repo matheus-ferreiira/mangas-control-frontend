@@ -5,30 +5,30 @@
             <!-- ══ SKELETON LOADER ══ -->
             <template v-if="loading">
                 <!-- Hero skeleton -->
-                <div style="position: relative; height: 300px; background: linear-gradient(135deg, #141825, #1a2035); animation: pulse 1.4s ease-in-out infinite;">
-                    <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 40%, rgba(11,15,26,0.95) 100%);" />
+                <div style="position: relative; height: 300px; background: linear-gradient(135deg, #131826, #1a1f2e); animation: pulse 1.4s ease-in-out infinite;">
+                    <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 40%, rgba(13,17,23,0.95) 100%);" />
                     <div style="position: absolute; bottom: 18px; left: 16px; right: 16px;">
                         <div style="display: flex; gap: 6px; margin-bottom: 10px;">
-                            <div style="width: 44px; height: 18px; border-radius: 20px; background: #1e2640;" />
-                            <div style="width: 60px; height: 18px; border-radius: 20px; background: #1e2640;" />
+                            <div style="width: 44px; height: 18px; border-radius: 20px; background: #1e2535;" />
+                            <div style="width: 60px; height: 18px; border-radius: 20px; background: #1e2535;" />
                         </div>
-                        <div style="height: 26px; width: 75%; border-radius: 8px; background: #1e2640; margin-bottom: 8px;" />
-                        <div style="height: 14px; width: 50%; border-radius: 6px; background: #1e2640;" />
+                        <div style="height: 26px; width: 75%; border-radius: 8px; background: #1e2535; margin-bottom: 8px;" />
+                        <div style="height: 14px; width: 50%; border-radius: 6px; background: #1e2535;" />
                     </div>
                 </div>
                 <!-- Back button always visible -->
                 <div style="position: fixed; left: 12px; z-index: 200;" :style="{ top: 'max(12px, env(safe-area-inset-top, 12px))' }">
-                    <button style="width: 36px; height: 36px; border-radius: 50%; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: #eef2ff; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer;" @click="$router.back()">‹</button>
+                    <button style="width: 36px; height: 36px; border-radius: 50%; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: #eef0f5; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer;" @click="$router.back()">‹</button>
                 </div>
                 <!-- Skeleton body -->
                 <div style="padding: 16px 16px 80px;">
                     <div style="display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 18px;">
-                        <div v-for="i in 4" :key="i" style="height: 64px; border-radius: 14px; background: #1a2035; animation: pulse 1.4s ease-in-out infinite;" />
+                        <div v-for="i in 4" :key="i" style="height: 64px; border-radius: 14px; background: #131826; animation: pulse 1.4s ease-in-out infinite;" />
                     </div>
                     <div style="display: flex; gap: 6px; margin-bottom: 18px;">
-                        <div v-for="i in 4" :key="i" :style="{ width: `${40 + i * 12}px`, height: '26px', borderRadius: '8px', background: '#1a2035', animation: 'pulse 1.4s ease-in-out infinite' }" />
+                        <div v-for="i in 4" :key="i" :style="{ width: `${40 + i * 12}px`, height: '26px', borderRadius: '8px', background: '#131826', animation: 'pulse 1.4s ease-in-out infinite' }" />
                     </div>
-                    <div style="height: 120px; border-radius: 16px; background: #1a2035; animation: pulse 1.4s ease-in-out infinite;" />
+                    <div style="height: 120px; border-radius: 16px; background: #131826; animation: pulse 1.4s ease-in-out infinite;" />
                 </div>
             </template>
 
@@ -107,12 +107,12 @@
                         <span
                             v-for="g in content.genres"
                             :key="g"
-                            style="font-size: 11px; font-weight: 600; color: #9aa3b8; background: #222837; border: 1px solid #262d40; padding: 4px 10px; border-radius: 8px;"
+                            :style="genreTagStyle"
                         >{{ g }}</span>
                     </div>
 
                     <!-- Studios / Authors -->
-                    <div v-if="content.studios?.length" style="background: #1a1f2e; border: 1px solid #262d40; border-radius: 16px; padding: 14px 16px; margin-bottom: 14px;">
+                    <div v-if="content.studios?.length" style="background: #131826; border: 1px solid #1e2535; border-radius: 16px; padding: 14px 16px; margin-bottom: 14px;">
                         <div style="font-size: 10px; font-weight: 700; color: #6b738a; margin-bottom: 10px; letter-spacing: 0.08em; text-transform: uppercase;">
                             {{ content.type === 'manga' ? 'Autores' : 'Estúdios' }}
                         </div>
@@ -120,13 +120,13 @@
                             <span
                                 v-for="s in content.studios"
                                 :key="s"
-                                style="font-size: 12px; font-weight: 600; color: #9aa3b8; background: #222837; border: 1px solid #262d40; padding: 4px 12px; border-radius: 8px;"
+                                style="font-size: 12px; font-weight: 600; color: #9aa3b8; background: #1a1f2e; border: 1px solid #1e2535; padding: 4px 12px; border-radius: 8px;"
                             >{{ s }}</span>
                         </div>
                     </div>
 
                     <!-- Networks (TV) -->
-                    <div v-if="content.networks?.length" style="background: #1a1f2e; border: 1px solid #262d40; border-radius: 16px; padding: 14px 16px; margin-bottom: 14px;">
+                    <div v-if="content.networks?.length" style="background: #131826; border: 1px solid #1e2535; border-radius: 16px; padding: 14px 16px; margin-bottom: 14px;">
                         <div style="font-size: 10px; font-weight: 700; color: #6b738a; margin-bottom: 10px; letter-spacing: 0.08em; text-transform: uppercase;">Plataformas</div>
                         <div style="display: flex; flex-wrap: wrap; gap: 6px;">
                             <span
@@ -138,7 +138,7 @@
                     </div>
 
                     <!-- Demographics + Themes (Jikan) -->
-                    <div v-if="content.demographics?.length || content.themes?.length" style="background: #1a1f2e; border: 1px solid #262d40; border-radius: 16px; padding: 14px 16px; margin-bottom: 14px;">
+                    <div v-if="content.demographics?.length || content.themes?.length" style="background: #131826; border: 1px solid #1e2535; border-radius: 16px; padding: 14px 16px; margin-bottom: 14px;">
                         <div v-if="content.demographics?.length" :style="{ marginBottom: content.themes?.length ? '12px' : '0' }">
                             <div style="font-size: 10px; font-weight: 700; color: #6b738a; margin-bottom: 8px; letter-spacing: 0.08em; text-transform: uppercase;">Público</div>
                             <div style="display: flex; flex-wrap: wrap; gap: 6px;">
@@ -155,14 +155,14 @@
                                 <span
                                     v-for="t in content.themes"
                                     :key="t"
-                                    style="font-size: 12px; font-weight: 600; color: #9aa3b8; background: #222837; border: 1px solid #262d40; padding: 4px 10px; border-radius: 8px;"
+                                    style="font-size: 12px; font-weight: 600; color: #9aa3b8; background: #1a1f2e; border: 1px solid #1e2535; padding: 4px 10px; border-radius: 8px;"
                                 >{{ t }}</span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Synopsis -->
-                    <div v-if="content.synopsis" style="background: #1a1f2e; border: 1px solid #262d40; border-radius: 16px; padding: 16px; margin-bottom: 14px;">
+                    <div v-if="content.synopsis" style="background: #131826; border: 1px solid #1e2535; border-radius: 16px; padding: 16px; margin-bottom: 14px;">
                         <div style="font-size: 10px; font-weight: 700; color: #6b738a; margin-bottom: 10px; letter-spacing: 0.08em; text-transform: uppercase;">Sinopse</div>
                         <div
                             style="font-size: 13px; color: #9aa3b8; line-height: 1.75; transition: all 0.2s;"
@@ -175,7 +175,7 @@
                     </div>
 
                     <!-- Trailer -->
-                    <div v-if="content.trailer_embed_url" style="background: #1a1f2e; border: 1px solid #262d40; border-radius: 16px; overflow: hidden; margin-bottom: 14px;">
+                    <div v-if="content.trailer_embed_url" style="background: #131826; border: 1px solid #1e2535; border-radius: 16px; overflow: hidden; margin-bottom: 14px;">
                         <iframe
                             :src="content.trailer_embed_url"
                             style="width: 100%; aspect-ratio: 16/9; border: none; display: block;"
@@ -185,7 +185,7 @@
                     </div>
 
                     <!-- Alternative names -->
-                    <div v-if="content.alternative_names && content.alternative_names.length > 1" style="background: #1a1f2e; border: 1px solid #262d40; border-radius: 16px; padding: 16px; margin-bottom: 14px;">
+                    <div v-if="content.alternative_names && content.alternative_names.length > 1" style="background: #131826; border: 1px solid #1e2535; border-radius: 16px; padding: 16px; margin-bottom: 14px;">
                         <div style="font-size: 10px; font-weight: 700; color: #6b738a; margin-bottom: 10px; letter-spacing: 0.08em; text-transform: uppercase;">Títulos Alternativos</div>
                         <div style="display: flex; flex-direction: column; gap: 6px;">
                             <div v-for="(alt, i) in content.alternative_names" :key="i" style="font-size: 13px; color: #9aa3b8;">{{ alt }}</div>
@@ -193,7 +193,7 @@
                     </div>
 
                     <!-- Meta info -->
-                    <div v-if="content.original_language || content.origin_type || content.popularity" style="background: #1a1f2e; border: 1px solid #262d40; border-radius: 16px; padding: 16px; margin-bottom: 14px;">
+                    <div v-if="content.original_language || content.origin_type || content.popularity" style="background: #131826; border: 1px solid #1e2535; border-radius: 16px; padding: 16px; margin-bottom: 14px;">
                         <div style="font-size: 10px; font-weight: 700; color: #6b738a; margin-bottom: 10px; letter-spacing: 0.08em; text-transform: uppercase;">Informações</div>
                         <div v-if="content.original_language" :style="metaRowStyle">
                             <span :style="metaKeyStyle">Idioma</span>
@@ -210,7 +210,7 @@
                     </div>
 
                     <!-- ══ MEU REGISTRO (only when in library) ══ -->
-                    <div v-if="isInLibrary && userContent" style="background: #1a1f2e; border: 1px solid #262d40; border-radius: 18px; padding: 18px; margin-bottom: 16px;">
+                    <div v-if="isInLibrary && userContent" style="background: #131826; border-radius: 18px; padding: 18px; margin-bottom: 16px; border: 1px solid #1e2535;" :style="{ borderLeft: `3px solid ${typeColor}` }">
                         <!-- Section header -->
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px;">
                             <div style="font-size: 15px; font-weight: 800; color: #eef0f5; letter-spacing: -0.01em;">Meu Registro</div>
@@ -229,7 +229,7 @@
                                     style="display: flex; align-items: center; gap: 5px; height: 34px; padding: 0 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; border: 1px solid; transition: all 0.15s; white-space: nowrap;"
                                     :style="userContent.status === s.value
                                         ? { background: getStatusColor(s.value) + '22', color: getStatusColor(s.value), borderColor: getStatusColor(s.value) + '88' }
-                                        : { background: '#222837', color: '#6b738a', borderColor: '#262d40' }"
+                                        : { background: '#1a1f2e', color: '#6b738a', borderColor: '#1e2535' }"
                                     @click="changeStatus(s.value)"
                                 >
                                     <span style="width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;" :style="{ background: userContent.status === s.value ? getStatusColor(s.value) : '#4a5169' }" />
@@ -284,7 +284,7 @@
                                 </div>
                                 <!-- Progress bar -->
                                 <div v-if="!isOngoing && content.total_units" style="margin-top: 14px;">
-                                    <div style="height: 5px; background: #262d40; border-radius: 4px; overflow: hidden;">
+                                    <div style="height: 5px; background: #1e2535; border-radius: 4px; overflow: hidden;">
                                         <div style="height: 100%; border-radius: 4px; transition: width 0.35s;" :style="{ width: progressPct + '%', background: statusColor }" />
                                     </div>
                                     <div style="display: flex; justify-content: space-between; font-size: 11px; color: #4a5169; margin-top: 5px;">
@@ -305,7 +305,7 @@
                                     style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; border: 1px solid; transition: all 0.15s; flex-shrink: 0;"
                                     :style="userContent.rating === n
                                         ? { background: ratingBg(n), color: ratingColor(n), borderColor: ratingBorderColor(n) }
-                                        : { background: '#222837', color: '#6b738a', borderColor: '#262d40' }"
+                                        : { background: '#1a1f2e', color: '#6b738a', borderColor: '#1e2535' }"
                                     @click="changeRating(userContent.rating === n ? null : n)"
                                 >{{ n }}</div>
                             </div>
@@ -350,7 +350,7 @@
                 <div style="font-size: 40px; margin-bottom: 14px; opacity: 0.5;">😕</div>
                 <div style="font-size: 15px; font-weight: 700; color: #9aa3b8; margin-bottom: 20px;">Conteúdo não encontrado</div>
                 <button
-                    style="padding: 10px 24px; border-radius: 12px; border: 1px solid #262d40; background: transparent; color: #6b738a; cursor: pointer; font-size: 13px; font-weight: 700;"
+                    style="padding: 10px 24px; border-radius: 12px; border: 1px solid #1e2535; background: transparent; color: #6b738a; cursor: pointer; font-size: 13px; font-weight: 700;"
                     @click="$router.back()"
                 >Voltar</button>
             </div>
@@ -397,11 +397,11 @@ import {
 import { siteService, Site } from '@/services/siteService';
 
 const TYPE_BADGE_COLOR: Record<ContentType, string> = {
-    manga: '#00d4aa',
-    anime: '#8b5cf6',
-    novel: '#f59e0b',
-    movie: '#ec4899',
-    tv:    '#06b6d4',
+    manga: '#5eead4',
+    anime: '#a78bfa',
+    novel: '#fbbf24',
+    movie: '#f472b6',
+    tv:    '#22d3ee',
 };
 
 const TYPE_EMOJI: Record<ContentType, string> = {
@@ -413,11 +413,11 @@ const TYPE_EMOJI: Record<ContentType, string> = {
 };
 
 const STATUS_COLORS: Record<ContentStatus, string> = {
-    reading:      '#3b82f6',
-    completed:    '#10b981',
-    paused:       '#f59e0b',
-    dropped:      '#ef4444',
-    plan_to_read: '#8b5cf6',
+    reading:      '#60a5fa',
+    completed:    '#34d399',
+    paused:       '#fbbf24',
+    dropped:      '#f87171',
+    plan_to_read: '#a78bfa',
 };
 
 const MOVIE_STATUSES: ContentStatus[] = ['plan_to_read', 'reading', 'completed'];
@@ -444,11 +444,16 @@ export default defineComponent({
 
     computed: {
         contentType(): ContentType { return this.content?.type ?? 'manga'; },
+        typeColor(): string { return TYPE_BADGE_COLOR[this.contentType] ?? '#5eead4'; },
         typeLabel(): string { return CONTENT_TYPE_LABELS[this.contentType]; },
         typeEmoji(): string { return TYPE_EMOJI[this.contentType]; },
         typeBadgeStyle(): Record<string, string> {
-            const col = TYPE_BADGE_COLOR[this.contentType] ?? '#00d4aa';
-            return { fontSize: '9px', fontWeight: '800', letterSpacing: '0.07em', color: col, background: col + '20', padding: '2px 8px', borderRadius: '20px', textTransform: 'uppercase' };
+            const col = this.typeColor;
+            return { fontSize: '9px', fontWeight: '800', letterSpacing: '0.07em', color: col, background: col + '1a', padding: '2px 8px', borderRadius: '20px', textTransform: 'uppercase' };
+        },
+        genreTagStyle(): Record<string, string> {
+            const col = this.typeColor;
+            return { fontSize: '11px', fontWeight: '600', color: col + 'cc', background: col + '12', border: `1px solid ${col}28`, padding: '4px 10px', borderRadius: '8px' };
         },
         catStatusLabel(): string {
             const s = this.content?.status;
@@ -500,7 +505,7 @@ export default defineComponent({
 
         // ── Static style helpers ──
         statCellStyle(): Record<string, string> {
-            return { background: '#1a1f2e', border: '1px solid #262d40', borderRadius: '14px', padding: '12px 6px', textAlign: 'center' };
+            return { background: '#131826', border: '1px solid #1e2535', borderRadius: '14px', padding: '12px 6px', textAlign: 'center' };
         },
         statLabelStyle(): Record<string, string> {
             return { fontSize: '9px', fontWeight: '600', color: '#6b738a', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '3px' };
@@ -509,12 +514,12 @@ export default defineComponent({
             return { fontSize: '10px', fontWeight: '700', letterSpacing: '0.08em', color: '#6b738a', textTransform: 'uppercase', marginBottom: '10px' };
         },
         metaRowStyle(): Record<string, string> {
-            return { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '9px 0', borderBottom: '1px solid #262d40' };
+            return { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '9px 0', borderBottom: '1px solid #1e2535' };
         },
         metaKeyStyle(): Record<string, string> { return { fontSize: '13px', color: '#6b738a' }; },
         metaValStyle(): Record<string, string> { return { fontSize: '13px', fontWeight: '600', color: '#9aa3b8' }; },
         stepBtnStyleDisabled(): Record<string, string> {
-            return { width: '52px', height: '52px', borderRadius: '26px', border: '1px solid #262d40', background: '#222837', color: '#2a3450', fontSize: '24px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'not-allowed', flexShrink: '0' };
+            return { width: '52px', height: '52px', borderRadius: '26px', border: '1px solid #1e2535', background: '#1a1f2e', color: '#2a3045', fontSize: '24px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'not-allowed', flexShrink: '0' };
         },
     },
 
@@ -529,8 +534,8 @@ export default defineComponent({
                 width: '52px', height: '52px', borderRadius: '26px', fontSize: '24px', fontWeight: '700',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: '0', transition: 'all 0.2s',
                 ...(active
-                    ? { border: '1px solid #5eead4', background: '#5eead4', color: '#0d1117' }
-                    : { border: '1px solid #262d40', background: '#222837', color: '#eef0f5' }
+                    ? { border: `1px solid ${this.typeColor}`, background: this.typeColor, color: '#0d1117' }
+                    : { border: '1px solid #1e2535', background: '#1a1f2e', color: '#eef0f5' }
                 ),
             };
         },
@@ -560,14 +565,11 @@ export default defineComponent({
             this.userContent = null;
             const rawId = this.$route.params.id;
             const id = Number(rawId);
-            console.log('[CatalogDetail] loadContent id=', id, 'raw=', rawId);
 
             // Step 1: content is critical — show error state only if this fails
             try {
                 this.content = await contentService.getById(id);
-                console.log('[CatalogDetail] content=', this.content);
             } catch (err) {
-                console.error('[CatalogDetail] getById threw:', err);
                 this.content = null;
             }
 
@@ -575,7 +577,6 @@ export default defineComponent({
                 // Step 2: userContent — always try, don't rely solely on is_in_library flag
                 try {
                     const all = await userContentService.getAll({ content_id: id } as any);
-                    console.log('[CatalogDetail] userContents all=', all);
                     // Try matching by content_id (string or number), then by nested content.id,
                     // then fall back to the first item when the backend already filtered by content_id
                     const uc = all.find((u) => Number(u.content_id) === id)
@@ -601,8 +602,7 @@ export default defineComponent({
                             if (src.score    != null && this.content.score    == null) this.content.score    = src.score;
                         }
                     }
-                } catch (err) {
-                    console.error('[CatalogDetail] getAll userContent err:', err);
+                } catch {
                     this.userContent = null;
                 }
 
@@ -767,10 +767,10 @@ export default defineComponent({
 }
 
 .neon-select {
-    --background: #222837;
+    --background: #1a1f2e;
     --color: #eef0f5;
     --placeholder-color: #6b738a;
-    --border-color: #262d40;
+    --border-color: #1e2535;
     --border-radius: 12px;
     --highlight-color-focused: #5eead4;
     --padding-start: 14px;

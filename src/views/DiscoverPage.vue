@@ -2,43 +2,47 @@
     <IonPage>
         <IonContent :fullscreen="true" @ionScroll="onScroll">
             <div style="padding-bottom: 100px; background: #0d1117; min-height: 100%;">
-                <!-- Header -->
+
+                <!-- ── Sticky Header ─────────────────────────────────────────── -->
                 <div style="padding: 20px 18px 12px; background: #0d1117; position: sticky; top: 0; z-index: 10;">
                     <div style="display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 12px;">
                         <div>
-                            <div style="font-size: 11px; color: #6b738a; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 2px;">DESCOBRIR</div>
+                            <div style="font-size: 11px; color: #6b738a; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 2px;">CATÁLOGO</div>
                             <div style="font-size: 24px; font-weight: 900; color: #eef0f5; letter-spacing: -0.03em; line-height: 1.1;">Explorar</div>
                         </div>
                         <button
                             v-if="isAdmin"
-                            style="width: 34px; height: 34px; border-radius: 10px; border: 1px solid #262d40; background: transparent; color: #6b738a; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 15px; margin-bottom: 2px;"
+                            style="width: 34px; height: 34px; border-radius: 10px; border: 1px solid #262d40; background: transparent; color: #6b738a; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 15px;"
                             @click="$router.push('/manage-contents')"
                         >⚙</button>
                     </div>
 
                     <!-- Search bar -->
                     <div style="position: relative; display: flex; align-items: center;">
-                        <span style="position: absolute; left: 13px; color: #6b738a; pointer-events: none; display: flex; align-items: center;">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                        <span style="position: absolute; left: 13px; color: #4a5169; pointer-events: none; display: flex; align-items: center;">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
                         </span>
                         <input
                             :value="query"
                             placeholder="Buscar animes, mangás, filmes..."
-                            style="width: 100%; padding: 10px 36px 10px 36px; border-radius: 12px; border: 1px solid #262d40; background: #1a1f2e; color: #eef0f5; font-size: 13px; outline: none; box-sizing: border-box; transition: border-color 0.2s;"
+                            class="search-input"
+                            style="width: 100%; padding: 11px 36px 11px 38px; border-radius: 14px; border: 1.5px solid #1e2535; background: #131826; color: #eef0f5; font-size: 13px; font-weight: 500; outline: none; box-sizing: border-box; transition: border-color 0.2s;"
                             @input="onSearchInput"
+                            @focus="searchFocused = true"
+                            @blur="searchFocused = false"
                         />
                         <button
                             v-if="query"
-                            style="position: absolute; right: 8px; width: 24px; height: 24px; border-radius: 12px; border: none; background: transparent; color: #6b738a; cursor: pointer; display: flex; align-items: center; justify-content: center;"
+                            style="position: absolute; right: 8px; width: 24px; height: 24px; border-radius: 12px; border: none; background: #1a1f2e; color: #6b738a; cursor: pointer; display: flex; align-items: center; justify-content: center;"
                             @click="clearQuery"
                         >
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M5 5l14 14M19 5 5 19"/></svg>
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 5l14 14M19 5 5 19"/></svg>
                         </button>
                     </div>
                 </div>
 
                 <!-- Type filter chips -->
-                <div class="no-scrollbar" style="overflow-x: auto; padding: 0 18px 12px;">
+                <div class="no-scrollbar" style="overflow-x: auto; padding: 0 18px 14px;">
                     <div style="display: flex; gap: 6px; min-width: max-content;">
                         <button
                             v-for="opt in typeOptions"
@@ -49,118 +53,177 @@
                     </div>
                 </div>
 
-                <!-- ─── HOME MODE: hero + carousels ─── -->
+                <!-- ─── HOME MODE ─────────────────────────────────────────────── -->
                 <template v-if="!isSearchMode">
-                    <!-- Loading home -->
+
+                    <!-- Loading skeleton -->
                     <div v-if="homeLoading" style="padding: 0 18px;">
-                        <div style="height: 260px; border-radius: 18px; background: #1a1f2e; border: 1px solid #262d40; margin-bottom: 24px;" class="skeleton"></div>
-                        <div style="height: 18px; width: 160px; border-radius: 6px; margin-bottom: 12px;" class="skeleton"></div>
+                        <div style="height: 280px; border-radius: 20px; background: #131826; border: 1px solid #1e2535; margin-bottom: 28px;" class="skeleton"></div>
+                        <div style="height: 16px; width: 140px; border-radius: 6px; margin-bottom: 14px;" class="skeleton"></div>
                         <div style="display: flex; gap: 10px; overflow: hidden;">
                             <div v-for="i in 4" :key="i" style="width: 128px; flex-shrink: 0;">
                                 <div style="height: 185px; border-radius: 10px;" class="skeleton"></div>
-                                <div style="height: 13px; border-radius: 4px; margin-top: 8px; width: 90%;" class="skeleton"></div>
+                                <div style="height: 12px; border-radius: 4px; margin-top: 8px; width: 85%;" class="skeleton"></div>
                             </div>
                         </div>
                     </div>
 
                     <template v-else>
-                        <!-- Hero featured -->
+
+                        <!-- ── Hero Featured ──────────────────────────────────── -->
                         <div
-                            v-if="featured"
-                            style="position: relative; height: 260px; border-radius: 18px; overflow: hidden; cursor: pointer; margin: 0 18px 24px;"
-                            @click="openDetail(featured)"
+                            v-if="homeData?.featured"
+                            style="position: relative; height: 280px; border-radius: 20px; overflow: hidden; cursor: pointer; margin: 0 18px 28px;"
+                            @click="openDetail(homeData.featured!)"
                         >
                             <img
-                                v-if="featured.cover"
-                                :src="featured.cover"
+                                v-if="homeData.featured.cover"
+                                :src="homeData.featured.cover"
                                 alt=""
                                 style="width: 100%; height: 100%; object-fit: cover; display: block;"
                             />
-                            <div v-else :style="heroFallbackStyle(featured.type)" style="width: 100%; height: 100%;"></div>
-                            <!-- Overlay -->
-                            <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(13,17,23,0.05) 0%, rgba(13,17,23,0.35) 50%, rgba(13,17,23,0.95) 100%);"></div>
-                            <!-- EM ALTA badge -->
-                            <div style="position: absolute; top: 14px; left: 14px; display: flex; align-items: center; gap: 5px; padding: 5px 11px; border-radius: 20px; background: rgba(13,17,23,0.7); backdrop-filter: blur(8px); color: #5eead4; font-size: 10px; font-weight: 800; letter-spacing: 0.06em;">
+                            <div v-else :style="heroFallbackStyle(homeData.featured.type)" style="width: 100%; height: 100%;"></div>
+                            <!-- Multi-layer overlay for depth -->
+                            <div style="position: absolute; inset: 0; background: linear-gradient(135deg, rgba(13,17,23,0.2) 0%, transparent 50%);"></div>
+                            <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(13,17,23,0.08) 0%, rgba(13,17,23,0.45) 55%, rgba(13,17,23,0.97) 100%);"></div>
+                            <!-- Badge top-left -->
+                            <div style="position: absolute; top: 14px; left: 14px; display: flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 20px; background: rgba(13,17,23,0.72); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); font-size: 10px; font-weight: 800; letter-spacing: 0.08em; color: #f472b6;">
                                 🔥 EM ALTA
                             </div>
-                            <!-- Content bottom -->
-                            <div style="position: absolute; bottom: 16px; left: 16px; right: 16px;">
-                                <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px;">
-                                    <span :style="typePillStyle(featured.type)">{{ typeLabel(featured.type) }}</span>
-                                    <span v-if="featured.rating" style="display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 700; color: #eef0f5;">
-                                        <span style="color: #fbbf24;">★</span> {{ featured.rating.toFixed(1) }}
+                            <!-- Bottom content -->
+                            <div style="position: absolute; bottom: 18px; left: 18px; right: 18px;">
+                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
+                                    <span :style="typePillStyle(homeData.featured.type)">{{ typeLabel(homeData.featured.type) }}</span>
+                                    <span v-if="homeData.featured.rating" style="display: inline-flex; align-items: center; gap: 3px; font-size: 12px; font-weight: 700; color: #fbbf24;">
+                                        ★ {{ homeData.featured.rating.toFixed(1) }}
                                     </span>
+                                    <span v-if="homeData.featured.release_year" style="font-size: 11px; color: rgba(255,255,255,0.5);">{{ homeData.featured.release_year }}</span>
                                 </div>
-                                <div style="font-size: 22px; font-weight: 900; color: #fff; letter-spacing: -0.03em; margin-bottom: 4px; line-height: 1.15;">{{ featured.name }}</div>
-                                <div style="font-size: 11px; color: rgba(255,255,255,0.65); margin-bottom: 12px;">{{ featured.release_year }} · {{ (featured.genres ?? []).slice(0,3).join(' · ') }}</div>
-                                <button
-                                    style="padding: 9px 18px; border-radius: 24px; border: none; background: #eef0f5; color: #0d1117; font-size: 12px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;"
-                                    @click.stop="openDetail(featured)"
-                                >▶ Ver detalhes</button>
+                                <div style="font-size: 24px; font-weight: 900; color: #fff; letter-spacing: -0.03em; margin-bottom: 4px; line-height: 1.15; text-shadow: 0 2px 12px rgba(0,0,0,0.5);">{{ homeData.featured.name }}</div>
+                                <div style="font-size: 11px; color: rgba(255,255,255,0.55); margin-bottom: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ (homeData.featured.genres ?? []).slice(0, 3).join(' · ') }}</div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <button
+                                        style="padding: 10px 20px; border-radius: 24px; border: none; background: #eef0f5; color: #0d1117; font-size: 12px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;"
+                                        @click.stop="openDetail(homeData!.featured!)"
+                                    >
+                                        <svg width="11" height="11" viewBox="0 0 24 24" fill="#0d1117"><polygon points="5,3 19,12 5,21"/></svg>
+                                        Ver detalhes
+                                    </button>
+                                    <div v-if="homeData.featured.is_in_library" style="width: 36px; height: 36px; border-radius: 18px; background: rgba(94,234,212,0.18); border: 1.5px solid rgba(94,234,212,0.4); display: flex; align-items: center; justify-content: center;">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5eead4" stroke-width="2.5" stroke-linecap="round"><path d="m4 12 5 5 11-11"/></svg>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Continue watching (user in-progress) -->
-                        <section v-if="continueItems.length > 0" style="margin-bottom: 24px;">
-                            <div style="display: flex; align-items: flex-end; justify-content: space-between; padding: 0 18px; margin-bottom: 10px;">
+                        <!-- ── Continue acompanhando ──────────────────────────── -->
+                        <section v-if="homeData?.continue_items?.length" style="margin-bottom: 28px;">
+                            <div style="display: flex; align-items: center; gap: 8px; padding: 0 18px; margin-bottom: 12px;">
+                                <div style="width: 3px; height: 18px; border-radius: 3px; background: #60a5fa; flex-shrink: 0;"></div>
                                 <div>
                                     <div style="font-size: 17px; font-weight: 800; color: #eef0f5; letter-spacing: -0.02em;">Continue acompanhando</div>
-                                    <div style="font-size: 11px; color: #6b738a; margin-top: 1px;">{{ continueItems.length }} em andamento</div>
+                                    <div style="font-size: 11px; color: #6b738a; margin-top: 1px;">{{ homeData.continue_items.length }} em andamento</div>
                                 </div>
                             </div>
                             <div class="no-scrollbar" style="overflow-x: auto;">
                                 <div style="display: flex; gap: 10px; padding: 0 18px; min-width: max-content;">
                                     <div
-                                        v-for="ci in continueItems"
-                                        :key="ci.id"
+                                        v-for="ci in homeData.continue_items"
+                                        :key="ci.user_content_id"
                                         style="width: 200px; flex-shrink: 0; cursor: pointer;"
-                                        @click="$router.push(`/catalog/${ci.contentId}`)"
+                                        @click="$router.push(`/catalog/${ci.content_id}`)"
                                     >
-                                        <div style="position: relative; border-radius: 12px; overflow: hidden; height: 112px; background: #1a1f2e;">
+                                        <div style="position: relative; border-radius: 12px; overflow: hidden; height: 116px; background: #1a1f2e;">
                                             <img v-if="ci.cover" :src="ci.cover" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
                                             <div v-else :style="heroFallbackStyle(ci.type)" style="width: 100%; height: 100%;"></div>
-                                            <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(13,17,23,0) 40%, rgba(13,17,23,0.95) 100%);"></div>
+                                            <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(13,17,23,0) 30%, rgba(13,17,23,0.96) 100%);"></div>
+                                            <div style="position: absolute; top: 8px; left: 8px;">
+                                                <span :style="typePillStyle(ci.type)" style="font-size: 8px; padding: 2px 6px;">{{ typeLabel(ci.type) }}</span>
+                                            </div>
                                             <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 8px 10px;">
-                                                <div style="font-size: 12px; font-weight: 800; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-bottom: 5px;">{{ ci.title }}</div>
-                                                <div style="height: 3px; background: rgba(255,255,255,0.12); border-radius: 3px; overflow: hidden;">
-                                                    <div style="height: 100%; border-radius: 3px; transition: width 0.3s ease;" :style="{ width: ci.pct + '%', background: ci.statusColor }"></div>
+                                                <div style="font-size: 12px; font-weight: 800; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-bottom: 6px;">{{ ci.title }}</div>
+                                                <div style="height: 3px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
+                                                    <div style="height: 100%; border-radius: 3px; transition: width 0.3s ease; background: #60a5fa;" :style="{ width: ci.progress_pct + '%' }"></div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 6px; padding: 0 2px;">
-                                            <div style="font-size: 10px; color: #9aa3b8;">{{ ci.nextLabel }}</div>
-                                            <div style="font-size: 10px; color: #6b738a;">{{ ci.pct }}%</div>
+                                            <div style="font-size: 10px; color: #9aa3b8; font-weight: 600;">
+                                                {{ (ci.type === 'anime' || ci.type === 'tv') ? 'Ep' : ci.type === 'movie' ? 'Filme' : 'Cap' }}
+                                                {{ ci.current_units }}
+                                                {{ ci.total_units ? `/ ${ci.total_units}` : '' }}
+                                            </div>
+                                            <div style="font-size: 10px; color: #6b738a; font-weight: 700;">{{ ci.progress_pct }}%</div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </section>
 
-                        <!-- Carousel sections -->
-                        <section v-for="section in homeSections" :key="section.id" style="margin-bottom: 24px;">
-                            <div style="display: flex; align-items: flex-end; justify-content: space-between; padding: 0 18px; margin-bottom: 10px;">
-                                <div>
-                                    <div style="font-size: 17px; font-weight: 800; color: #eef0f5; letter-spacing: -0.02em;">{{ section.title }}</div>
-                                    <div v-if="section.sub" style="font-size: 11px; color: #6b738a; margin-top: 1px;">{{ section.sub }}</div>
+                        <!-- ── Type category quick links ─────────────────────── -->
+                        <section style="margin-bottom: 28px;">
+                            <div class="no-scrollbar" style="overflow-x: auto;">
+                                <div style="display: flex; gap: 8px; padding: 0 18px; min-width: max-content;">
+                                    <div
+                                        v-for="cat in typeCategories"
+                                        :key="cat.type"
+                                        style="width: 96px; height: 60px; border-radius: 16px; cursor: pointer; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; transition: transform 0.15s, opacity 0.15s;"
+                                        :style="{ background: `linear-gradient(135deg, ${cat.color}1a 0%, ${cat.color}2e 100%)`, border: `1.5px solid ${cat.color}33` }"
+                                        @click="goToType(cat.type)"
+                                    >
+                                        <span style="font-size: 20px; line-height: 1;">{{ cat.icon }}</span>
+                                        <span :style="{ fontSize: '11px', fontWeight: '800', color: cat.color, letterSpacing: '0.03em' }">{{ cat.label }}</span>
+                                    </div>
                                 </div>
+                            </div>
+                        </section>
+
+                        <!-- ── Dynamic content sections ──────────────────────── -->
+                        <section v-for="section in homeSections" :key="section.id" style="margin-bottom: 28px;">
+                            <div style="display: flex; align-items: flex-end; justify-content: space-between; padding: 0 18px; margin-bottom: 12px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div style="width: 3px; height: 18px; border-radius: 3px; flex-shrink: 0;" :style="{ background: section.accentColor }"></div>
+                                    <div>
+                                        <div style="font-size: 17px; font-weight: 800; color: #eef0f5; letter-spacing: -0.02em;">{{ section.title }}</div>
+                                        <div v-if="section.sub" style="font-size: 11px; color: #6b738a; margin-top: 1px;">{{ section.sub }}</div>
+                                    </div>
+                                </div>
+                                <button
+                                    v-if="section.filterType"
+                                    style="display: flex; align-items: center; gap: 3px; padding: 5px 10px; border-radius: 20px; border: none; background: transparent; cursor: pointer; font-size: 11px; font-weight: 700;"
+                                    :style="{ color: section.accentColor }"
+                                    @click="goToType(section.filterType!)"
+                                >
+                                    Ver todos
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" :stroke="section.accentColor" stroke-width="2.2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg>
+                                </button>
                             </div>
                             <div class="no-scrollbar" style="overflow-x: auto;">
                                 <div style="display: flex; gap: 10px; padding: 0 18px; min-width: max-content;">
                                     <div
                                         v-for="item in section.items"
                                         :key="item.id"
+                                        class="poster-card"
                                         style="width: 128px; flex-shrink: 0; cursor: pointer;"
                                         @click="openDetail(item)"
                                     >
                                         <!-- Poster -->
                                         <div style="position: relative; border-radius: 10px; overflow: hidden; height: 185px; background: #1a1f2e;">
-                                            <img v-if="item.cover && !coverErrors[item.id]" :src="item.cover" :alt="item.name" style="width: 100%; height: 100%; object-fit: cover; display: block;" @error="coverErrors[item.id] = true" />
+                                            <img
+                                                v-if="item.cover && !coverErrors[item.id]"
+                                                :src="item.cover"
+                                                :alt="item.name"
+                                                style="width: 100%; height: 100%; object-fit: cover; display: block;"
+                                                @error="coverErrors[item.id] = true"
+                                            />
                                             <div v-else :style="heroFallbackStyle(item.type)" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: 900; letter-spacing: -0.04em; color: rgba(255,255,255,0.3);">{{ typeShortLabel(item.type) }}</div>
-                                            <!-- Type pill overlay -->
+                                            <!-- Bottom gradient -->
+                                            <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 70px; background: linear-gradient(0deg, rgba(13,17,23,0.85) 0%, transparent 100%); pointer-events: none;"></div>
+                                            <!-- Type pill -->
                                             <div style="position: absolute; top: 6px; left: 6px;">
                                                 <span :style="typePillStyle(item.type)" style="font-size: 8px; padding: 2px 6px;">{{ typeLabel(item.type) }}</span>
                                             </div>
-                                            <!-- Score badge top-right -->
+                                            <!-- Score badge -->
                                             <div v-if="item.rating && item.rating >= 8.5" style="position: absolute; top: 6px; right: 6px; padding: 2px 6px; border-radius: 10px; background: rgba(13,17,23,0.85); backdrop-filter: blur(4px); font-size: 9px; font-weight: 800; color: #fbbf24; display: flex; align-items: center; gap: 2px;">
                                                 ★ {{ item.rating.toFixed(1) }}
                                             </div>
@@ -169,7 +232,7 @@
                                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#0d1117" stroke-width="2.5" stroke-linecap="round"><path d="m4 12 5 5 11-11"/></svg>
                                             </div>
                                         </div>
-                                        <!-- Info below poster -->
+                                        <!-- Info below -->
                                         <div style="margin-top: 8px;">
                                             <div style="font-size: 12px; font-weight: 700; color: #eef0f5; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">{{ item.name }}</div>
                                             <div style="font-size: 10px; color: #6b738a; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ item.release_year }}{{ (item.genres ?? [])[0] ? ' · ' + item.genres![0] : '' }}</div>
@@ -178,10 +241,11 @@
                                 </div>
                             </div>
                         </section>
+
                     </template>
                 </template>
 
-                <!-- ─── SEARCH/FILTER MODE: grid ─── -->
+                <!-- ─── SEARCH / FILTER MODE ──────────────────────────────────── -->
                 <template v-else>
                     <!-- Toolbar: count + sort + filter -->
                     <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 18px 12px;">
@@ -212,7 +276,7 @@
 
                     <!-- Empty state -->
                     <div v-else-if="!loading && contents.length === 0" style="text-align: center; padding: 56px 28px;">
-                        <div style="width: 72px; height: 72px; border-radius: 36px; background: #1a1f2e; border: 1px solid #262d40; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                        <div style="width: 72px; height: 72px; border-radius: 36px; background: #131826; border: 1px solid #262d40; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
                             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6b738a" stroke-width="1.7" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
                         </div>
                         <div style="font-size: 15px; font-weight: 700; color: #eef0f5; margin-bottom: 6px;">Nada encontrado</div>
@@ -237,6 +301,8 @@
                                     @error="coverErrors[content.id] = true"
                                 />
                                 <div v-else :style="heroFallbackStyle(content.type)" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 900; color: rgba(255,255,255,0.3);">{{ typeShortLabel(content.type) }}</div>
+                                <!-- Bottom gradient -->
+                                <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 60px; background: linear-gradient(0deg, rgba(13,17,23,0.85) 0%, transparent 100%); pointer-events: none;"></div>
                                 <!-- Type pill -->
                                 <div style="position: absolute; top: 5px; left: 5px;">
                                     <span :style="typePillStyle(content.type)" style="font-size: 8px; padding: 1px 5px;">{{ typeLabel(content.type) }}</span>
@@ -264,10 +330,11 @@
                         <IonInfiniteScrollContent loading-text="Carregando mais..." />
                     </IonInfiniteScroll>
                 </template>
+
             </div>
         </IonContent>
 
-        <!-- Sort Sheet -->
+        <!-- ── Sort Sheet ─────────────────────────────────────────────────── -->
         <IonModal :is-open="isSortOpen" :initial-breakpoint="0.65" :breakpoints="[0, 0.65, 1]" :handle="true" handle-behavior="cycle" class="bottom-sheet-modal" @didDismiss="isSortOpen = false">
             <IonContent class="sheet-content">
                 <div style="padding: 4px 16px 32px;">
@@ -289,7 +356,7 @@
             </IonContent>
         </IonModal>
 
-        <!-- Filter Sheet -->
+        <!-- ── Filter Sheet ────────────────────────────────────────────────── -->
         <IonModal :is-open="isFilterOpen" :initial-breakpoint="0.9" :breakpoints="[0, 0.9, 1]" :handle="true" handle-behavior="cycle" class="bottom-sheet-modal" @didDismiss="isFilterOpen = false">
             <IonHeader class="sheet-header">
                 <div style="padding: 8px 20px 0;">
@@ -355,19 +422,19 @@
 import { defineComponent } from 'vue';
 import {
     IonPage, IonContent, IonInfiniteScroll, IonInfiniteScrollContent,
-    IonModal, IonHeader, IonFooter, toastController,
+    IonModal, IonHeader, IonFooter,
 } from '@ionic/vue';
 import { contentService, Content, ContentMeta, ContentType, ContentCatalogStatus, ContentSortField } from '@/services/contentService';
-import { userContentService, UserContent, ContentStatus } from '@/services/userContentService';
+import { discoverService, DiscoverHome } from '@/services/discoverService';
 import { authStore } from '@/store/auth';
 
 const SORT_OPTIONS = [
-    { id: 'score_desc',  label: 'Mais relevantes',  icon: '◆', desc: 'Score combinado',     apiSort: 'score' as ContentSortField,      apiOrder: 'desc' as const },
-    { id: 'popular',     label: 'Mais populares',   icon: '🔥', desc: 'Maior audiência',    apiSort: 'popularity' as ContentSortField, apiOrder: 'desc' as const },
-    { id: 'note_desc',   label: 'Melhor avaliação', icon: '★',  desc: 'Maior nota primeiro', apiSort: 'rating' as ContentSortField,     apiOrder: 'desc' as const },
-    { id: 'votes_desc',  label: 'Mais votados',     icon: '👍', desc: 'Mais avaliações',    apiSort: 'votes_count' as ContentSortField, apiOrder: 'desc' as const },
-    { id: 'updated_desc',label: 'Recentes',         icon: '⚡', desc: 'Atualizados primeiro',apiSort: 'updated_at' as ContentSortField, apiOrder: 'desc' as const },
-    { id: 'name_asc',    label: 'Nome A → Z',       icon: '↑',  desc: 'Ordem alfabética',   apiSort: 'name' as ContentSortField,       apiOrder: 'asc' as const },
+    { id: 'score_desc',   label: 'Mais relevantes',  icon: '◆', desc: 'Score combinado',      apiSort: 'score' as ContentSortField,       apiOrder: 'desc' as const },
+    { id: 'popular',      label: 'Mais populares',   icon: '🔥', desc: 'Maior audiência',     apiSort: 'popularity' as ContentSortField,  apiOrder: 'desc' as const },
+    { id: 'note_desc',    label: 'Melhor avaliação', icon: '★',  desc: 'Maior nota primeiro',  apiSort: 'rating' as ContentSortField,      apiOrder: 'desc' as const },
+    { id: 'votes_desc',   label: 'Mais votados',     icon: '👍', desc: 'Mais avaliações',     apiSort: 'votes_count' as ContentSortField, apiOrder: 'desc' as const },
+    { id: 'updated_desc', label: 'Recentes',         icon: '⚡', desc: 'Atualizados primeiro', apiSort: 'updated_at' as ContentSortField,  apiOrder: 'desc' as const },
+    { id: 'name_asc',     label: 'Nome A → Z',       icon: '↑',  desc: 'Ordem alfabética',    apiSort: 'name' as ContentSortField,        apiOrder: 'asc' as const },
 ];
 
 const TYPE_META: Record<string, { color: string; label: string; short: string }> = {
@@ -385,15 +452,17 @@ const CAT_STATUS: Record<string, { label: string; color: string }> = {
     cancelled: { label: 'Cancelado',    color: '#f87171' },
 };
 
-const STATUS_COLORS: Record<ContentStatus, string> = {
-    reading: '#60a5fa', completed: '#34d399', paused: '#fbbf24', dropped: '#f87171', plan_to_read: '#a78bfa',
-};
-
 const GENRES = ['Ação', 'Aventura', 'Comédia', 'Drama', 'Fantasia', 'Ficção Científica', 'Horror', 'Mistério', 'Romance', 'Seinen', 'Shounen', 'Slice of Life', 'Supernatural', 'Thriller'];
 const EMPTY_META: ContentMeta = { current_page: 1, last_page: 1, per_page: 20, total: 0, from: 0, to: 0 };
 
-interface ContinueItem { id: number; contentId: number; title: string; cover: string | undefined; type: string; pct: number; statusColor: string; nextLabel: string; }
-interface HomeSection { id: string; title: string; sub?: string; items: Content[]; }
+interface HomeSection {
+    id: string;
+    title: string;
+    sub?: string;
+    accentColor: string;
+    filterType?: ContentType;
+    items: Content[];
+}
 
 export default defineComponent({
     name: 'DiscoverPage',
@@ -415,22 +484,28 @@ export default defineComponent({
             isSortOpen: false,
             isFilterOpen: false,
             coverErrors: {} as Record<number, boolean>,
+            searchFocused: false,
             // Home mode
             homeLoading: false,
-            featured: null as Content | null,
-            homeSections: [] as HomeSection[],
-            continueItems: [] as ContinueItem[],
+            homeData: null as DiscoverHome | null,
             // Statics
             sortOptions: SORT_OPTIONS,
             catStatusOptions: CAT_STATUS,
             genresList: GENRES,
             typeOptions: [
-                { label: 'Tudo',  value: null as ContentType | null },
-                { label: 'Anime', value: 'anime' as ContentType },
-                { label: 'Mangá', value: 'manga' as ContentType },
-                { label: 'Novel', value: 'novel' as ContentType },
-                { label: 'Filmes',value: 'movie' as ContentType },
-                { label: 'Séries',value: 'tv' as ContentType },
+                { label: 'Tudo',   value: null as ContentType | null },
+                { label: 'Anime',  value: 'anime' as ContentType },
+                { label: 'Mangá',  value: 'manga' as ContentType },
+                { label: 'Novel',  value: 'novel' as ContentType },
+                { label: 'Filmes', value: 'movie' as ContentType },
+                { label: 'Séries', value: 'tv' as ContentType },
+            ],
+            typeCategories: [
+                { type: 'anime' as ContentType,  label: 'Anime',  icon: '🎌', color: '#a78bfa' },
+                { type: 'manga' as ContentType,  label: 'Mangá',  icon: '📖', color: '#5eead4' },
+                { type: 'movie' as ContentType,  label: 'Filme',  icon: '🎬', color: '#f472b6' },
+                { type: 'tv' as ContentType,     label: 'Série',  icon: '📺', color: '#22d3ee' },
+                { type: 'novel' as ContentType,  label: 'Novel',  icon: '✍️', color: '#fbbf24' },
             ],
         };
     },
@@ -448,6 +523,44 @@ export default defineComponent({
         },
         hasActiveFilters(): boolean { return !!(this.query || this.activeType || this.activeFilterCount > 0); },
         isAdmin(): boolean { return authStore.user?.role === 'admin'; },
+        homeSections(): HomeSection[] {
+            if (!this.homeData) return [];
+            const d = this.homeData;
+            const sections: HomeSection[] = [];
+
+            if (d.trending?.length) {
+                sections.push({ id: 'trending', title: 'Em alta agora', sub: 'Os mais populares do momento', accentColor: '#f472b6', items: d.trending });
+            }
+            if (d.top_anime?.length) {
+                sections.push({ id: 'top_anime', title: 'Animes em destaque', sub: 'Os mais bem avaliados', accentColor: '#a78bfa', filterType: 'anime', items: d.top_anime });
+            }
+            if (d.popular_manga?.length) {
+                sections.push({ id: 'popular_manga', title: 'Mangás mais populares', sub: 'Maior audiência no catálogo', accentColor: '#5eead4', filterType: 'manga', items: d.popular_manga });
+            }
+            if (d.movies_and_tv?.length) {
+                sections.push({ id: 'movies_and_tv', title: 'Filmes & Séries', sub: 'Para assistir agora', accentColor: '#22d3ee', items: d.movies_and_tv });
+            }
+            if (d.recommendations?.length) {
+                const genres = (d.user_top_genres ?? []).slice(0, 2).join(', ');
+                sections.push({ id: 'recommendations', title: 'Recomendado para você', sub: genres ? `Baseado em: ${genres}` : 'Baseado no seu histórico', accentColor: '#fbbf24', items: d.recommendations });
+            }
+            if (d.top_rated?.length) {
+                sections.push({ id: 'top_rated', title: 'Melhor avaliados', sub: 'Score acima de 7.5', accentColor: '#34d399', items: d.top_rated });
+            }
+            if (d.completed_works?.length) {
+                sections.push({ id: 'completed_works', title: 'Obras finalizadas', sub: 'Completas para maratonar', accentColor: '#60a5fa', items: d.completed_works });
+            }
+            if (d.top_novels?.length) {
+                sections.push({ id: 'top_novels', title: 'Novels em destaque', sub: 'Light novels e Web novels', accentColor: '#fbbf24', filterType: 'novel', items: d.top_novels });
+            }
+            if (d.recently_updated?.length) {
+                sections.push({ id: 'recently_updated', title: 'Atualizados recentemente', sub: 'Novos capítulos disponíveis', accentColor: '#5eead4', items: d.recently_updated });
+            }
+            if (d.new_additions?.length) {
+                sections.push({ id: 'new_additions', title: 'Recém adicionados', sub: 'Chegaram no catálogo', accentColor: '#a78bfa', items: d.new_additions });
+            }
+            return sections;
+        },
         sortBtnStyle(): Record<string, string> {
             return { display: 'flex', alignItems: 'center', gap: '5px', padding: '6px 12px', borderRadius: '20px', border: 'none', cursor: 'pointer', background: '#1a1f2e', outline: '1px solid #262d40', transition: 'all 0.18s' };
         },
@@ -457,7 +570,7 @@ export default defineComponent({
         },
     },
     async ionViewWillEnter() {
-        if (!this.isSearchMode && this.homeSections.length === 0) {
+        if (!this.isSearchMode && !this.homeData) {
             await this.loadHome();
         }
     },
@@ -465,39 +578,7 @@ export default defineComponent({
         async loadHome() {
             this.homeLoading = true;
             try {
-                const [topRated, trending, recent, userContents] = await Promise.all([
-                    contentService.getAll({ sort: 'score', order: 'desc', per_page: 10 }),
-                    contentService.getAll({ sort: 'popularity', order: 'desc', per_page: 8 }),
-                    contentService.getAll({ sort: 'updated_at', order: 'desc', per_page: 8 }),
-                    userContentService.getAll().catch(() => [] as UserContent[]),
-                ]);
-
-                this.featured = topRated.items[0] ?? null;
-
-                // Continue watching
-                const inProgress = userContents.filter(u => u.status === 'reading');
-                this.continueItems = inProgress.slice(0, 6).map(u => {
-                    const max = u.content?.total_units;
-                    const pct = max ? Math.min(Math.round((u.current_units / max) * 100), 100) : 30;
-                    const isWatch = u.content?.type === 'anime' || u.content?.type === 'tv';
-                    const nextLabel = isWatch ? `Próximo: Ep ${u.current_units + 1}` : `Próximo: Cap ${u.current_units + 1}`;
-                    return {
-                        id: u.id,
-                        contentId: u.content?.id ?? u.content_id,
-                        title: u.content?.name ?? '',
-                        cover: u.content?.cover,
-                        type: u.content?.type ?? 'manga',
-                        pct,
-                        statusColor: STATUS_COLORS[u.status] ?? '#60a5fa',
-                        nextLabel,
-                    };
-                });
-
-                this.homeSections = [
-                    { id: 'top', title: 'Melhor avaliados', sub: 'Notas acima de 8.5', items: topRated.items.slice(1, 9) },
-                    { id: 'trending', title: 'Em alta agora', sub: 'Os mais populares', items: trending.items },
-                    { id: 'recent', title: 'Atualizados recentemente', items: recent.items },
-                ];
+                this.homeData = await discoverService.getHome();
             } catch { /* silent */ } finally {
                 this.homeLoading = false;
             }
@@ -528,14 +609,14 @@ export default defineComponent({
             }
         },
 
-        async handleInfiniteScroll(event: any) {
+        async handleInfiniteScroll(event: CustomEvent) {
             const nextPage = this.meta.current_page + 1;
-            if (nextPage > this.meta.last_page) { event.target.complete(); return; }
+            if (nextPage > this.meta.last_page) { (event.target as HTMLElement & { complete(): void }).complete(); return; }
             try {
                 const result = await contentService.getAll({ ...this.buildFilters(), page: nextPage });
                 this.contents.push(...result.items);
                 this.meta = result.meta;
-            } catch { /* silent */ } finally { event.target.complete(); }
+            } catch { /* silent */ } finally { (event.target as HTMLElement & { complete(): void }).complete(); }
         },
 
         onSearchInput(ev: Event) {
@@ -544,11 +625,20 @@ export default defineComponent({
             this.searchTimer = setTimeout(() => { if (this.isSearchMode) this.loadContents(); }, 400);
         },
 
-        clearQuery() { this.query = ''; if (!this.activeType) { /* stay home */ } else { this.loadContents(); } },
+        clearQuery() {
+            this.query = '';
+            if (!this.activeType) { /* stay home */ }
+            else { this.loadContents(); }
+        },
 
         setType(type: ContentType | null) {
             this.activeType = type;
             if (type) this.loadContents();
+        },
+
+        goToType(type: ContentType) {
+            this.activeType = type;
+            this.loadContents();
         },
 
         setSort(id: string) { this.sortById = id; this.isSortOpen = false; if (this.isSearchMode) this.loadContents(); },
@@ -591,22 +681,23 @@ export default defineComponent({
             const active = this.activeType === val;
             const col = val ? (TYPE_META[val]?.color ?? '#5eead4') : '#eef0f5';
             return {
-                padding: '7px 14px', borderRadius: '20px', border: 'none',
+                padding: '7px 15px', borderRadius: '20px', border: 'none',
                 fontSize: '12px', fontWeight: '700', cursor: 'pointer', flexShrink: '0',
-                background: active ? col : 'transparent',
+                background: active ? col : '#131826',
                 color: active ? '#0d1117' : '#9aa3b8',
+                outline: active ? 'none' : '1.5px solid #1e2535',
                 transition: 'all 0.18s',
             };
         },
         typePillStyle(type: string): Record<string, string> {
             const col = TYPE_META[type]?.color ?? '#5eead4';
-            return { fontSize: '9px', fontWeight: '700', letterSpacing: '0.06em', color: col, background: col + '1f', padding: '2px 7px', borderRadius: '20px', textTransform: 'uppercase', flexShrink: '0' };
+            return { fontSize: '9px', fontWeight: '700', letterSpacing: '0.06em', color: col, background: col + '22', padding: '2px 7px', borderRadius: '20px', textTransform: 'uppercase', flexShrink: '0', display: 'inline-block' };
         },
         typeLabel(type: string): string { return TYPE_META[type]?.label ?? type.toUpperCase(); },
         typeShortLabel(type: string): string { return TYPE_META[type]?.short ?? '?'; },
         heroFallbackStyle(type: string): Record<string, string> {
             const col = TYPE_META[type]?.color ?? '#5eead4';
-            return { background: `linear-gradient(135deg, ${col}33, #1a1f2e)` };
+            return { background: `linear-gradient(135deg, ${col}2a, #131826)` };
         },
         sortOptionStyle(id: string): Record<string, string> {
             const active = this.sortById === id;
@@ -638,16 +729,21 @@ export default defineComponent({
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+.search-input::placeholder { color: #4a5169; }
+.search-input:focus { border-color: #5eead4 !important; }
+
 .filter-label {
     font-size: 10px; font-weight: 800; color: #6b738a;
     text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px;
 }
 
+.poster-card:active { opacity: 0.85; transform: scale(0.97); }
+
 .skeleton {
-    background: #1a1f2e;
-    animation: pulse 1.4s ease-in-out infinite;
+    background: #131826;
+    animation: pulse 1.5s ease-in-out infinite;
 }
-@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
 </style>
 
 <style>

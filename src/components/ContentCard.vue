@@ -1,12 +1,12 @@
 <template>
     <div
-        class="relative overflow-hidden cursor-pointer"
+        class="content-card"
         :style="cardStyle"
         @click="$emit('click')"
     >
-        <div style="display: flex; gap: 14px; padding: 12px;">
+        <div style="display: flex; gap: 12px; padding: 10px 12px;">
             <!-- Cover -->
-            <div :style="coverFallbackStyle">
+            <div :style="coverStyle">
                 <img
                     v-if="item.content?.cover && !imgError"
                     :src="item.content.cover"
@@ -15,37 +15,35 @@
                     @error="imgError = true"
                 />
                 <span v-else style="font-size: 26px; font-weight: 900; letter-spacing: -0.04em; position: absolute;">{{ typeShort }}</span>
+                <!-- Type corner dot -->
+                <div :style="{ position: 'absolute', bottom: '5px', right: '5px', width: '7px', height: '7px', borderRadius: '50%', background: typeColor, boxShadow: `0 0 0 2px rgba(13,17,23,0.7)` }"></div>
             </div>
 
             <!-- Info -->
             <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: space-between;">
-                <!-- Top block -->
-                <div>
-                    <!-- Row 1: type badge + status dot + optional badges -->
-                    <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 5px; flex-wrap: wrap;">
-                        <span :style="typeBadgeStyle">{{ typeBadgeLabel }}</span>
-                        <span v-if="originTypeBadge" style="font-size: 9px; font-weight: 700; color: #6b738a; background: rgba(107,115,138,0.12); padding: 2px 6px; border-radius: 20px; flex-shrink: 0;">{{ originTypeBadge }}</span>
-                        <span :style="statusDotStyle"></span>
-                        <span v-if="item.content?.is_adult" style="font-size: 9px; font-weight: 800; color: #f87171; background: rgba(248,113,113,0.12); padding: 2px 6px; border-radius: 20px; flex-shrink: 0;">+18</span>
-                    </div>
-
-                    <!-- Row 2: title -->
-                    <div style="font-size: 14px; font-weight: 800; color: #eef0f5; margin-bottom: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: -0.01em; line-height: 1.25;">
-                        {{ item.content?.name || 'Desconhecido' }}
-                    </div>
-
-                    <!-- Row 3: genres · year -->
-                    <div style="font-size: 10px; color: #6b738a; margin-bottom: 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                        {{ metaGenreYear }}
-                    </div>
+                <!-- Row 1: type badge + status dot + optional badges -->
+                <div style="display: flex; align-items: center; gap: 5px; margin-bottom: 4px; flex-wrap: wrap;">
+                    <span :style="typeBadgeStyle">{{ typeBadgeLabel }}</span>
+                    <span v-if="originTypeBadge" style="font-size: 9px; font-weight: 700; color: #6b738a; background: rgba(107,115,138,0.1); padding: 2px 6px; border-radius: 20px; flex-shrink: 0;">{{ originTypeBadge }}</span>
+                    <span :style="statusDotStyle"></span>
+                    <span v-if="item.content?.is_adult" style="font-size: 9px; font-weight: 800; color: #f87171; background: rgba(248,113,113,0.1); padding: 2px 6px; border-radius: 20px; flex-shrink: 0;">+18</span>
                 </div>
 
-                <!-- Bottom block: progress line + bar -->
+                <!-- Row 2: title -->
+                <div style="font-size: 15px; font-weight: 800; color: #eef0f5; margin-bottom: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: -0.02em; line-height: 1.2;">
+                    {{ item.content?.name || 'Desconhecido' }}
+                </div>
+
+                <!-- Row 3: genres · year -->
+                <div style="font-size: 10px; color: #6b738a; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    {{ metaGenreYear }}
+                </div>
+
+                <!-- Bottom: progress line + bar -->
                 <div>
-                    <!-- Progress line -->
-                    <div style="font-size: 11px; color: #9aa3b8; display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+                    <div style="font-size: 11px; color: #9aa3b8; display: flex; align-items: center; gap: 5px; margin-bottom: 6px;">
                         <template v-if="isMovie">
-                            <span :style="{ fontWeight: '600', color: statusColor }">{{ statusLabel }}</span>
+                            <span :style="{ fontWeight: '700', color: statusColor }">{{ statusLabel }}</span>
                             <template v-if="item.rating != null">
                                 <span style="color: #4a5169;">·</span>
                                 <span style="color: #fbbf24; font-weight: 700;">★ {{ item.rating }}</span>
@@ -71,37 +69,37 @@
                         </template>
                         <template v-if="lastUpdateText">
                             <span style="color: #4a5169;">·</span>
-                            <span style="color: #6b738a;">{{ lastUpdateText }}</span>
+                            <span style="color: #4a5169;">{{ lastUpdateText }}</span>
                         </template>
                     </div>
 
-                    <!-- Progress bar (not for movies) -->
-                    <div v-if="!isMovie" style="height: 3px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; position: relative;">
+                    <!-- Progress bar -->
+                    <div v-if="!isMovie" style="height: 4px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; position: relative;">
                         <div
                             v-if="isOngoing && !item.content?.total_units"
                             class="shimmer-bar"
-                            style="position: absolute; height: 100%; width: 40%; border-radius: 3px;"
+                            style="position: absolute; height: 100%; width: 40%; border-radius: 4px;"
                             :style="{ background: `linear-gradient(90deg, transparent, ${statusColor}cc, transparent)` }"
                         ></div>
                         <div
                             v-else
-                            style="height: 100%; border-radius: 3px; transition: width 0.4s cubic-bezier(0.4,0,0.2,1);"
+                            style="height: 100%; border-radius: 4px; transition: width 0.4s cubic-bezier(0.4,0,0.2,1);"
                             :style="{ width: progressPct + '%', background: statusColor }"
                         ></div>
                     </div>
                 </div>
             </div>
 
-            <!-- +1 button (not for movies) -->
+            <!-- +1 button -->
             <div v-if="!isMovie" style="display: flex; align-items: center; flex-shrink: 0;">
                 <button
                     :disabled="atLimit"
-                    style="width: 34px; height: 34px; border-radius: 17px; border: none; font-size: 20px; font-weight: 600; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0;"
+                    style="width: 36px; height: 36px; border-radius: 18px; border: none; font-size: 20px; font-weight: 600; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0;"
                     :style="atLimit
-                        ? { background: '#222837', color: '#4a5169', cursor: 'not-allowed' }
+                        ? { background: '#1a1f2e', color: '#3a4255', cursor: 'not-allowed' }
                         : plusActive
-                            ? { background: '#5eead4', color: '#0d1117', transform: 'scale(1.15)', cursor: 'pointer' }
-                            : { background: '#222837', color: '#5eead4', cursor: 'pointer' }"
+                            ? { background: typeColor, color: '#0d1117', transform: 'scale(1.15)', cursor: 'pointer', boxShadow: `0 0 12px ${typeColor}66` }
+                            : { background: '#1a1f2e', color: typeColor, cursor: 'pointer', border: '1px solid #262d40' }"
                     @click.stop="handlePlus"
                 >+</button>
             </div>
@@ -147,6 +145,9 @@ export default defineComponent({
         contentType(): ContentType {
             return this.item.content?.type ?? 'manga';
         },
+        typeColor(): string {
+            return TYPE_BADGE[this.contentType]?.color ?? '#5eead4';
+        },
         typeShort(): string {
             return TYPE_SHORT[this.contentType] ?? '?';
         },
@@ -154,24 +155,24 @@ export default defineComponent({
             return TYPE_BADGE[this.contentType]?.label ?? this.contentType.toUpperCase();
         },
         typeBadgeStyle(): Record<string, string> {
-            const col = TYPE_BADGE[this.contentType]?.color ?? '#5eead4';
+            const col = this.typeColor;
             return {
                 fontSize: '9px', fontWeight: '700', letterSpacing: '0.06em',
-                color: col, background: col + '1f',
+                color: col, background: col + '1a',
                 padding: '2px 7px', borderRadius: '20px', textTransform: 'uppercase',
                 flexShrink: '0', lineHeight: '1.4',
             };
         },
         cardStyle(): Record<string, string> {
-            const col = TYPE_BADGE[this.contentType]?.color ?? '#5eead4';
+            const col = this.typeColor;
             return {
-                background: '#1a1f2e',
-                borderTop: '1px solid #262d40',
-                borderRight: '1px solid #262d40',
-                borderBottom: '1px solid #262d40',
+                background: `linear-gradient(120deg, ${col}0e 0%, #131826 100%)`,
+                borderTop: '1px solid #1e2535',
+                borderRight: '1px solid #1e2535',
+                borderBottom: '1px solid #1e2535',
                 borderLeft: `3px solid ${col}`,
-                borderRadius: '14px',
-                marginBottom: '10px',
+                borderRadius: '12px',
+                marginBottom: '8px',
                 transition: 'transform 0.15s',
                 animation: 'fadeIn 0.25s ease',
                 overflow: 'hidden',
@@ -179,14 +180,15 @@ export default defineComponent({
                 position: 'relative',
             };
         },
-        coverFallbackStyle(): Record<string, string> {
-            const col = TYPE_BADGE[this.contentType]?.color ?? '#5eead4';
+        coverStyle(): Record<string, string> {
+            const col = this.typeColor;
             return {
                 flexShrink: '0', borderRadius: '8px', overflow: 'hidden',
-                width: '72px', height: '102px',
-                background: `linear-gradient(135deg, ${col}22, #222837)`,
+                width: '80px', height: '114px',
+                background: `linear-gradient(135deg, ${col}22, #1a1f2e)`,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 color: col, position: 'relative',
+                boxShadow: '0 4px 16px rgba(0,0,0,0.5)',
             };
         },
         statusColor(): string {
@@ -198,7 +200,7 @@ export default defineComponent({
         statusDotStyle(): Record<string, string> {
             const col = this.statusColor;
             return {
-                width: '7px', height: '7px', borderRadius: '50%', flexShrink: '0',
+                width: '6px', height: '6px', borderRadius: '50%', flexShrink: '0',
                 background: col, boxShadow: `0 0 0 2px ${col}22`,
                 display: 'inline-block',
             };
@@ -271,5 +273,8 @@ export default defineComponent({
 }
 .shimmer-bar {
     animation: shimmer 2.4s ease-in-out infinite;
+}
+.content-card:active {
+    transform: scale(0.985);
 }
 </style>
