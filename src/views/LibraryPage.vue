@@ -37,21 +37,6 @@
                     </div>
                 </div>
 
-                <!-- Status filter tabs with counts -->
-                <div class="no-scrollbar" style="overflow-x: auto; padding: 0 18px 10px;">
-                    <div style="display: flex; gap: 4px; min-width: max-content;">
-                        <button
-                            v-for="tab in statusTabs"
-                            :key="tab.value ?? 'all'"
-                            :style="tabStyle(tab.value)"
-                            @click="activeStatus = tab.value"
-                        >
-                            {{ tab.label }}
-                            <span :style="tabCountStyle(tab.value)">{{ tab.count }}</span>
-                        </button>
-                    </div>
-                </div>
-
                 <!-- Type filter chips -->
                 <div class="no-scrollbar" style="overflow-x: auto; padding: 0 18px 10px;">
                     <div style="display: flex; gap: 6px; min-width: max-content;">
@@ -127,16 +112,26 @@
                     <div style="font-size: 12px; color: #6b738a;">{{ search ? 'Tente outro termo' : 'Tente outros filtros' }}</div>
                 </div>
 
-                <!-- Card list -->
-                <div v-else style="padding: 0 14px;">
-                    <ContentCard
-                        v-for="item in sortedFiltered"
-                        :key="item.id"
-                        :item="item"
-                        @click="$router.push(`/catalog/${item.content?.id ?? item.content_id}`)"
-                        @plusOne="incrementItem"
-                    />
-                </div>
+                <!-- Grouped by status -->
+                <template v-else>
+                    <div v-for="group in groupedByStatus" :key="group.status" style="margin-bottom: 16px;">
+                        <!-- Status section header -->
+                        <div style="display: flex; align-items: center; gap: 8px; padding: 0 18px 8px;">
+                            <span :style="{ width: '8px', height: '8px', borderRadius: '50%', background: group.color, display: 'inline-block', flexShrink: '0', boxShadow: `0 0 0 3px ${group.color}22` }"></span>
+                            <span style="font-size: 10px; font-weight: 800; color: #eef0f5; letter-spacing: 0.06em; text-transform: uppercase;">{{ group.label }}</span>
+                            <span style="font-size: 11px; color: #4a5169; font-weight: 600;">{{ group.items.length }}</span>
+                        </div>
+                        <div style="padding: 0 14px;">
+                            <ContentCard
+                                v-for="item in group.items"
+                                :key="item.id"
+                                :item="item"
+                                @click="$router.push(`/catalog/${item.content?.id ?? item.content_id}`)"
+                                @plusOne="incrementItem"
+                            />
+                        </div>
+                    </div>
+                </template>
             </div>
         </IonContent>
 
@@ -279,7 +274,6 @@ export default defineComponent({
             loading: false,
             userContents: [] as UserContent[],
             search: '',
-            activeStatus: null as string | null,
             activeType: null as ContentType | null,
             sortBy: 'updated_desc',
             isSortOpen: false,
@@ -330,16 +324,33 @@ export default defineComponent({
             }
             return chips;
         },
-        statusTabs(): { value: string | null; label: string; count: number }[] {
-            const inProgress = this.userContents.filter(i => i.status === 'reading').length;
-            const watching   = this.userContents.filter(i => i.status === 'reading' || i.status === 'plan_to_read').length;
-            return [
-                { value: null,        label: 'Tudo',       count: this.userContents.length },
-                { value: 'active',    label: 'Assistindo', count: this.userContents.filter(i => ['reading'].includes(i.status)).length },
-                { value: 'completed', label: 'Completos',  count: this.userContents.filter(i => i.status === 'completed').length },
-                { value: 'paused',    label: 'Pausados',   count: this.userContents.filter(i => i.status === 'paused').length },
-                { value: 'planned',   label: 'Quero ver',  count: this.userContents.filter(i => i.status === 'plan_to_read').length },
-            ].filter(t => t.value === null || t.count > 0);
+        groupedByStatus(): { status: ContentStatus; label: string; color: string; items: UserContent[] }[] {
+            const STATUS_ORDER: ContentStatus[] = ['reading', 'plan_to_read', 'completed', 'paused', 'dropped'];
+            const STATUS_COLOR: Record<string, string> = {
+                reading: '#60a5fa', completed: '#34d399', paused: '#fbbf24', dropped: '#f87171', plan_to_read: '#a78bfa',
+            };
+            const groups: Record<string, UserContent[]> = {};
+            for (const item of this.sortedFiltered) {
+                (groups[item.status] = groups[item.status] || []).push(item);
+            }
+            return STATUS_ORDER.filter(s => groups[s]?.length).map(s => {
+                const items = groups[s];
+                const isAllVideo = items.every(i => ['anime', 'tv', 'movie'].includes(i.content?.type ?? ''));
+                const isAllReading = items.every(i => ['manga', 'novel'].includes(i.content?.type ?? ''));
+                let label: string;
+                if (s === 'reading') {
+                    label = isAllVideo ? 'Assistindo' : isAllReading ? 'Lendo' : 'Em andamento';
+                } else if (s === 'plan_to_read') {
+                    label = isAllVideo ? 'Quero assistir' : isAllReading ? 'Quero ler' : 'Quero ver / ler';
+                } else if (s === 'completed') {
+                    label = 'Completos';
+                } else if (s === 'paused') {
+                    label = 'Pausados';
+                } else {
+                    label = 'Abandonados';
+                }
+                return { status: s as ContentStatus, label, color: STATUS_COLOR[s] ?? '#6b738a', items };
+            });
         },
         sortedFiltered(): UserContent[] {
             let result = [...this.userContents];
@@ -347,17 +358,6 @@ export default defineComponent({
             // Quick type filter
             if (this.activeType) {
                 result = result.filter(i => i.content?.type === this.activeType);
-            }
-
-            // Status tab
-            if (this.activeStatus === 'active') {
-                result = result.filter(i => i.status === 'reading');
-            } else if (this.activeStatus === 'completed') {
-                result = result.filter(i => i.status === 'completed');
-            } else if (this.activeStatus === 'paused') {
-                result = result.filter(i => i.status === 'paused');
-            } else if (this.activeStatus === 'planned') {
-                result = result.filter(i => i.status === 'plan_to_read');
             }
 
             // Search
@@ -464,24 +464,6 @@ export default defineComponent({
             (event.target as HTMLIonRefresherElement).complete();
         },
         // Style helpers
-        tabStyle(val: string | null): Record<string, string> {
-            const active = this.activeStatus === val;
-            return {
-                padding: '7px 14px', borderRadius: '20px', border: 'none',
-                fontSize: '12px', fontWeight: '700', cursor: 'pointer', flexShrink: '0',
-                display: 'flex', alignItems: 'center', gap: '6px',
-                background: active ? '#eef0f5' : 'transparent',
-                color: active ? '#0d1117' : '#9aa3b8',
-                transition: 'all 0.18s',
-            };
-        },
-        tabCountStyle(val: string | null): Record<string, string> {
-            const active = this.activeStatus === val;
-            return {
-                fontSize: '10px', opacity: '0.65',
-                color: active ? '#0d1117' : '#6b738a',
-            };
-        },
         typeChipStyle(val: ContentType | null): Record<string, string> {
             const active = this.activeType === val;
             const colors: Record<string, string> = { manga: '#5eead4', anime: '#a78bfa', novel: '#fbbf24', movie: '#f472b6', tv: '#22d3ee' };
