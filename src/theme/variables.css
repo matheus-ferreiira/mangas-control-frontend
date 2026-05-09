@@ -14,44 +14,44 @@
     --ion-color-secondary-shade: #7a4fdc;
     --ion-color-secondary-tint: #976cf7;
 
-    --ion-background-color: #0b0f1a;
-    --ion-background-color-rgb: 11, 15, 26;
+    --ion-background-color: #0d1117;
+    --ion-background-color-rgb: 13, 17, 23;
 
     --ion-text-color: #f0f4ff;
     --ion-text-color-rgb: 240, 244, 255;
 
-    --ion-card-background: #1a2035;
-    --ion-item-background: #141825;
+    --ion-card-background: #131826;
+    --ion-item-background: #131826;
     --ion-font-family: 'Inter', system-ui, -apple-system, sans-serif;
 
-    --ion-toolbar-background: #141825;
-    --ion-tab-bar-background: #0f1629;
+    --ion-toolbar-background: #131826;
+    --ion-tab-bar-background: #0d1117;
     --ion-tab-bar-border-color: rgba(0, 212, 170, 0.2);
     --ion-tab-bar-color: #5a6480;
     --ion-tab-bar-color-selected: #00d4aa;
 
-    --ion-color-step-50: #101524;
-    --ion-color-step-100: #141825;
-    --ion-color-step-150: #181d2e;
-    --ion-color-step-200: #1a2035;
-    --ion-color-step-250: #1e2740;
-    --ion-color-step-300: #222840;
-    --ion-color-step-350: #252d4a;
-    --ion-color-step-400: #293455;
-    --ion-color-step-450: #2d3a60;
-    --ion-color-step-500: #30406b;
+    --ion-color-step-50: #0f1420;
+    --ion-color-step-100: #131826;
+    --ion-color-step-150: #171c2c;
+    --ion-color-step-200: #1a1f2e;
+    --ion-color-step-250: #1e2535;
+    --ion-color-step-300: #222a3c;
+    --ion-color-step-350: #263045;
+    --ion-color-step-400: #2a3650;
+    --ion-color-step-450: #2e3c5c;
+    --ion-color-step-500: #324268;
 
-    --ion-placeholder-color: #4a5570;
-    --ion-border-color: #222840;
-    --ion-item-border-color: #222840;
+    --ion-placeholder-color: #4a5169;
+    --ion-border-color: #1e2535;
+    --ion-item-border-color: #1e2535;
 
     /* Custom vars */
-    --neon-surface: #141825;
-    --neon-surface-elevated: #1a2035;
-    --neon-border: #222840;
-    --neon-accent: #00d4aa;
-    --neon-accent-dim: rgba(0, 212, 170, 0.13);
-    --neon-accent-glow: rgba(0, 212, 170, 0.28);
+    --neon-surface: #131826;
+    --neon-surface-elevated: #1a1f2e;
+    --neon-border: #1e2535;
+    --neon-accent: #5eead4;
+    --neon-accent-dim: rgba(94, 234, 212, 0.13);
+    --neon-accent-glow: rgba(94, 234, 212, 0.28);
     --neon-blue: #8b5cf6;
     --neon-text-muted: #5a6480;
     --neon-gradient: linear-gradient(135deg, #8b5cf6 0%, #00d4aa 100%);
@@ -60,11 +60,11 @@
     --neon-pill-border: #4a5a80;
 
     /* Status colors */
-    --status-reading: #3b82f6;
-    --status-completed: #10b981;
-    --status-paused: #f59e0b;
-    --status-dropped: #ef4444;
-    --status-plan: #8b5cf6;
+    --status-reading: #60a5fa;
+    --status-completed: #34d399;
+    --status-paused: #fbbf24;
+    --status-dropped: #f87171;
+    --status-plan: #a78bfa;
 }
 
 body, ion-app {
@@ -80,13 +80,13 @@ h1, h2, h3, h4 {
 }
 
 ion-content {
-    --background: #0b0f1a;
+    --background: #0d1117;
 }
 
 ion-toolbar {
-    --background: #141825;
-    --border-color: rgba(0, 212, 170, 0.12);
-    border-bottom: 1px solid rgba(0, 212, 170, 0.12);
+    --background: #131826;
+    --border-color: rgba(94, 234, 212, 0.1);
+    border-bottom: 1px solid rgba(94, 234, 212, 0.1);
 }
 
 ion-title {
@@ -96,20 +96,20 @@ ion-title {
 }
 
 ion-item {
-    --border-color: #222840;
-    --highlight-color-focused: #00d4aa;
+    --border-color: #1e2535;
+    --highlight-color-focused: #5eead4;
 }
 
 ion-tab-bar {
-    border-top: 1px solid rgba(0, 212, 170, 0.2);
+    border-top: 1px solid rgba(94, 234, 212, 0.15);
     padding-bottom: env(safe-area-inset-bottom);
     height: 60px;
     overflow: visible;
 }
 
 ion-tab-button {
-    --color: #5a6480;
-    --color-selected: #00d4aa;
+    --color: #4a5169;
+    --color-selected: #5eead4;
     font-family: 'Inter', system-ui, sans-serif;
     font-size: 10px;
     font-weight: 600;
@@ -122,7 +122,7 @@ ion-modal ion-header {
 }
 
 ion-back-button {
-    --color: #00d4aa;
+    --color: #5eead4;
 }
 
 .neon-gradient-text {
@@ -161,8 +161,8 @@ ion-back-button {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: rgba(0, 212, 170, 0.13);
-    border: 1px solid rgba(0, 212, 170, 0.3);
+    background: rgba(94, 234, 212, 0.13);
+    border: 1px solid rgba(94, 234, 212, 0.28);
     border-radius: 20px;
     padding: 4px 12px;
     font-size: 11px;
