@@ -71,6 +71,12 @@ export interface Content {
     country?: string;
     total_seasons?: number;
     duration_formatted?: string;
+    studios?: string[];
+    demographics?: string[];
+    themes?: string[];
+    tagline?: string;
+    age_rating?: string;
+    networks?: string[];
 }
 
 export interface ContentMeta {
@@ -219,6 +225,7 @@ export const contentService = {
     async getById(id: number): Promise<Content | null> {
         try {
             const { data } = await api.get(`/contents/${id}`);
+            if (!data || typeof data !== 'object' || !('id' in data)) return null;
             return data as Content;
         } catch {
             return null;
