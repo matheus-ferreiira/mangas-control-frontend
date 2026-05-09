@@ -28,7 +28,7 @@ const routes: Array<RouteRecordRaw> = [
         component: TabsPage,
         meta: { requiresAuth: true },
         children: [
-            { path: '', redirect: '/tabs/library' },
+            { path: '', redirect: '/tabs/discover' },
             {
                 path: 'library',
                 component: () => import('@/views/LibraryPage.vue'),
@@ -44,6 +44,10 @@ const routes: Array<RouteRecordRaw> = [
             {
                 path: 'sources',
                 component: () => import('@/views/ManageSitesPage.vue'),
+            },
+            {
+                path: 'activity',
+                component: () => import('@/views/ActivityPage.vue'),
             },
             {
                 path: 'profile',
