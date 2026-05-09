@@ -54,6 +54,17 @@ export interface UserContent {
         country?: string;
         original_language?: string;
         is_adult?: boolean;
+        origin_type?: string;
+        age_rating?: string;
+        tagline?: string;
+        studios?: string[];
+        demographics?: string[];
+        themes?: string[];
+        networks?: string[];
+        duration?: number;
+        source?: string;
+        external_id?: string | null;
+        popularity?: number;
     };
     site?: {
         id: number;
@@ -69,9 +80,12 @@ export interface UserContent {
 }
 
 export const userContentService = {
-    async getAll(params?: { type?: ContentType; status?: ContentStatus }): Promise<UserContent[]> {
+    async getAll(params?: { type?: ContentType; status?: ContentStatus; content_id?: number }): Promise<UserContent[]> {
         const { data } = await api.get('/user-contents', { params });
-        return (Array.isArray(data) ? data : data?.data ?? []) as UserContent[];
+        if (Array.isArray(data)) return data as UserContent[];
+        if (Array.isArray(data?.items)) return data.items as UserContent[];
+        if (Array.isArray(data?.data)) return data.data as UserContent[];
+        return [];
     },
 
     async getOne(id: number): Promise<UserContent> {
