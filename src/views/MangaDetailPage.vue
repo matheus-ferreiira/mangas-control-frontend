@@ -14,15 +14,15 @@
                         style="width: 100%; height: 100%; object-fit: cover; display: block;"
                         alt="Capa"
                     />
-                    <div v-else style="width: 100%; height: 100%; background: linear-gradient(135deg, #141825, #1a2035); display: flex; align-items: center; justify-content: center;">
-                        <IonIcon :icon="typeIcon" style="font-size: 64px; color: #1e2640;" />
+                    <div v-else style="width: 100%; height: 100%; background: linear-gradient(135deg, rgba(8,10,16,0.8), rgba(5,7,11,1)); display: flex; align-items: center; justify-content: center;">
+                        <IonIcon :icon="typeIcon" style="font-size: 64px; color: rgba(255,255,255,0.06);" />
                     </div>
                     <!-- Gradient overlay -->
-                    <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(11,15,26,0.2) 0%, rgba(11,15,26,0.7) 60%, rgba(11,15,26,1) 100%);"></div>
+                    <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(5,7,11,0.2) 0%, rgba(5,7,11,0.7) 60%, rgba(5,7,11,1) 100%);"></div>
                     <!-- Back button -->
                     <div style="position: absolute; left: 12px;" :style="{ top: 'max(12px, env(safe-area-inset-top, 12px))' }">
                         <button
-                            style="width: 36px; height: 36px; border-radius: 50%; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: #eef2ff; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer;"
+                            style="width: 36px; height: 36px; border-radius: 50%; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: #e9edf2; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer;"
                             @click="$router.back()"
                         >‹</button>
                     </div>
@@ -32,45 +32,40 @@
                         <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 6px;">
                             <span :style="typeBadgeStyle">{{ typeLabel }}</span>
                             <span v-if="catStatusLabel" :style="catStatusBadgeStyle">{{ catStatusLabel }}</span>
-                            <span v-if="fullContent?.is_adult" style="font-size: 9px; font-weight: 800; color: #ef4444; background: rgba(239,68,68,0.15); padding: 2px 6px; border-radius: 20px; letter-spacing: 0.04em;">+18</span>
-                            <span v-if="isHighScore" style="font-size: 9px; font-weight: 800; color: #f59e0b; background: rgba(245,158,11,0.15); padding: 2px 6px; border-radius: 20px; letter-spacing: 0.04em;">TOP</span>
+                            <span v-if="fullContent?.is_adult" style="font-size: 9px; font-weight: 800; color: #FF5E5E; background: rgba(239,107,107,0.15); padding: 2px 6px; border-radius: 20px; letter-spacing: 0.04em;">+18</span>
+                            <span v-if="isHighScore" style="font-size: 9px; font-weight: 800; color: #F5C542; background: rgba(230,184,92,0.15); padding: 2px 6px; border-radius: 20px; letter-spacing: 0.04em;">TOP</span>
                         </div>
-                        <h1 style="font-size: 22px; font-weight: 800; color: #eef2ff; margin: 0; line-height: 1.25; letter-spacing: -0.02em;">{{ item.content?.name }}</h1>
-                        <div v-if="fullContent?.alternative_names?.length" style="font-size: 11px; color: #5a6480; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ fullContent.alternative_names[0] }}</div>
+                        <h1 style="font-size: 22px; font-weight: 800; color: #e9edf2; margin: 0; line-height: 1.25; letter-spacing: -0.02em; font-family: 'Sora', system-ui, sans-serif;">{{ item.content?.name }}</h1>
+                        <div v-if="fullContent?.alternative_names?.length" style="font-size: 11px; color: rgba(233,237,242,0.42); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ fullContent.alternative_names[0] }}</div>
                     </div>
                 </div>
 
                 <div style="padding: 14px 16px 96px;">
-                    <!-- Stats grid -->
-                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px;">
-                        <div v-if="fullContent?.rating != null" style="background: #1a2035; border: 1px solid #1e2640; border-radius: 12px; padding: 10px 6px; text-align: center;">
-                            <div style="font-size: 15px; font-weight: 800; color: #f59e0b;">★ {{ fullContent.rating }}</div>
-                            <div style="font-size: 9px; font-weight: 600; color: #4a5470; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px;">Nota</div>
+                    <!-- Stats row -->
+                    <div style="display: flex; align-items: stretch; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; overflow: hidden;">
+                        <div v-if="fullContent?.rating != null" style="flex: 1; padding: 12px 8px; text-align: center; border-right: 1px solid rgba(255,255,255,0.06);">
+                            <div style="font-size: 18px; font-weight: 800; color: #F5C542; font-family: 'Sora', system-ui, sans-serif;">★ {{ fullContent.rating }}</div>
+                            <div style="font-size: 9px; color: rgba(233,237,242,0.42); text-transform: uppercase; letter-spacing: 0.14em; margin-top: 3px;">Nota</div>
                         </div>
-                        <div v-if="fullContent?.score != null" style="background: #1a2035; border: 1px solid #1e2640; border-radius: 12px; padding: 10px 6px; text-align: center;">
-                            <div style="font-size: 15px; font-weight: 800; color: #00d4aa;">{{ fullContent.score }}</div>
-                            <div style="font-size: 9px; font-weight: 600; color: #4a5470; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px;">Score</div>
+                        <div v-if="fullContent?.score != null" style="flex: 1; padding: 12px 8px; text-align: center; border-right: 1px solid rgba(255,255,255,0.06);">
+                            <div style="font-size: 18px; font-weight: 800; color: #00F5A0; font-family: 'Sora', system-ui, sans-serif;">{{ fullContent.score }}</div>
+                            <div style="font-size: 9px; color: rgba(233,237,242,0.42); text-transform: uppercase; letter-spacing: 0.14em; margin-top: 3px;">Score</div>
                         </div>
-                        <div v-if="fullContent?.release_year" style="background: #1a2035; border: 1px solid #1e2640; border-radius: 12px; padding: 10px 6px; text-align: center;">
-                            <div style="font-size: 15px; font-weight: 800; color: #eef2ff;">{{ fullContent.release_year }}</div>
-                            <div style="font-size: 9px; font-weight: 600; color: #4a5470; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px;">Ano</div>
+                        <div v-if="fullContent?.release_year" style="flex: 1; padding: 12px 8px; text-align: center; border-right: 1px solid rgba(255,255,255,0.06);">
+                            <div style="font-size: 18px; font-weight: 800; color: #e9edf2; font-family: 'Sora', system-ui, sans-serif;">{{ fullContent.release_year }}</div>
+                            <div style="font-size: 9px; color: rgba(233,237,242,0.42); text-transform: uppercase; letter-spacing: 0.14em; margin-top: 3px;">Ano</div>
                         </div>
-                        <!-- Type-specific stat -->
-                        <div v-if="isMovie && fullContent?.duration_formatted" style="background: #1a2035; border: 1px solid #1e2640; border-radius: 12px; padding: 10px 6px; text-align: center;">
-                            <div style="font-size: 13px; font-weight: 800; color: #eef2ff;">{{ fullContent.duration_formatted }}</div>
-                            <div style="font-size: 9px; font-weight: 600; color: #4a5470; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px;">Duração</div>
+                        <div v-if="isMovie && fullContent?.duration_formatted" style="flex: 1; padding: 12px 8px; text-align: center;">
+                            <div style="font-size: 15px; font-weight: 800; color: #e9edf2; font-family: 'Sora', system-ui, sans-serif;">{{ fullContent.duration_formatted }}</div>
+                            <div style="font-size: 9px; color: rgba(233,237,242,0.42); text-transform: uppercase; letter-spacing: 0.14em; margin-top: 3px;">Duração</div>
                         </div>
-                        <div v-else-if="isTv && fullContent?.total_seasons" style="background: #1a2035; border: 1px solid #1e2640; border-radius: 12px; padding: 10px 6px; text-align: center;">
-                            <div style="font-size: 15px; font-weight: 800; color: #eef2ff;">{{ fullContent.total_seasons }}</div>
-                            <div style="font-size: 9px; font-weight: 600; color: #4a5470; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px;">Temporadas</div>
+                        <div v-else-if="isTv && fullContent?.total_seasons" style="flex: 1; padding: 12px 8px; text-align: center;">
+                            <div style="font-size: 18px; font-weight: 800; color: #e9edf2; font-family: 'Sora', system-ui, sans-serif;">{{ fullContent.total_seasons }}</div>
+                            <div style="font-size: 9px; color: rgba(233,237,242,0.42); text-transform: uppercase; letter-spacing: 0.14em; margin-top: 3px;">Temporadas</div>
                         </div>
-                        <div v-else-if="fullContent?.total_units" style="background: #1a2035; border: 1px solid #1e2640; border-radius: 12px; padding: 10px 6px; text-align: center;">
-                            <div style="font-size: 15px; font-weight: 800; color: #eef2ff;">{{ fullContent.total_units }}</div>
-                            <div style="font-size: 9px; font-weight: 600; color: #4a5470; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px;">{{ unitShort }}</div>
-                        </div>
-                        <div v-if="fullContent?.country" style="background: #1a2035; border: 1px solid #1e2640; border-radius: 12px; padding: 10px 6px; text-align: center;">
-                            <div style="font-size: 14px; font-weight: 800; color: #eef2ff;">{{ fullContent.country }}</div>
-                            <div style="font-size: 9px; font-weight: 600; color: #4a5470; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px;">País</div>
+                        <div v-else-if="fullContent?.total_units" style="flex: 1; padding: 12px 8px; text-align: center;">
+                            <div style="font-size: 18px; font-weight: 800; color: #e9edf2; font-family: 'Sora', system-ui, sans-serif;">{{ fullContent.total_units }}</div>
+                            <div style="font-size: 9px; color: rgba(233,237,242,0.42); text-transform: uppercase; letter-spacing: 0.14em; margin-top: 3px;">{{ unitShort }}</div>
                         </div>
                     </div>
 
@@ -79,25 +74,25 @@
                         <span
                             v-for="g in genres"
                             :key="g"
-                            style="font-size: 10px; font-weight: 600; color: #7a88aa; background: #141825; border: 1px solid #1e2640; padding: 3px 8px; border-radius: 6px;"
+                            style="font-size: 10px; font-weight: 600; color: rgba(233,237,242,0.42); background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); padding: 3px 8px; border-radius: 6px;"
                         >{{ g }}</span>
                     </div>
 
                     <!-- Synopsis -->
-                    <div v-if="synopsis" style="background: #141825; border: 1px solid #1e2640; border-radius: 14px; padding: 14px; margin-bottom: 16px;">
-                        <div style="font-size: 12px; font-weight: 800; color: #eef2ff; margin-bottom: 8px; letter-spacing: 0.02em; text-transform: uppercase;">Sinopse</div>
+                    <div v-if="synopsis" style="background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 14px; margin-bottom: 16px;">
+                        <div style="font-size: 10px; font-weight: 800; color: rgba(233,237,242,0.42); margin-bottom: 8px; letter-spacing: 0.22em; text-transform: uppercase;">Sinopse</div>
                         <div
-                            style="font-size: 12px; color: #7a88aa; line-height: 1.7; transition: all 0.2s;"
+                            style="font-size: 12px; color: rgba(233,237,242,0.62); line-height: 1.7; transition: all 0.2s;"
                             :style="synopsisExpanded ? {} : { display: '-webkit-box', WebkitLineClamp: '4', WebkitBoxOrient: 'vertical', overflow: 'hidden' }"
                         >{{ synopsis }}</div>
                         <button
-                            style="margin-top: 8px; font-size: 11px; font-weight: 700; color: #00d4aa; background: none; border: none; cursor: pointer; padding: 0;"
+                            style="margin-top: 8px; font-size: 11px; font-weight: 700; color: #00F5A0; background: none; border: none; cursor: pointer; padding: 0;"
                             @click="synopsisExpanded = !synopsisExpanded"
                         >{{ synopsisExpanded ? 'Ver menos ↑' : 'Ver mais ↓' }}</button>
                     </div>
 
                     <!-- Trailer -->
-                    <div v-if="trailerEmbedUrl" style="background: #141825; border: 1px solid #1e2640; border-radius: 14px; overflow: hidden; margin-bottom: 16px;">
+                    <div v-if="trailerEmbedUrl" style="background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; overflow: hidden; margin-bottom: 16px;">
                         <iframe
                             :src="trailerEmbedUrl"
                             style="width: 100%; aspect-ratio: 16/9; border: none; display: block;"
@@ -107,12 +102,12 @@
                     </div>
 
                     <!-- My Record panel -->
-                    <div style="background: #1a2035; border: 1px solid #1e2640; border-radius: 16px; padding: 16px; margin-bottom: 16px;">
-                        <div style="font-size: 13px; font-weight: 800; color: #eef2ff; margin-bottom: 14px; letter-spacing: -0.01em;">Meu Registro</div>
+                    <div style="background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 16px; margin-bottom: 16px;">
+                        <div style="font-size: 13px; font-weight: 800; color: #e9edf2; margin-bottom: 14px; letter-spacing: -0.01em;">Meu Registro</div>
 
                         <!-- Status -->
                         <div style="margin-bottom: 14px;">
-                            <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.08em; color: #4a5470; text-transform: uppercase; margin-bottom: 8px;">Status</div>
+                            <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.22em; color: rgba(233,237,242,0.42); text-transform: uppercase; margin-bottom: 8px;">Status</div>
                             <div style="display: flex; flex-wrap: wrap; gap: 6px;">
                                 <div
                                     v-for="s in availableStatuses"
@@ -120,10 +115,10 @@
                                     style="display: flex; align-items: center; gap: 5px; height: 30px; padding: 0 12px; border-radius: 20px; font-size: 11px; font-weight: 700; cursor: pointer; border: 1px solid; transition: all 0.15s; white-space: nowrap;"
                                     :style="item.status === s.value
                                         ? { background: getStatusColor(s.value) + '22', color: getStatusColor(s.value), borderColor: getStatusColor(s.value) + '88' }
-                                        : { background: '#141825', color: '#5a6480', borderColor: '#222840' }"
+                                        : { background: 'rgba(255,255,255,0.025)', color: 'rgba(233,237,242,0.42)', borderColor: 'rgba(255,255,255,0.06)' }"
                                     @click="changeStatus(s.value)"
                                 >
-                                    <span style="width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;" :style="{ background: item.status === s.value ? getStatusColor(s.value) : '#4a5570' }"></span>
+                                    <span style="width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;" :style="{ background: item.status === s.value ? getStatusColor(s.value) : 'rgba(255,255,255,0.12)' }"></span>
                                     {{ s.label }}
                                 </div>
                             </div>
@@ -133,16 +128,16 @@
                         <template v-if="!isMovie">
                             <!-- Season (TV/Anime) -->
                             <div v-if="isTv" style="margin-bottom: 14px;">
-                                <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.08em; color: #4a5470; text-transform: uppercase; margin-bottom: 8px;">Temporada</div>
+                                <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.22em; color: rgba(233,237,242,0.42); text-transform: uppercase; margin-bottom: 8px;">Temporada</div>
                                 <div style="display: flex; align-items: center; gap: 10px;">
                                     <button
-                                        style="width: 36px; height: 36px; border-radius: 10px; border: 1px solid #1e2640; background: transparent; color: #eef2ff; font-size: 20px; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;"
+                                        style="width: 36px; height: 36px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.025); color: #e9edf2; font-size: 20px; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;"
                                         :disabled="saving || (item.current_season ?? 1) <= 1"
                                         @click="decrementSeason"
                                     >−</button>
-                                    <div style="flex: 1; text-align: center; font-size: 28px; font-weight: 800; color: #eef2ff;">{{ item.current_season ?? 1 }}</div>
+                                    <div style="flex: 1; text-align: center; font-size: 28px; font-weight: 800; color: #e9edf2; font-family: 'Sora', system-ui, sans-serif;">{{ item.current_season ?? 1 }}</div>
                                     <button
-                                        style="width: 36px; height: 36px; border-radius: 10px; border: 1px solid #00d4aa; background: #00d4aa; color: #000; font-size: 20px; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;"
+                                        style="width: 36px; height: 36px; border-radius: 10px; border: 1px solid #00F5A0; background: #00F5A0; color: #05070b; font-size: 20px; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;"
                                         :disabled="saving"
                                         @click="incrementSeason"
                                     >+</button>
@@ -151,12 +146,12 @@
 
                             <!-- Episode / Chapter -->
                             <div style="margin-bottom: 14px;">
-                                <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.08em; color: #4a5470; text-transform: uppercase; margin-bottom: 8px;">
+                                <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.22em; color: rgba(233,237,242,0.42); text-transform: uppercase; margin-bottom: 8px;">
                                     {{ isTv ? 'Episódio' : (contentType === 'anime' ? 'Episódio' : 'Capítulo') }}
                                 </div>
                                 <div style="display: flex; align-items: center; gap: 10px;">
                                     <button
-                                        style="width: 36px; height: 36px; border-radius: 10px; border: 1px solid #1e2640; background: transparent; color: #eef2ff; font-size: 20px; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;"
+                                        style="width: 36px; height: 36px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.025); color: #e9edf2; font-size: 20px; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;"
                                         :disabled="saving || item.current_units <= 0"
                                         @click="decrement"
                                     >−</button>
@@ -175,15 +170,15 @@
                                         />
                                         <span
                                             v-else
-                                            style="font-size: 32px; font-weight: 800; color: #eef2ff; cursor: pointer; line-height: 1;"
+                                            style="font-size: 32px; font-weight: 800; color: #e9edf2; cursor: pointer; line-height: 1; font-family: 'Sora', system-ui, sans-serif;"
                                             @click="startEditUnits"
                                         >{{ item.current_units }}</span>
                                     </div>
                                     <button
                                         style="width: 36px; height: 36px; border-radius: 10px; font-size: 20px; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: all 0.2s;"
                                         :style="atLimit
-                                            ? { border: '1px solid #1e2640', background: '#141825', color: '#2a3450', cursor: 'not-allowed' }
-                                            : { border: '1px solid #00d4aa', background: '#00d4aa', color: '#000' }"
+                                            ? { border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.025)', color: 'rgba(233,237,242,0.18)', cursor: 'not-allowed' }
+                                            : { border: '1px solid #00F5A0', background: '#00F5A0', color: '#05070b' }"
                                         :disabled="saving || atLimit"
                                         @click="increment"
                                     >+</button>
@@ -193,22 +188,22 @@
                                     <div style="height: 3px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden;">
                                         <div style="height: 100%; border-radius: 3px; transition: width 0.3s;" :style="{ width: progressPct + '%', background: statusColor }"></div>
                                     </div>
-                                    <div style="font-size: 10px; color: #4a5470; margin-top: 4px;">{{ item.current_units }} / {{ item.content?.total_units }} {{ unitShort }} · {{ progressPct }}%</div>
+                                    <div style="font-size: 10px; color: rgba(233,237,242,0.42); margin-top: 4px;">{{ item.current_units }} / {{ item.content?.total_units }} {{ unitShort }} · {{ progressPct }}%</div>
                                 </div>
                             </div>
                         </template>
 
                         <!-- Rating grid -->
                         <div style="margin-bottom: 14px;">
-                            <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.08em; color: #4a5470; text-transform: uppercase; margin-bottom: 8px;">Avaliação (0–10)</div>
+                            <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.22em; color: rgba(233,237,242,0.42); text-transform: uppercase; margin-bottom: 8px;">Avaliação (0–10)</div>
                             <div style="display: flex; flex-wrap: wrap; gap: 6px;">
                                 <div
                                     v-for="n in ratingOptions"
                                     :key="n"
                                     style="width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer; border: 1px solid; transition: all 0.15s;"
                                     :style="item.rating === n
-                                        ? { background: 'rgba(245,158,11,0.15)', color: '#f59e0b', borderColor: 'rgba(245,158,11,0.4)' }
-                                        : { background: '#141825', color: '#5a6480', borderColor: '#222840' }"
+                                        ? { background: 'rgba(230,184,92,0.15)', color: '#F5C542', borderColor: 'rgba(230,184,92,0.4)' }
+                                        : { background: 'rgba(255,255,255,0.025)', color: 'rgba(233,237,242,0.42)', borderColor: 'rgba(255,255,255,0.06)' }"
                                     @click="changeRating(item.rating === n ? null : n)"
                                 >{{ n }}</div>
                             </div>
@@ -216,7 +211,7 @@
 
                         <!-- Site -->
                         <div v-if="sites.length">
-                            <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.08em; color: #4a5470; text-transform: uppercase; margin-bottom: 8px;">Fonte</div>
+                            <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.22em; color: rgba(233,237,242,0.42); text-transform: uppercase; margin-bottom: 8px;">Fonte</div>
                             <IonSelect
                                 v-model="selectedSiteId"
                                 :compareWith="(o1: any, o2: any) => Number(o1) === Number(o2)"
@@ -233,17 +228,17 @@
                     </div>
 
                     <!-- Votes info -->
-                    <div v-if="fullContent?.votes_count" style="text-align: center; font-size: 11px; color: #4a5470; margin-bottom: 12px;">
+                    <div v-if="fullContent?.votes_count" style="text-align: center; font-size: 11px; color: rgba(233,237,242,0.42); margin-bottom: 12px;">
                         {{ fullContent.votes_count.toLocaleString('pt-BR') }} avaliações
                     </div>
 
                     <!-- Delete — subtle link-style -->
                     <div style="display: flex; justify-content: center; padding-top: 4px;">
                         <button
-                            style="background: none; border: none; cursor: pointer; font-size: 12px; font-weight: 600; color: #3a4460; display: flex; align-items: center; gap: 5px; padding: 8px 16px; border-radius: 10px; transition: color 0.15s;"
+                            style="background: none; border: none; cursor: pointer; font-size: 12px; font-weight: 600; color: rgba(233,237,242,0.28); display: flex; align-items: center; gap: 5px; padding: 8px 16px; border-radius: 10px; transition: color 0.15s;"
                             @click="confirmDelete"
-                            onmouseenter="this.style.color='#ef4444'"
-                            onmouseleave="this.style.color='#3a4460'"
+                            onmouseenter="this.style.color='#FF5E5E'"
+                            onmouseleave="this.style.color='rgba(233,237,242,0.28)'"
                         >
                             <IonIcon :icon="trashOutline" style="font-size: 13px;" />
                             Remover da biblioteca
@@ -278,19 +273,19 @@ const TYPE_ICONS: Record<ContentType, string> = {
 };
 
 const TYPE_BADGE_STYLES: Record<ContentType, { color: string }> = {
-    manga:  { color: '#00d4aa' },
-    anime:  { color: '#8b5cf6' },
-    novel:  { color: '#f59e0b' },
-    movie:  { color: '#ec4899' },
-    tv:     { color: '#06b6d4' },
+    manga:  { color: '#00F5A0' },
+    anime:  { color: '#B8A4FF' },
+    novel:  { color: '#F5C542' },
+    movie:  { color: '#FF7EC7' },
+    tv:     { color: '#7CAEFF' },
 };
 
 const STATUS_COLORS: Record<ContentStatus, string> = {
-    reading: '#3b82f6',
-    completed: '#10b981',
-    paused: '#f59e0b',
-    dropped: '#ef4444',
-    plan_to_read: '#8b5cf6',
+    reading:      '#7CAEFF',
+    completed:    '#00F5A0',
+    paused:       '#F5C542',
+    dropped:      '#FF5E5E',
+    plan_to_read: '#B8A4FF',
 };
 
 const MOVIE_STATUSES: ContentStatus[] = ['plan_to_read', 'reading', 'completed'];
@@ -324,7 +319,7 @@ export default defineComponent({
             return CONTENT_TYPE_LABELS[this.contentType];
         },
         typeBadgeStyle(): Record<string, string> {
-            const col = TYPE_BADGE_STYLES[this.contentType]?.color ?? '#00d4aa';
+            const col = TYPE_BADGE_STYLES[this.contentType]?.color ?? '#00F5A0';
             return {
                 fontSize: '9px', fontWeight: '800', letterSpacing: '0.07em',
                 color: col, background: col + '20',
@@ -528,9 +523,9 @@ export default defineComponent({
 <style scoped>
 .unit-input {
     --background: transparent;
-    --color: #eef2ff;
-    --highlight-color-focused: #00d4aa;
-    --border-color: #00d4aa;
+    --color: #e9edf2;
+    --highlight-color-focused: #00F5A0;
+    --border-color: #00F5A0;
     --padding-start: 0;
     --padding-end: 0;
     font-size: 32px;
@@ -540,12 +535,12 @@ export default defineComponent({
 }
 
 .neon-select {
-    --background: #1a2035;
-    --color: #eef2ff;
-    --placeholder-color: #4a5570;
-    --border-color: #1e2640;
+    --background: rgba(255,255,255,0.025);
+    --color: #e9edf2;
+    --placeholder-color: rgba(233,237,242,0.28);
+    --border-color: rgba(255,255,255,0.06);
     --border-radius: 12px;
-    --highlight-color-focused: #00d4aa;
+    --highlight-color-focused: #00F5A0;
     --padding-start: 14px;
     --padding-end: 14px;
     min-height: 48px;

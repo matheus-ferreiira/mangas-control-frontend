@@ -55,7 +55,7 @@
                                 class="type-btn"
                                 :style="newForm.type === opt.value
                                     ? typeActiveStyle(opt.value)
-                                    : { '--background': '#141825', '--color': '#5a6480', '--border-color': '#222840' }"
+                                    : { '--background': 'rgba(255,255,255,0.025)', '--color': 'rgba(233,237,242,0.42)', '--border-color': 'rgba(255,255,255,0.06)' }"
                                 @click="newForm.type = opt.value"
                             >{{ opt.label }}</IonButton>
                         </div>
@@ -78,8 +78,8 @@
                     </IonButton>
 
                     <!-- Success message -->
-                    <div v-if="submitSuccess" class="mt-4 p-4 bg-[#10b981]/10 border border-[#10b981]/30 rounded-xl text-center">
-                        <div class="text-[#10b981] font-bold mb-1">✓ Solicitação enviada!</div>
+                    <div v-if="submitSuccess" class="mt-4 p-4 bg-neon-accent-dim border border-neon-accent-mid rounded-xl text-center">
+                        <div class="text-neon-accent font-bold mb-1">✓ Solicitação enviada!</div>
                         <div class="text-[12px] text-neon-muted">Você será notificado quando for revisada.</div>
                     </div>
                 </template>
@@ -119,7 +119,7 @@
                                     </div>
                                     <div
                                         v-if="req.rejection_reason"
-                                        class="mt-2 p-2 bg-[#ef4444]/10 border border-[#ef4444]/20 rounded-lg text-[11px] text-[#ef4444]"
+                                        class="mt-2 p-2 bg-[#ef6b6b]/10 border border-[#ef6b6b]/20 rounded-lg text-[11px] text-[#ef6b6b]"
                                     >
                                         <span class="font-bold">Motivo: </span>{{ req.rejection_reason }}
                                     </div>
@@ -361,11 +361,11 @@ export default defineComponent({
 
         typeActiveStyle(type: ContentType): Record<string, string> {
             const map: Record<ContentType, Record<string, string>> = {
-                manga: { '--background': 'rgba(0,212,170,0.15)', '--color': '#00d4aa', '--border-color': 'rgba(0,212,170,0.5)' },
-                anime: { '--background': 'rgba(123,143,245,0.15)', '--color': '#7b8ff5', '--border-color': 'rgba(123,143,245,0.5)' },
-                novel: { '--background': 'rgba(255,162,107,0.15)', '--color': '#ffa26b', '--border-color': 'rgba(255,162,107,0.5)' },
-                movie: { '--background': 'rgba(248,113,113,0.15)', '--color': '#f87171', '--border-color': 'rgba(248,113,113,0.5)' },
-                tv: { '--background': 'rgba(167,139,250,0.15)', '--color': '#a78bfa', '--border-color': 'rgba(167,139,250,0.5)' },
+                manga: { '--background': 'rgba(52,211,153,0.15)', '--color': '#00F5A0', '--border-color': 'rgba(52,211,153,0.5)' },
+                anime: { '--background': 'rgba(167,139,250,0.15)', '--color': '#a78bfa', '--border-color': 'rgba(167,139,250,0.5)' },
+                novel: { '--background': 'rgba(230,184,92,0.15)', '--color': '#e6b85c', '--border-color': 'rgba(230,184,92,0.5)' },
+                movie: { '--background': 'rgba(244,114,182,0.15)', '--color': '#f472b6', '--border-color': 'rgba(244,114,182,0.5)' },
+                tv:    { '--background': 'rgba(125,167,255,0.15)', '--color': '#7da7ff', '--border-color': 'rgba(125,167,255,0.5)' },
             };
             return map[type] ?? {};
         },
@@ -379,12 +379,12 @@ export default defineComponent({
 
 <style scoped>
 .neon-input {
-    --background: #1a2035;
-    --color: #f0f4ff;
-    --placeholder-color: #4a5570;
-    --border-color: #222840;
+    --background: rgba(255,255,255,0.025);
+    --color: #e9edf2;
+    --placeholder-color: rgba(233,237,242,0.28);
+    --border-color: rgba(255,255,255,0.06);
     --border-radius: 12px;
-    --highlight-color-focused: #00d4aa;
+    --highlight-color-focused: #00F5A0;
     --padding-start: 16px;
     --padding-end: 16px;
     min-height: 52px;
@@ -399,11 +399,11 @@ export default defineComponent({
     margin: 0;
 }
 
-.btn-primary { --background: var(--neon-accent); --color: #000; --border-radius: 12px; font-weight: 700; height: 50px; }
+.btn-primary { --background: #00F5A0; --color: #050608; --border-radius: 12px; font-weight: 700; height: 50px; }
 
 .approve-btn {
-    --background: #10b981;
-    --color: #000;
+    --background: #00F5A0;
+    --color: #050608;
     --border-radius: 10px;
     font-weight: 700;
     height: 40px;
@@ -411,8 +411,8 @@ export default defineComponent({
 }
 
 .reject-btn {
-    --color: #ef4444;
-    --border-color: rgba(239,68,68,0.4);
+    --color: #ef6b6b;
+    --border-color: rgba(239,107,107,0.4);
     --border-radius: 10px;
     height: 40px;
     flex: 1;

@@ -1,14 +1,14 @@
 <template>
-    <IonPage class="[--background:#0b0f1a]">
-        <IonContent :fullscreen="true" class="[--background:#0b0f1a]">
+    <IonPage class="[--background:#05070b]">
+        <IonContent :fullscreen="true" class="[--background:#05070b]">
             <!-- Logo -->
             <div class="flex flex-col items-center px-6 pt-16 pb-8">
                 <div class="w-[72px] h-[72px] bg-neon-accent/12 rounded-[20px] flex items-center justify-center mb-4 border border-neon-accent/20">
                     <IonIcon :icon="bookSharp" class="text-[40px] text-neon-accent" />
                 </div>
-                <h1 class="text-[28px] font-black tracking-[4px] m-0 mb-2.5 leading-none">
-                    <span class="text-neon-blue">NEON</span>
-                    <span class="text-neon-accent"> CURATOR</span>
+                <h1 style="font-size: 28px; font-weight: 800; margin: 0 0 8px; line-height: 1.1; font-family: 'Sora', system-ui, sans-serif; letter-spacing: -0.04em;">
+                    <span class="text-neon-blue">Neon</span>
+                    <span class="text-neon-accent"> Curator</span>
                 </h1>
                 <p class="text-neon-muted text-sm text-center leading-relaxed m-0">
                     Arquivando as melhores narrativas<br />visuais do mundo.
@@ -28,7 +28,7 @@
                     :disabled="loading"
                     @click="loginWithGoogle"
                 >
-                    <IonSpinner v-if="loading && loginMode === 'google'" slot="start" name="crescent" style="width:20px;height:20px;--color:#00d4aa" />
+                    <IonSpinner v-if="loading && loginMode === 'google'" slot="start" name="crescent" style="width:20px;height:20px;--color:#00F5A0" />
                     <template v-else>
                         <span slot="start" style="display:flex;align-items:center;margin-inline-end:10px">
                             <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true">
@@ -96,10 +96,10 @@
 
             <!-- Footer -->
             <div class="px-6 pb-10 text-center">
-                <p class="text-[10px] text-[#4a5568] tracking-[0.5px] m-0 mb-2">© 2025 PROTOCOLO ARQUIVISTA DIGITAL</p>
+                <p style="font-size: 10px; color: rgba(233,237,242,0.18); letter-spacing: 0.06em; margin: 0 0 8px;">© 2025 Neon Curator</p>
                 <div class="flex justify-center gap-5">
-                    <a href="#" class="text-[10px] text-[#4a5568] no-underline tracking-[0.5px]">POLÍTICA DE PRIVACIDADE</a>
-                    <a href="#" class="text-[10px] text-[#4a5568] no-underline tracking-[0.5px]">TERMOS DE USO</a>
+                    <a href="#" style="font-size: 10px; color: rgba(233,237,242,0.18); text-decoration: none; letter-spacing: 0.04em;">Privacidade</a>
+                    <a href="#" style="font-size: 10px; color: rgba(233,237,242,0.18); text-decoration: none; letter-spacing: 0.04em;">Termos</a>
                 </div>
             </div>
         </IonContent>
@@ -197,9 +197,9 @@ export default defineComponent({
 
 <style scoped>
 .google-btn {
-    --background: #1a2035;
-    --color: #f0f4ff;
-    --border-color: #222840;
+    --background: hsl(222 24% 7%);
+    --color: hsl(213 25% 92%);
+    --border-color: hsl(0 0% 100% / 0.08);
     --border-radius: 14px;
     --border-width: 1px;
     --letter-spacing: 0;
@@ -210,20 +210,21 @@ export default defineComponent({
 }
 
 .btn-primary {
-    --background: var(--neon-accent);
-    --color: #000;
+    --background: #00F5A0;
+    --color: #050608;
     --border-radius: 14px;
+    --box-shadow: 0 0 24px hsl(158 100% 48% / 0.35);
     font-weight: 700;
     height: 52px;
 }
 
 .neon-input {
-    --background: #1a2035;
-    --color: #f0f4ff;
-    --placeholder-color: #4a5570;
-    --border-color: #222840;
+    --background: hsl(222 24% 7%);
+    --color: hsl(213 25% 92%);
+    --placeholder-color: hsl(213 10% 40%);
+    --border-color: hsl(0 0% 100% / 0.07);
     --border-radius: 12px;
-    --highlight-color-focused: #00d4aa;
+    --highlight-color-focused: #00F5A0;
     --padding-start: 16px;
     --padding-end: 16px;
     min-height: 50px;
