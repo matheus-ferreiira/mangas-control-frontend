@@ -55,7 +55,7 @@
                 <template v-if="!isSearchMode">
 
                     <!-- Loading skeleton -->
-                    <div v-if="homeLoading" style="padding: 0 18px;">
+                    <div v-if="homeLoading" style="padding: 14px 18px 0;">
                         <div style="height: 280px; border-radius: 20px; background: hsl(222 24% 7%); border: 1px solid hsl(220 20% 14%); margin-bottom: 28px;" class="skeleton"></div>
                         <div style="height: 16px; width: 140px; border-radius: 6px; margin-bottom: 14px;" class="skeleton"></div>
                         <div style="display: flex; gap: 10px; overflow: hidden;">
@@ -66,7 +66,7 @@
                         </div>
                     </div>
 
-                    <template v-else>
+                    <div v-else style="padding-top: 14px;">
 
                         <!-- ── Hero Featured ──────────────────────────────────── -->
                         <div
@@ -234,13 +234,13 @@
                             </div>
                         </section>
 
-                    </template>
+                    </div>
                 </template>
 
                 <!-- ─── SEARCH / FILTER MODE ──────────────────────────────────── -->
                 <template v-else>
                     <!-- Toolbar: count + sort + filter -->
-                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 18px 12px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 18px 12px;">
                         <span style="font-size: 12px; font-weight: 600; color: rgba(233,237,242,0.42);">
                             <template v-if="meta.total > 0">{{ meta.total.toLocaleString('pt-BR') }} obras</template>
                             <template v-else-if="!loading">Nenhum resultado</template>
