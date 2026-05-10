@@ -259,8 +259,8 @@
                     </div>
 
                     <!-- Skeleton grid -->
-                    <div v-if="loading && contents.length === 0" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 0 14px;">
-                        <div v-for="i in 9" :key="i" style="aspect-ratio: 0.69;">
+                    <div v-if="loading && contents.length === 0" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 0 14px; align-items: start;">
+                        <div v-for="i in 9" :key="i" style="aspect-ratio: 0.69; min-width: 0;">
                             <div style="border-radius: 10px; height: 100%;" class="skeleton"></div>
                             <div style="height: 12px; border-radius: 4px; margin-top: 8px; width: 80%;" class="skeleton"></div>
                         </div>
@@ -277,11 +277,11 @@
                     </div>
 
                     <!-- Grid 3 cols -->
-                    <div v-else style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 0 14px;">
+                    <div v-else style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 0 14px; align-items: start;">
                         <div
                             v-for="content in contents"
                             :key="content.id"
-                            style="cursor: pointer;"
+                            style="cursor: pointer; min-width: 0;"
                             @click="openDetail(content)"
                         >
                             <div style="position: relative; border-radius: 10px; overflow: hidden; background: rgba(255,255,255,0.025); aspect-ratio: 0.69;">

@@ -128,12 +128,12 @@
                             </div>
                         </div>
                         <!-- 3-column poster grid -->
-                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 0 18px;">
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 0 18px; align-items: start;">
                             <div
                                 v-for="item in group.items"
                                 :key="item.id"
                                 class="cover-card"
-                                style="display: flex; flex-direction: column; gap: 7px; cursor: pointer; animation: fade 0.22s ease;"
+                                style="display: flex; flex-direction: column; gap: 7px; cursor: pointer; animation: fade 0.22s ease; min-width: 0;"
                                 @click="$router.push(`/catalog/${item.content?.id ?? item.content_id}`)"
                             >
                                 <!-- Poster -->
