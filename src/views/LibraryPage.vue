@@ -5,40 +5,40 @@
                 <IonRefresherContent pulling-icon="chevron-down-circle-outline" refreshing-spinner="crescent" pulling-text="" refreshing-text="" />
             </IonRefresher>
 
-            <div style="padding: 0 0 100px;">
-                <!-- ─── Header ─── -->
-                <div style="padding: 20px 18px 0;">
-                    <div style="font-size: 10px; color: #4a5169; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px;">BIBLIOTECA</div>
-                    <div style="font-size: 26px; font-weight: 900; color: #eef0f5; letter-spacing: -0.03em; line-height: 1.1;">Minha coleção</div>
+            <div style="padding: 0 0 100px; background: hsl(220 30% 3%); min-height: 100%;">
 
-                    <!-- Quick stats row — transparent -->
-                    <div style="display: flex; gap: 8px; margin-top: 14px;">
-                        <div
-                            v-for="stat in quickStats"
-                            :key="stat.label"
-                            style="flex: 1; background: transparent; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 11px 10px; text-align: center;"
-                        >
-                            <div :style="{ fontSize: '20px', fontWeight: '900', color: stat.color, letterSpacing: '-0.03em', lineHeight: '1' }">{{ stat.value }}</div>
-                            <div style="font-size: 9px; color: #4a5169; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 4px;">{{ stat.label }}</div>
+                <!-- ─── Header ─── -->
+                <div style="padding: 22px 18px 0;">
+                    <div style="font-size: 10px; color: rgba(233,237,242,0.42); font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; margin-bottom: 5px;">BIBLIOTECA</div>
+                    <div style="font-size: 30px; font-weight: 800; letter-spacing: -0.04em; line-height: 1.1; font-family: 'Sora', system-ui, sans-serif; background: linear-gradient(135deg, #00F5A0, #00D9FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Minha coleção</div>
+
+                    <!-- Airy stat row — no boxes, just numbers with dividers -->
+                    <div style="display: flex; align-items: stretch; gap: 0; margin-top: 18px; margin-bottom: 4px;">
+                        <div v-for="(stat, i) in quickStats" :key="stat.label" style="display: flex; align-items: stretch; flex: 1;">
+                            <div v-if="i > 0" style="width: 1px; background: rgba(255,255,255,0.06); margin: 0;"></div>
+                            <div style="flex: 1; padding: 4px 0 4px 14px;">
+                                <div :style="{ fontSize: '26px', fontWeight: '800', letterSpacing: '-0.04em', lineHeight: '1', color: stat.accent ? '#00F5A0' : 'hsl(213 25% 92%)', fontFamily: '\'Sora\', system-ui, sans-serif' }">{{ stat.value }}</div>
+                                <div style="font-size: 9px; color: rgba(233,237,242,0.42); font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; margin-top: 6px;">{{ stat.label }}</div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- ─── Search ─── -->
                 <div style="padding: 18px 18px 10px;">
-                    <div style="position: relative; display: flex; align-items: center;">
-                        <span style="position: absolute; left: 13px; color: #4a5169; pointer-events: none; display: flex; align-items: center;">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-                        </span>
+                    <div style="position: relative;">
+                        <span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: rgba(233,237,242,0.22); font-size: 14px; pointer-events: none;">⌕</span>
                         <input
                             :value="search"
                             placeholder="Buscar na biblioteca..."
-                            style="width: 100%; padding: 10px 36px 10px 38px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.09); background: transparent; color: #eef0f5; font-size: 13px; outline: none; box-sizing: border-box;"
+                            style="width: 100%; padding: 12px 14px 12px 38px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.025); color: #e9edf2; font-size: 13px; outline: none; box-sizing: border-box; font-family: inherit; transition: border-color 0.15s;"
                             @input="onSearch"
+                            @focus="($event.target as HTMLInputElement).style.borderColor = 'rgba(255,255,255,0.10)'"
+                            @blur="($event.target as HTMLInputElement).style.borderColor = 'rgba(255,255,255,0.06)'"
                         />
                         <button
                             v-if="search"
-                            style="position: absolute; right: 8px; width: 22px; height: 22px; border-radius: 11px; border: none; background: rgba(255,255,255,0.07); color: #6b738a; cursor: pointer; display: flex; align-items: center; justify-content: center;"
+                            style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); width: 22px; height: 22px; border-radius: 11px; border: none; background: rgba(255,255,255,0.07); color: rgba(233,237,242,0.62); cursor: pointer; display: flex; align-items: center; justify-content: center;"
                             @click="search = ''"
                         >
                             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M5 5l14 14M19 5 5 19"/></svg>
@@ -56,35 +56,37 @@
                             @click="activeType = activeType === t.value ? null : t.value"
                         >
                             {{ t.label }}
-                            <span :style="{ fontSize: '10px', opacity: '0.65', marginLeft: '2px' }">{{ t.count }}</span>
+                            <span :style="{ fontSize: '10px', opacity: '0.55', marginLeft: '2px' }">{{ t.count }}</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- ─── Sort row ─── -->
+                <!-- ─── Toolbar ─── -->
                 <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 18px 14px;">
-                    <button
-                        v-if="activeFilterCount > 0"
-                        style="display: flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 20px; border: none; cursor: pointer; font-size: 11px; font-weight: 700; background: rgba(167,139,250,0.12); color: #a78bfa;"
-                        @click="isFilterOpen = true"
-                    >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M3 5h18M6 12h12M10 19h4"/></svg>
-                        Filtros
-                        <span style="background: #a78bfa; color: #0d1117; border-radius: 8px; padding: 1px 6px; font-size: 9px; font-weight: 800;">{{ activeFilterCount }}</span>
-                    </button>
-                    <div v-else style="flex: 1;"></div>
-                    <button
-                        style="display: flex; align-items: center; gap: 5px; background: transparent; border: none; cursor: pointer; padding: 0;"
-                        @click="isSortOpen = true"
-                    >
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6b738a" stroke-width="1.7" stroke-linecap="round"><path d="M3 7h13M3 12h9M3 17h5M17 17V7M14 14l3 3 3-3"/></svg>
-                        <span :style="{ fontSize: '11px', fontWeight: '700', color: isSortDefault ? '#6b738a' : '#5eead4' }">{{ sortMeta.label }}</span>
-                    </button>
+                    <div style="font-size: 11px; color: rgba(233,237,242,0.42); font-weight: 700; letter-spacing: 0.04em;">
+                        {{ sortedFiltered.length }} {{ sortedFiltered.length === 1 ? 'obra' : 'obras' }}
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <button
+                            v-if="activeFilterCount > 0"
+                            :style="filterBtnStyle(true)"
+                            @click="isFilterOpen = true"
+                        >
+                            <span style="opacity: 0.7;">≡</span> Filtros
+                            <span style="min-width: 16px; height: 16px; padding: 0 4px; border-radius: 8px; background: #00F5A0; color: #050608; font-size: 9px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center;">{{ activeFilterCount }}</span>
+                        </button>
+                        <button
+                            style="background: transparent; border: none; cursor: pointer; color: rgba(233,237,242,0.62); font-size: 11px; font-weight: 700; letter-spacing: 0.04em; display: flex; align-items: center; gap: 6px; padding: 4px 8px;"
+                            @click="isSortOpen = true"
+                        >
+                            <span style="opacity: 0.6;">↕</span> {{ sortMeta.label }}
+                        </button>
+                    </div>
                 </div>
 
                 <!-- ─── Loading skeleton ─── -->
                 <div v-if="loading" style="padding: 0 16px;">
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
                         <div
                             v-for="i in 12"
                             :key="i"
@@ -96,83 +98,89 @@
                 </div>
 
                 <!-- ─── Empty: library empty ─── -->
-                <div v-else-if="userContents.length === 0" style="text-align: center; padding: 64px 28px;">
-                    <div style="width: 72px; height: 72px; border-radius: 36px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4a5169" stroke-width="1.7" stroke-linecap="round"><path d="M4 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4z"/><path d="M20 4h-7a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h8z"/></svg>
+                <div v-else-if="userContents.length === 0" style="text-align: center; padding: 64px 28px; display: flex; flex-direction: column; align-items: center; gap: 6px;">
+                    <div style="font-size: 30px; color: rgba(233,237,242,0.22); margin-bottom: 6px;">◌</div>
+                    <div style="font-size: 15px; font-weight: 700; color: #e9edf2;">Sua biblioteca está vazia</div>
+                    <div style="font-size: 12px; color: rgba(233,237,242,0.42); line-height: 1.6; max-width: 240px;">Encontre obras no catálogo e adicione à sua coleção pessoal.</div>
+                    <div style="margin-top: 14px;">
+                        <button
+                            style="padding: 13px 20px; border-radius: 12px; border: none; background: #00F5A0; color: #050608; font-weight: 800; font-size: 13px; cursor: pointer; box-shadow: 0 6px 22px hsl(158 100% 48% / 0.45);"
+                            @click="$router.push('/tabs/discover')"
+                        >Explorar catálogo</button>
                     </div>
-                    <div style="font-size: 15px; font-weight: 700; color: #eef0f5; margin-bottom: 6px;">Sua biblioteca está vazia</div>
-                    <div style="font-size: 12px; color: #6b738a; line-height: 1.6; margin-bottom: 20px;">Adicione conteúdo do Catálogo para começar</div>
-                    <button
-                        style="padding: 10px 20px; border-radius: 24px; border: none; background: #5eead4; color: #0d1117; font-weight: 800; font-size: 13px; cursor: pointer;"
-                        @click="$router.push('/tabs/discover')"
-                    >Explorar Catálogo</button>
                 </div>
 
                 <!-- ─── Empty: no filter results ─── -->
                 <div v-else-if="sortedFiltered.length === 0" style="text-align: center; padding: 48px 28px;">
-                    <div style="font-size: 15px; font-weight: 700; color: #9aa3b8; margin-bottom: 6px;">Nenhum resultado</div>
-                    <div style="font-size: 12px; color: #6b738a;">{{ search ? 'Tente outro termo' : 'Tente outros filtros' }}</div>
+                    <div style="font-size: 30px; color: rgba(233,237,242,0.22); margin-bottom: 8px;">∅</div>
+                    <div style="font-size: 15px; font-weight: 700; color: #e9edf2; margin-bottom: 4px;">Nenhum resultado</div>
+                    <div style="font-size: 12px; color: rgba(233,237,242,0.42);">{{ search ? 'Tente outro termo' : 'Tente outros filtros' }}</div>
                 </div>
 
                 <!-- ─── Status groups — 3-col poster grid ─── -->
                 <template v-else>
-                    <div v-for="group in groupedByStatus" :key="group.status" style="margin-bottom: 20px;">
-                        <!-- Group header -->
-                        <div style="display: flex; align-items: center; gap: 10px; padding: 6px 18px 12px;">
-                            <div :style="{ width: '3px', height: '18px', borderRadius: '2px', background: group.color, flexShrink: '0', boxShadow: `0 0 8px ${group.color}55` }"></div>
-                            <span style="font-size: 11px; font-weight: 800; color: #eef0f5; text-transform: uppercase; letter-spacing: 0.08em;">{{ group.label }}</span>
-                            <span style="font-size: 11px; color: #4a5169; font-weight: 600;">{{ group.items.length }}</span>
+                    <div v-for="group in groupedByStatus" :key="group.status" style="margin-bottom: 28px; animation: fade 0.25s ease;">
+                        <!-- Section label — small caps, muted -->
+                        <div style="display: flex; align-items: baseline; justify-content: space-between; padding: 0 18px; margin-bottom: 12px;">
+                            <div style="display: flex; align-items: baseline; gap: 8px;">
+                                <span style="font-size: 11px; font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(233,237,242,0.42);">{{ group.label }}</span>
+                                <span style="font-size: 10px; color: rgba(233,237,242,0.22); font-weight: 700;">· {{ group.items.length }}</span>
+                            </div>
                         </div>
                         <!-- 3-column poster grid -->
-                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 0 16px;">
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 0 18px;">
                             <div
                                 v-for="item in group.items"
                                 :key="item.id"
                                 class="cover-card"
-                                style="position: relative; border-radius: 10px; overflow: hidden; cursor: pointer;"
-                                :style="{ aspectRatio: '2/3' }"
+                                style="display: flex; flex-direction: column; gap: 7px; cursor: pointer; animation: fade 0.22s ease;"
                                 @click="$router.push(`/catalog/${item.content?.id ?? item.content_id}`)"
                             >
-                                <!-- Cover image -->
-                                <img
-                                    v-if="item.content?.cover"
-                                    :src="item.content.cover"
-                                    :alt="item.content?.name"
-                                    style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block;"
-                                />
-                                <!-- No cover fallback -->
-                                <div
-                                    v-else
-                                    style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;"
-                                    :style="{ background: `linear-gradient(135deg, ${typeColor(item.content?.type ?? '')}18, #0a0d14)` }"
-                                >
-                                    <span
-                                        style="font-size: 34px; font-weight: 900; opacity: 0.35;"
-                                        :style="{ color: typeColor(item.content?.type ?? '') }"
-                                    >{{ typeShortLabel(item.content?.type ?? '') }}</span>
-                                </div>
-                                <!-- Bottom gradient overlay -->
-                                <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(5,8,14,0.98) 0%, rgba(5,8,14,0.7) 28%, rgba(5,8,14,0.1) 55%, transparent 75%);"></div>
-                                <!-- Top-right: status dot -->
-                                <div
-                                    style="position: absolute; top: 6px; right: 6px; width: 7px; height: 7px; border-radius: 50%;"
-                                    :style="{ background: group.color, boxShadow: `0 0 0 2px rgba(5,8,14,0.7)` }"
-                                ></div>
-                                <!-- Top-left: +1 button -->
-                                <button
-                                    v-if="item.content?.type !== 'movie' && !isAtLimit(item)"
-                                    style="position: absolute; top: 5px; left: 5px; width: 22px; height: 22px; border-radius: 11px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; line-height: 1;"
-                                    :style="{ background: typeColor(item.content?.type ?? '') + 'dd', color: '#060a10' }"
-                                    @click.stop="incrementItem(item.id)"
-                                >+</button>
-                                <!-- Bottom: title + progress bar -->
-                                <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 6px 7px 7px;">
+                                <!-- Poster -->
+                                <div style="position: relative; border-radius: 10px; overflow: hidden;" :style="{ aspectRatio: '2/3' }">
+                                    <img
+                                        v-if="item.content?.cover"
+                                        :src="item.content.cover"
+                                        :alt="item.content?.name"
+                                        style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block;"
+                                    />
+                                    <!-- No cover gradient -->
                                     <div
-                                        style="font-size: 10.5px; font-weight: 700; color: #eef0f5; line-height: 1.3; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; letter-spacing: -0.01em; margin-bottom: 5px;"
-                                    >{{ item.content?.name }}</div>
-                                    <!-- Progress bar -->
-                                    <div v-if="item.content?.type !== 'movie'" style="height: 2px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden;">
-                                        <div :style="{ width: progressPct(item) + '%', height: '100%', background: typeColor(item.content?.type ?? ''), borderRadius: '2px', transition: 'width 0.3s' }"></div>
+                                        v-else
+                                        style="position: absolute; inset: 0;"
+                                        :style="{ background: `linear-gradient(155deg, ${typeGrad(item.content?.type ?? '')[0]}, ${typeGrad(item.content?.type ?? '')[1]})` }"
+                                    >
+                                        <div style="position: absolute; inset: 0; padding: 10px; display: flex; align-items: flex-end; background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.55) 100%);">
+                                            <div style="font-size: 12px; font-weight: 800; color: rgba(255,255,255,0.92); line-height: 1.15; font-family: 'Sora', system-ui, sans-serif;">{{ item.content?.name }}</div>
+                                        </div>
+                                    </div>
+                                    <!-- Shadow overlay -->
+                                    <div style="position: absolute; inset: 0; box-shadow: 0 8px 24px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.04); pointer-events: none; border-radius: 10px;"></div>
+                                    <!-- Status dot — top right -->
+                                    <span style="position: absolute; top: 7px; right: 7px; width: 9px; height: 9px; border-radius: 5px; box-shadow: 0 0 0 2px rgba(0,0,0,0.55);"
+                                          :style="{ background: group.color }"></span>
+                                    <!-- +1 button — top left, only for non-movies -->
+                                    <button
+                                        v-if="item.content?.type !== 'movie' && !isAtLimit(item)"
+                                        style="position: absolute; top: 5px; left: 5px; width: 24px; height: 24px; border-radius: 12px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; line-height: 1; background: #00F5A0; color: #050608;"
+                                        @click.stop="incrementItem(item.id)"
+                                    >+</button>
+                                    <!-- Progress bar — bottom, only if reading -->
+                                    <div
+                                        v-if="item.content?.type !== 'movie' && item.status === 'reading' && item.content?.total_units"
+                                        style="position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(0,0,0,0.45);"
+                                    >
+                                        <div :style="{ height: '100%', width: progressPct(item) + '%', background: '#00F5A0' }"></div>
+                                    </div>
+                                </div>
+                                <!-- Title + meta below poster -->
+                                <div style="padding: 0 1px;">
+                                    <div style="font-size: 12px; font-weight: 700; color: #e9edf2; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;">{{ item.content?.name }}</div>
+                                    <div v-if="item.status === 'reading' && item.content?.type !== 'movie'" style="font-size: 10px; color: rgba(233,237,242,0.42); margin-top: 3px;">
+                                        {{ unitLabel(item.content?.type) }} {{ item.current_units }}{{ item.content?.total_units ? ` / ${item.content.total_units}` : '' }}
+                                    </div>
+                                    <div v-else-if="item.status === 'completed'" style="font-size: 10px; color: rgba(233,237,242,0.42); margin-top: 3px;">
+                                        {{ item.rating != null ? `★ ${item.rating}/10` : 'Concluído' }}
                                     </div>
                                 </div>
                             </div>
@@ -185,33 +193,28 @@
         <!-- ─── Sort Sheet ─── -->
         <IonModal
             :is-open="isSortOpen"
-            :initial-breakpoint="0.6"
-            :breakpoints="[0, 0.6, 1]"
+            :initial-breakpoint="0.55"
+            :breakpoints="[0, 0.55, 1]"
             :handle="true"
             handle-behavior="cycle"
             class="bottom-sheet-modal"
             @didDismiss="isSortOpen = false"
         >
             <IonContent class="sheet-content">
-                <div style="padding: 4px 16px 32px;">
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
-                        <div style="font-size: 16px; font-weight: 800; color: #eef0f5; letter-spacing: -0.02em;">Ordenar por</div>
-                        <button style="width: 30px; height: 30px; border-radius: 15px; border: none; background: rgba(255,255,255,0.06); color: #9aa3b8; cursor: pointer; display: flex; align-items: center; justify-content: center;" @click="isSortOpen = false">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M5 5l14 14M19 5 5 19"/></svg>
-                        </button>
+                <div style="padding: 4px 8px 24px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 18px 14px;">
+                        <div style="font-size: 18px; font-weight: 800; color: #e9edf2; letter-spacing: -0.02em;">Ordenar</div>
+                        <button style="background: transparent; border: none; cursor: pointer; color: rgba(233,237,242,0.42); font-size: 11px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase;" @click="isSortOpen = false">Fechar</button>
                     </div>
                     <button
                         v-for="opt in sortOptions"
                         :key="opt.id"
-                        :style="sortOptionStyle(opt.id)"
                         @click="setSort(opt.id)"
+                        style="width: 100%; text-align: left; padding: 14px 18px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; font-size: 14px; font-weight: 600; transition: color 0.15s;"
+                        :style="{ color: sortBy === opt.id ? '#00F5A0' : '#e9edf2' }"
                     >
-                        <div :style="sortIconStyle(opt.id)">{{ opt.icon }}</div>
-                        <div style="flex: 1; text-align: left;">
-                            <div :style="{ fontSize: '13px', fontWeight: '700', color: sortBy === opt.id ? '#5eead4' : '#eef0f5' }">{{ opt.label }}</div>
-                            <div style="font-size: 11px; color: #6b738a; margin-top: 1px;">{{ opt.desc }}</div>
-                        </div>
-                        <svg v-if="sortBy === opt.id" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5eead4" stroke-width="2" stroke-linecap="round"><path d="m4 12 5 5 11-11"/></svg>
+                        <span>{{ opt.label }}</span>
+                        <span v-if="sortBy === opt.id" style="color: #00F5A0;">✓</span>
                     </button>
                 </div>
             </IonContent>
@@ -228,61 +231,53 @@
             @didDismiss="isFilterOpen = false"
         >
             <IonHeader class="sheet-header">
-                <div style="padding: 8px 20px 0;">
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                        <div>
-                            <div style="font-size: 18px; font-weight: 800; color: #eef0f5; letter-spacing: -0.02em;">Filtros</div>
-                            <div v-if="activeFilterCount > 0" style="font-size: 11px; color: #5eead4; font-weight: 600; margin-top: 2px;">{{ activeFilterCount }} ativo{{ activeFilterCount > 1 ? 's' : '' }}</div>
-                        </div>
+                <div style="padding: 8px 18px 0;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 14px;">
+                        <div style="font-size: 18px; font-weight: 800; color: #e9edf2; letter-spacing: -0.02em;">Filtros</div>
                         <div style="display: flex; gap: 8px;">
-                            <button style="padding: 7px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); background: transparent; color: #6b738a; cursor: pointer; font-size: 12px; font-weight: 700;" @click="clearFilters">Limpar</button>
-                            <button style="width: 32px; height: 32px; border-radius: 16px; border: none; background: rgba(255,255,255,0.06); color: #9aa3b8; cursor: pointer; display: flex; align-items: center; justify-content: center;" @click="isFilterOpen = false">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M5 5l14 14M19 5 5 19"/></svg>
-                            </button>
+                            <button
+                                style="background: transparent; border: none; cursor: pointer; font-size: 11px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; transition: color 0.15s;"
+                                :style="{ color: activeFilterCount > 0 ? '#00F5A0' : 'rgba(233,237,242,0.42)' }"
+                                @click="clearFilters"
+                            >Limpar</button>
+                            <button
+                                style="background: transparent; border: none; cursor: pointer; color: rgba(233,237,242,0.42); font-size: 11px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase;"
+                                @click="isFilterOpen = false"
+                            >Fechar</button>
                         </div>
                     </div>
                 </div>
             </IonHeader>
             <IonContent class="sheet-content">
-                <div style="padding: 0 20px 120px;">
-                    <div style="margin-bottom: 22px;">
-                        <div class="filter-label">Tipo</div>
-                        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                            <button v-for="opt in typeOptions" :key="opt.value ?? 'all'" :style="typeFilterChipStyle(opt.value)" @click="toggleType(opt.value)">{{ opt.label }}</button>
-                        </div>
-                    </div>
+                <div style="padding: 0 18px 120px;">
                     <div style="margin-bottom: 22px;">
                         <div class="filter-label">Gêneros</div>
-                        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                        <div style="display: flex; flex-wrap: wrap; gap: 6px;">
                             <button v-for="g in genresList" :key="g" :style="genreChipStyle(g)" @click="toggleGenre(g)">{{ g }}</button>
                         </div>
                     </div>
                     <div>
                         <div class="filter-label">Outros</div>
-                        <div style="display: flex; flex-direction: column; gap: 8px;">
-                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-radius: 12px; background: transparent; border: 1px solid rgba(255,255,255,0.07); cursor: pointer;" @click="filterRecentOnly = !filterRecentOnly">
-                                <div>
-                                    <div style="font-size: 13px; font-weight: 700; color: #eef0f5;">Atualizados recentemente</div>
-                                    <div style="font-size: 11px; color: #6b738a; margin-top: 2px;">Últimos 5 dias</div>
-                                </div>
-                                <div :style="toggleTrackStyle(filterRecentOnly)"><div :style="toggleKnobStyle(filterRecentOnly)"></div></div>
-                            </div>
-                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-radius: 12px; background: transparent; border: 1px solid rgba(255,255,255,0.07); cursor: pointer;" @click="filterHasRating = !filterHasRating">
-                                <div>
-                                    <div style="font-size: 13px; font-weight: 700; color: #eef0f5;">★ Com avaliação</div>
-                                    <div style="font-size: 11px; color: #6b738a; margin-top: 2px;">Que você avaliou</div>
-                                </div>
-                                <div :style="toggleTrackStyle(filterHasRating)"><div :style="toggleKnobStyle(filterHasRating)"></div></div>
-                            </div>
-                        </div>
+                        <label style="display: flex; align-items: center; gap: 10px; padding: 12px 0; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.06);">
+                            <span :style="toggleTrackStyle(filterRecentOnly)"><span :style="toggleKnobStyle(filterRecentOnly)"></span></span>
+                            <span style="flex: 1; font-size: 13px; color: #e9edf2; font-weight: 600;">Atualizados recentemente</span>
+                            <input type="checkbox" :checked="filterRecentOnly" @change="filterRecentOnly = !filterRecentOnly" style="display: none;" />
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 10px; padding: 12px 0; cursor: pointer;">
+                            <span :style="toggleTrackStyle(filterHasRating)"><span :style="toggleKnobStyle(filterHasRating)"></span></span>
+                            <span style="flex: 1; font-size: 13px; color: #e9edf2; font-weight: 600;">★ Com avaliação</span>
+                            <input type="checkbox" :checked="filterHasRating" @change="filterHasRating = !filterHasRating" style="display: none;" />
+                        </label>
                     </div>
                 </div>
             </IonContent>
             <IonFooter class="sheet-footer">
-                <div style="padding: 12px 20px;">
-                    <button style="width: 100%; padding: 14px; border-radius: 12px; border: none; background: #5eead4; color: #0d1117; font-size: 14px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;" @click="isFilterOpen = false">
-                        Aplicar filtros
-                        <span v-if="activeFilterCount > 0" style="background: rgba(0,0,0,0.2); border-radius: 10px; padding: 2px 8px; font-size: 11px;">{{ activeFilterCount }}</span>
+                <div style="padding: 14px 18px;">
+                    <button
+                        style="width: 100%; padding: 13px; border-radius: 12px; border: none; background: #00F5A0; color: #050608; font-size: 14px; font-weight: 800; cursor: pointer; box-shadow: 0 6px 22px hsl(158 100% 48% / 0.45); display: flex; align-items: center; justify-content: center; gap: 8px;"
+                        @click="isFilterOpen = false"
+                    >
+                        Aplicar{{ activeFilterCount > 0 ? ` · ${activeFilterCount}` : '' }}
                     </button>
                 </div>
             </IonFooter>
@@ -300,11 +295,11 @@ import { userContentService, UserContent, ContentStatus } from '@/services/userC
 import { ContentType, CONTENT_TYPE_LABELS } from '@/services/contentService';
 
 const SORT_OPTIONS = [
-    { id: 'updated_desc', label: 'Atualizado recentemente', icon: '⚡', desc: 'Mais recentes primeiro' },
-    { id: 'name_asc',     label: 'Nome A → Z',              icon: '↑',  desc: 'Ordem alfabética' },
-    { id: 'name_desc',    label: 'Nome Z → A',              icon: '↓',  desc: 'Ordem inversa' },
-    { id: 'note_desc',    label: 'Melhor avaliação',         icon: '★',  desc: 'Maior nota que dei' },
-    { id: 'score_desc',   label: 'Mais relevantes',          icon: '◆',  desc: 'Score do conteúdo' },
+    { id: 'updated_desc', label: 'Atualizado recentemente' },
+    { id: 'name_asc',     label: 'Nome A → Z' },
+    { id: 'name_desc',    label: 'Nome Z → A' },
+    { id: 'note_desc',    label: 'Melhor avaliação' },
+    { id: 'score_desc',   label: 'Mais relevantes' },
 ];
 
 const GENRES_LIST = [
@@ -312,13 +307,12 @@ const GENRES_LIST = [
     'Horror', 'Mistério', 'Romance', 'Seinen', 'Shounen', 'Slice of Life', 'Supernatural', 'Thriller',
 ];
 
-const TYPE_COLORS: Record<string, string> = {
-    manga: '#5eead4', anime: '#a78bfa', novel: '#fbbf24', movie: '#f472b6', tv: '#22d3ee',
-};
-
-const TYPE_SHORT: Record<string, string> = {
-    manga: 'M', anime: 'A', novel: 'N', movie: 'F', tv: 'S',
-};
+// Cover gradient palettes for no-cover fallback
+const COVER_PALETTES = [
+    ['#1f2937', '#111827'], ['#172554', '#0c1226'], ['#1f1126', '#13101e'],
+    ['#10241e', '#0a1410'], ['#241818', '#140d0d'], ['#1a2536', '#0e1a2a'],
+    ['#2b1d2c', '#161018'], ['#1a2a1e', '#0c1410'],
+];
 
 export default defineComponent({
     name: 'LibraryPage',
@@ -332,60 +326,49 @@ export default defineComponent({
             sortBy: 'updated_desc',
             isSortOpen: false,
             isFilterOpen: false,
-            filterTypes: [] as (ContentType | null)[],
             filterGenres: [] as string[],
             filterRecentOnly: false,
             filterHasRating: false,
             sortOptions: SORT_OPTIONS,
             genresList: GENRES_LIST,
-            typeOptions: [
-                { label: 'Todos',                         value: null as ContentType | null },
-                { label: CONTENT_TYPE_LABELS.manga,       value: 'manga'  as ContentType },
-                { label: CONTENT_TYPE_LABELS.anime,       value: 'anime'  as ContentType },
-                { label: CONTENT_TYPE_LABELS.novel,       value: 'novel'  as ContentType },
-                { label: CONTENT_TYPE_LABELS.movie,       value: 'movie'  as ContentType },
-                { label: CONTENT_TYPE_LABELS.tv,          value: 'tv'     as ContentType },
-            ],
         };
     },
     computed: {
-        quickStats(): { label: string; value: number; color: string }[] {
+        quickStats(): { label: string; value: number; accent?: boolean }[] {
+            const inProgress = this.userContents.filter(uc => uc.status === 'reading').length;
+            const done = this.userContents.filter(uc => uc.status === 'completed').length;
             return [
-                { label: 'Total',     value: this.userContents.length,                                         color: '#5eead4' },
-                { label: 'Em curso',  value: this.userContents.filter(uc => uc.status === 'reading').length,   color: '#60a5fa' },
-                { label: 'Completos', value: this.userContents.filter(uc => uc.status === 'completed').length, color: '#34d399' },
+                { label: 'TOTAL',     value: this.userContents.length },
+                { label: 'EM CURSO',  value: inProgress, accent: true },
+                { label: 'COMPLETOS', value: done },
             ];
         },
         sortMeta() {
             return SORT_OPTIONS.find(o => o.id === this.sortBy) ?? SORT_OPTIONS[0];
         },
-        isSortDefault(): boolean {
-            return this.sortBy === 'updated_desc';
-        },
         activeFilterCount(): number {
             let n = 0;
-            if (this.filterTypes.length)  n++;
             if (this.filterGenres.length) n++;
             if (this.filterRecentOnly)    n++;
             if (this.filterHasRating)     n++;
             return n;
         },
-        typeChips(): { value: ContentType | null; label: string; color: string; count: number }[] {
+        typeChips(): { value: ContentType | null; label: string; count: number }[] {
             const labels: Record<string, string> = { manga: 'Manga', anime: 'Anime', novel: 'Novel', movie: 'Filme', tv: 'Série' };
             const types = ['manga', 'anime', 'novel', 'movie', 'tv'] as ContentType[];
-            const chips: { value: ContentType | null; label: string; color: string; count: number }[] = [
-                { value: null, label: 'Todos', color: '#5eead4', count: this.userContents.length },
+            const chips: { value: ContentType | null; label: string; count: number }[] = [
+                { value: null, label: 'Todos', count: this.userContents.length },
             ];
             for (const t of types) {
                 const count = this.userContents.filter(i => i.content?.type === t).length;
-                if (count > 0) chips.push({ value: t, label: labels[t], color: TYPE_COLORS[t] ?? '#5eead4', count });
+                if (count > 0) chips.push({ value: t, label: labels[t], count });
             }
             return chips;
         },
         groupedByStatus(): { status: ContentStatus; label: string; color: string; items: UserContent[] }[] {
             const STATUS_ORDER: ContentStatus[] = ['reading', 'plan_to_read', 'completed', 'paused', 'dropped'];
             const STATUS_COLOR: Record<string, string> = {
-                reading: '#60a5fa', completed: '#34d399', paused: '#fbbf24', dropped: '#f87171', plan_to_read: '#a78bfa',
+                reading: '#00F5A0', completed: '#7CAEFF', paused: '#F5C542', dropped: '#FF5E5E', plan_to_read: '#B8A4FF',
             };
             const groups: Record<string, UserContent[]> = {};
             for (const item of this.sortedFiltered) {
@@ -407,7 +390,7 @@ export default defineComponent({
                 } else {
                     label = 'Abandonados';
                 }
-                return { status: s as ContentStatus, label, color: STATUS_COLOR[s] ?? '#6b738a', items };
+                return { status: s as ContentStatus, label, color: STATUS_COLOR[s] ?? 'rgba(233,237,242,0.42)', items };
             });
         },
         sortedFiltered(): UserContent[] {
@@ -419,12 +402,11 @@ export default defineComponent({
                 const q = this.search.toLowerCase();
                 result = result.filter(i =>
                     i.content?.name?.toLowerCase().includes(q) ||
-                    i.content?.alternative_names?.some(n => n.toLowerCase().includes(q))
+                    i.content?.alternative_names?.some((n: string) => n.toLowerCase().includes(q))
                 );
             }
 
-            if (this.filterTypes.length) result = result.filter(i => this.filterTypes.includes(i.content?.type ?? null));
-            if (this.filterGenres.length) result = result.filter(i => i.content?.genres?.some(g => this.filterGenres.includes(g)));
+            if (this.filterGenres.length) result = result.filter(i => i.content?.genres?.some((g: string) => this.filterGenres.includes(g)));
 
             if (this.filterRecentOnly) {
                 result = result.filter(i => {
@@ -478,11 +460,14 @@ export default defineComponent({
             if (!total) return false;
             return uc.current_units >= total;
         },
-        typeColor(type: string): string {
-            return TYPE_COLORS[type] ?? '#5eead4';
+        typeGrad(type: string): [string, string] {
+            const seed = type === 'manga' ? 0 : type === 'anime' ? 1 : type === 'novel' ? 2 : type === 'movie' ? 4 : 5;
+            return COVER_PALETTES[seed % COVER_PALETTES.length] as [string, string];
         },
-        typeShortLabel(type: string): string {
-            return TYPE_SHORT[type] ?? '?';
+        unitLabel(type?: string): string {
+            if (type === 'anime' || type === 'tv') return 'Ep';
+            if (type === 'movie') return '';
+            return 'Cap';
         },
         onSearch(ev: Event) {
             this.search = (ev.target as HTMLInputElement).value;
@@ -491,18 +476,12 @@ export default defineComponent({
             this.sortBy = id;
             this.isSortOpen = false;
         },
-        toggleType(val: ContentType | null) {
-            const idx = this.filterTypes.indexOf(val);
-            if (idx >= 0) this.filterTypes.splice(idx, 1);
-            else this.filterTypes.push(val);
-        },
         toggleGenre(g: string) {
             const idx = this.filterGenres.indexOf(g);
             if (idx >= 0) this.filterGenres.splice(idx, 1);
             else this.filterGenres.push(g);
         },
         clearFilters() {
-            this.filterTypes = [];
             this.filterGenres = [];
             this.filterRecentOnly = false;
             this.filterHasRating = false;
@@ -525,71 +504,50 @@ export default defineComponent({
         },
         typeChipStyle(val: ContentType | null): Record<string, string> {
             const active = this.activeType === val;
-            const col = val ? (TYPE_COLORS[val] ?? '#5eead4') : '#5eead4';
             return {
-                padding: '6px 13px', borderRadius: '20px', border: 'none', cursor: 'pointer',
-                fontSize: '12px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px',
-                background: active ? col : 'transparent',
-                color: active ? '#0d1117' : '#9aa3b8',
-                outline: active ? 'none' : '1px solid rgba(255,255,255,0.09)',
-                transition: 'all 0.15s', flexShrink: '0',
+                padding: '8px 14px', borderRadius: '999px', cursor: 'pointer',
+                fontSize: '12px', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '6px',
+                border: `1px solid ${active ? '#00F5A0' : 'rgba(255,255,255,0.06)'}`,
+                background: active ? 'rgba(52,211,153,0.10)' : 'transparent',
+                color: active ? '#00F5A0' : 'rgba(233,237,242,0.62)',
+                transition: 'all 0.15s', flexShrink: '0', whiteSpace: 'nowrap',
             };
         },
-        typeFilterChipStyle(val: ContentType | null): Record<string, string> {
-            const active = this.filterTypes.includes(val);
-            const col = val ? (TYPE_COLORS[val] ?? '#5eead4') : '#5eead4';
+        filterBtnStyle(active: boolean): Record<string, string> {
             return {
-                padding: '6px 12px', borderRadius: '20px', border: 'none', cursor: 'pointer',
-                fontSize: '11px', fontWeight: '700',
-                background: active ? col + '22' : 'transparent',
-                color: active ? col : '#9aa3b8',
-                outline: active ? `1.5px solid ${col}44` : '1px solid rgba(255,255,255,0.08)',
+                background: active ? 'rgba(52,211,153,0.10)' : 'transparent',
+                border: `1px solid ${active ? '#00F5A0' : 'rgba(255,255,255,0.06)'}`,
+                color: active ? '#00F5A0' : 'rgba(233,237,242,0.62)',
+                cursor: 'pointer', fontSize: '11px', fontWeight: '700',
+                padding: '6px 12px', borderRadius: '999px',
+                display: 'flex', alignItems: 'center', gap: '6px',
                 transition: 'all 0.15s',
             };
         },
         genreChipStyle(g: string): Record<string, string> {
             const active = this.filterGenres.includes(g);
             return {
-                padding: '6px 12px', borderRadius: '20px', border: 'none', cursor: 'pointer',
-                fontSize: '11px', fontWeight: '600',
-                background: active ? 'rgba(94,234,212,0.15)' : 'transparent',
-                color: active ? '#5eead4' : '#9aa3b8',
-                outline: active ? '1.5px solid rgba(94,234,212,0.35)' : '1px solid rgba(255,255,255,0.08)',
+                padding: '6px 11px', borderRadius: '999px', cursor: 'pointer',
+                fontSize: '11px', fontWeight: '600', whiteSpace: 'nowrap',
+                border: `1px solid ${active ? 'rgba(52,211,153,0.66)' : 'rgba(255,255,255,0.06)'}`,
+                background: active ? 'rgba(52,211,153,0.10)' : 'transparent',
+                color: active ? '#00F5A0' : 'rgba(233,237,242,0.62)',
                 transition: 'all 0.15s',
-            };
-        },
-        sortOptionStyle(id: string): Record<string, string> {
-            const active = this.sortBy === id;
-            return {
-                width: '100%', display: 'flex', alignItems: 'center', gap: '12px',
-                padding: '12px 14px', borderRadius: '12px', border: 'none', cursor: 'pointer',
-                marginBottom: '4px',
-                background: active ? 'rgba(94,234,212,0.08)' : 'transparent',
-                outline: active ? '1px solid rgba(94,234,212,0.3)' : '1px solid rgba(255,255,255,0.07)',
-                textAlign: 'left', transition: 'all 0.15s',
-            };
-        },
-        sortIconStyle(id: string): Record<string, string> {
-            const active = this.sortBy === id;
-            return {
-                width: '36px', height: '36px', borderRadius: '10px', flexShrink: '0',
-                background: active ? 'rgba(94,234,212,0.2)' : 'rgba(255,255,255,0.06)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '15px', color: active ? '#5eead4' : '#6b738a',
             };
         },
         toggleTrackStyle(active: boolean): Record<string, string> {
             return {
-                width: '44px', height: '26px', borderRadius: '13px', position: 'relative',
-                background: active ? '#5eead4' : 'rgba(255,255,255,0.1)',
-                transition: 'background 0.2s', flexShrink: '0',
+                width: '38px', height: '22px', borderRadius: '11px', padding: '2px',
+                background: active ? '#00F5A0' : 'rgba(255,255,255,0.06)',
+                transition: 'background 0.15s', flexShrink: '0', position: 'relative',
+                display: 'inline-block',
             };
         },
         toggleKnobStyle(active: boolean): Record<string, string> {
             return {
-                position: 'absolute', top: '3px', borderRadius: '10px',
-                left: active ? '21px' : '3px', width: '20px', height: '20px',
-                background: '#fff', transition: 'left 0.2s', boxShadow: '0 1px 4px rgba(0,0,0,0.3)',
+                width: '18px', height: '18px', borderRadius: '9px', background: '#fff',
+                display: 'block', transform: `translateX(${active ? 16 : 0}px)`,
+                transition: 'transform 0.15s',
             };
         },
     },
@@ -603,14 +561,14 @@ export default defineComponent({
 .filter-label {
     font-size: 10px;
     font-weight: 800;
-    color: #6b738a;
+    color: rgba(233,237,242,0.42);
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: 10px;
+    letter-spacing: 0.22em;
+    margin-bottom: 12px;
 }
 
 .skeleton {
-    background: rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.04);
     animation: pulse 1.4s ease-in-out infinite;
 }
 
@@ -623,15 +581,20 @@ export default defineComponent({
     0%, 100% { opacity: 1; }
     50%       { opacity: 0.4; }
 }
+
+@keyframes fade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
 </style>
 
 <style>
 ion-modal.bottom-sheet-modal::part(content) {
-    background: #0d1117;
-    border-top: 1px solid rgba(255,255,255,0.07);
-    border-radius: 24px 24px 0 0;
+    background: hsl(222 24% 7%);
+    border-top: 1px solid hsl(0 0% 100% / 0.06);
+    border-radius: 18px 18px 0 0;
 }
-.sheet-content  { --background: #0d1117; }
-.sheet-header   { --background: #0d1117; box-shadow: none; }
-.sheet-footer   { --background: #0d1117; border-top: 1px solid rgba(255,255,255,0.07); box-shadow: none; }
+.sheet-content  { --background: hsl(222 24% 7%); }
+.sheet-header   { --background: hsl(222 24% 7%); box-shadow: none; border-bottom: 1px solid hsl(0 0% 100% / 0.06); }
+.sheet-footer   { --background: hsl(222 24% 7%); border-top: 1px solid hsl(0 0% 100% / 0.06); box-shadow: none; }
 </style>

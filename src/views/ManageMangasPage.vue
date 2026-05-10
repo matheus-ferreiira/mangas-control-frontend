@@ -196,7 +196,7 @@
                                     v-for="opt in typeOptions"
                                     :key="opt.value"
                                     class="h-[38px] rounded-[10px] text-[11px] font-bold border transition-colors"
-                                    :style="form.type === opt.value ? typeActiveStyle(opt.value) : { background: '#141825', color: '#5a6480', borderColor: '#222840' }"
+                                    :style="form.type === opt.value ? typeActiveStyle(opt.value) : { background: 'rgba(255,255,255,0.025)', color: 'rgba(233,237,242,0.42)', borderColor: 'rgba(255,255,255,0.06)' }"
                                     @click="form.type = opt.value"
                                 >{{ opt.label }}</button>
                             </div>
@@ -212,7 +212,7 @@
                                     class="h-[38px] rounded-[10px] text-[12px] font-semibold border transition-colors"
                                     :style="form.status === opt.value
                                         ? { background: opt.color + '22', color: opt.color, borderColor: opt.color + '88' }
-                                        : { background: '#141825', color: '#5a6480', borderColor: '#222840' }"
+                                        : { background: 'rgba(255,255,255,0.025)', color: 'rgba(233,237,242,0.42)', borderColor: 'rgba(255,255,255,0.06)' }"
                                     @click="form.status = form.status === opt.value ? null : opt.value"
                                 >{{ opt.label }}</button>
                             </div>
@@ -315,7 +315,7 @@
                             />
                             <button
                                 class="w-[52px] h-[52px] rounded-[12px] flex items-center justify-center flex-shrink-0 border transition-colors"
-                                style="background: rgba(0,212,170,0.1); border-color: rgba(0,212,170,0.3); color: #00d4aa"
+                                style="background: rgba(52,211,153,0.1); border-color: rgba(52,211,153,0.3); color: #00F5A0"
                                 @click="addGenre"
                             >
                                 <IonIcon :icon="addOutline" class="text-[20px]" />
@@ -326,7 +326,7 @@
                                 v-for="(genre, i) in form.genres"
                                 :key="i"
                                 class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold"
-                                style="background: rgba(0,212,170,0.1); color: #00d4aa; border: 1px solid rgba(0,212,170,0.25)"
+                                style="background: rgba(52,211,153,0.1); color: #00F5A0; border: 1px solid rgba(52,211,153,0.25)"
                             >
                                 {{ genre }}
                                 <button class="flex items-center opacity-60 active:opacity-100" @click="removeGenre(i)">
@@ -401,7 +401,7 @@
                             />
                             <button
                                 class="w-[52px] h-[52px] rounded-[12px] flex items-center justify-center flex-shrink-0 border transition-colors"
-                                style="background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.2); color: #ef4444"
+                                style="background: rgba(239,107,107,0.08); border-color: rgba(239,107,107,0.2); color: #ef6b6b"
                                 @click="removeAltName(i)"
                             >
                                 <IonIcon :icon="closeOutline" class="text-[18px]" />
@@ -410,7 +410,7 @@
                         <button
                             v-if="form.alternative_names.length < 50"
                             class="w-full h-[44px] rounded-[12px] border border-dashed flex items-center justify-center gap-2 text-sm font-semibold transition-colors active:border-neon-accent/50 active:text-neon-accent"
-                            style="border-color: #222840; color: #5a6480"
+                            style="border-color: rgba(255,255,255,0.06); color: rgba(233,237,242,0.42)"
                             @click="addAltName"
                         >
                             <IonIcon :icon="addOutline" />
@@ -746,11 +746,11 @@ export default defineComponent({
 
         typeActiveStyle(type: ContentType): Record<string, string> {
             const map: Record<ContentType, Record<string, string>> = {
-                manga:  { background: 'rgba(0,212,170,0.15)',   color: '#00d4aa', borderColor: 'rgba(0,212,170,0.5)' },
-                anime:  { background: 'rgba(123,143,245,0.15)', color: '#7b8ff5', borderColor: 'rgba(123,143,245,0.5)' },
-                novel:  { background: 'rgba(255,162,107,0.15)', color: '#ffa26b', borderColor: 'rgba(255,162,107,0.5)' },
-                movie:  { background: 'rgba(248,113,113,0.15)', color: '#f87171', borderColor: 'rgba(248,113,113,0.5)' },
-                tv:     { background: 'rgba(167,139,250,0.15)', color: '#a78bfa', borderColor: 'rgba(167,139,250,0.5)' },
+                manga:  { background: 'rgba(52,211,153,0.15)',   color: '#00F5A0', borderColor: 'rgba(52,211,153,0.5)' },
+                anime:  { background: 'rgba(167,139,250,0.15)',  color: '#a78bfa', borderColor: 'rgba(167,139,250,0.5)' },
+                novel:  { background: 'rgba(230,184,92,0.15)',   color: '#e6b85c', borderColor: 'rgba(230,184,92,0.5)' },
+                movie:  { background: 'rgba(244,114,182,0.15)',  color: '#f472b6', borderColor: 'rgba(244,114,182,0.5)' },
+                tv:     { background: 'rgba(125,167,255,0.15)',  color: '#7da7ff', borderColor: 'rgba(125,167,255,0.5)' },
             };
             return map[type] ?? {};
         },
@@ -766,16 +766,16 @@ export default defineComponent({
 <style scoped>
 .ion-header .toolbar-background { border-bottom: 1px solid #222840; }
 
-.btn-primary  { --background: var(--neon-accent); --color: #000; --border-radius: 12px; font-weight: 700; height: 48px; }
-.btn-outline  { --border-radius: 12px; --color: var(--neon-accent); --border-color: var(--neon-accent); }
+.btn-primary  { --background: #00F5A0; --color: #050608; --border-radius: 12px; font-weight: 700; height: 48px; }
+.btn-outline  { --border-radius: 12px; --color: #00F5A0; --border-color: #00F5A0; }
 
 .neon-input {
-    --background: #1a2035;
-    --color: #f0f4ff;
-    --placeholder-color: #4a5570;
-    --border-color: #222840;
+    --background: rgba(255,255,255,0.025);
+    --color: #e9edf2;
+    --placeholder-color: rgba(233,237,242,0.28);
+    --border-color: rgba(255,255,255,0.06);
     --border-radius: 12px;
-    --highlight-color-focused: #00d4aa;
+    --highlight-color-focused: #00F5A0;
     --padding-start: 16px;
     --padding-end: 16px;
     min-height: 52px;
@@ -783,13 +783,13 @@ export default defineComponent({
 }
 
 .neon-search {
-    --background: #141825;
-    --color: #f0f4ff;
-    --placeholder-color: #5a6480;
-    --icon-color: #5a6480;
-    --clear-button-color: #5a6480;
+    --background: rgba(255,255,255,0.025);
+    --color: #e9edf2;
+    --placeholder-color: rgba(233,237,242,0.28);
+    --icon-color: rgba(233,237,242,0.28);
+    --clear-button-color: rgba(233,237,242,0.42);
     --border-radius: 10px;
-    --box-shadow: 0 0 0 1px #222840;
+    --box-shadow: 0 0 0 1px rgba(255,255,255,0.06);
     padding-inline: 0;
     padding-top: 0;
     padding-bottom: 0;
@@ -798,30 +798,30 @@ export default defineComponent({
 .icon-btn {
     --border-radius: 10px;
     --border-width: 1px;
-    --background: #1a2035;
+    --background: rgba(255,255,255,0.025);
     --padding-start: 0;
     --padding-end: 0;
     width: 34px;
     height: 34px;
     margin: 0;
 }
-.edit-btn   { --color: #8b5cf6; --border-color: #222840; }
-.delete-btn { --color: #ef4444; --border-color: rgba(239,68,68,0.3); }
+.edit-btn   { --color: #a78bfa; --border-color: rgba(255,255,255,0.06); }
+.delete-btn { --color: #ef6b6b; --border-color: rgba(239,107,107,0.3); }
 
-.modal-content { --background: #0b0f1a; }
+.modal-content { --background: #080a10; }
 
 .section-label {
     font-size: 10px;
-    font-weight: 700;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--neon-muted, #5a6480);
+    letter-spacing: 0.22em;
+    color: rgba(233,237,242,0.42);
     margin-bottom: 10px;
 }
 
 .section-card {
-    background: #141825;
-    border: 1px solid #222840;
+    background: rgba(255,255,255,0.025);
+    border: 1px solid rgba(255,255,255,0.06);
     border-radius: 14px;
     padding: 16px;
 }
@@ -832,7 +832,7 @@ export default defineComponent({
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1.5px;
-    color: var(--neon-muted, #5a6480);
+    color: rgba(233,237,242,0.42);
     margin-bottom: 8px;
 }
 </style>

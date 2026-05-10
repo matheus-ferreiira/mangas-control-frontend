@@ -1,26 +1,74 @@
 @import "tailwindcss";
 
 @theme {
-    --color-neon-accent: #00d4aa;
-    --color-neon-surface: #141825;
-    --color-neon-card: #1a2035;
-    --color-neon-elevated: #1a2035;
-    --color-neon-border: #222840;
-    --color-neon-muted: #5a6480;
-    --color-neon-subtle: #8892aa;
-    --color-neon-text: #f0f4ff;
-    --color-neon-blue: #8b5cf6;
-    --color-neon-danger: #ef4444;
-    --color-neon-warning: #f59e0b;
-    --color-neon-bg: #0b0f1a;
+    /* ── Typography ── */
+    --font-family-sans: 'Sora', 'Inter', system-ui, -apple-system, sans-serif;
+    --font-family-display: 'Sora', system-ui, sans-serif;
 
-    /* Status colors */
-    --color-status-reading: #3b82f6;
-    --color-status-completed: #10b981;
-    --color-status-paused: #f59e0b;
-    --color-status-dropped: #ef4444;
-    --color-status-plan: #8b5cf6;
+    /* ── Primary — neon green ── */
+    --color-primary:     #00F5A0;
+    --color-primary-dim: hsl(158 100% 48% / 0.08);
+    --color-primary-mid: hsl(158 100% 48% / 0.18);
+    --color-primary-ink: #050608;
 
-    /* Interactive element borders — brighter than card borders for visibility */
-    --color-neon-pill-border: #4a5a80;
+    /* ── Cyan ── */
+    --color-cyan:     #00D9FF;
+    --color-cyan-dim: hsl(189 100% 50% / 0.08);
+    --color-cyan-mid: hsl(189 100% 50% / 0.18);
+
+    /* ── Background layers ── */
+    --color-bg:  hsl(220 30% 3%);
+    --color-bg1: hsl(222 24% 5%);
+    --color-bg2: hsl(222 24% 7%);
+
+    /* ── Named surfaces ── */
+    --color-surface-1: hsl(222 24% 7%);
+    --color-surface-2: hsl(222 22% 9%);
+    --color-surface-3: hsl(222 22% 12%);
+
+    /* ── Borders ── */
+    --color-border:        hsl(220 20% 14%);
+    --color-border-subtle: hsl(0 0% 100% / 0.06);
+    --color-border-strong: hsl(0 0% 100% / 0.12);
+
+    /* ── Text scale ── */
+    --color-text:        hsl(213 25% 92%);
+    --color-text-subtle: hsl(213 15% 65%);
+    --color-text-muted:  hsl(213 10% 45%);
+    --color-text-faint:  hsl(213 8% 30%);
+
+    /* ── Functional ── */
+    --color-warn:    #F5C542;
+    --color-bad:     #FF5E5E;
+    --color-info:    #7CAEFF;
+    --color-purple:  #B8A4FF;
+
+    /* ── Status ── */
+    --color-status-reading:    #00F5A0;
+    --color-status-completed:  #7CAEFF;
+    --color-status-paused:     #F5C542;
+    --color-status-dropped:    #FF5E5E;
+    --color-status-plan:       #B8A4FF;
+
+    /* ── Legacy compat (components pending redesign) ── */
+    --color-neon-accent:      #00F5A0;
+    --color-neon-accent-dim:  hsl(158 100% 48% / 0.08);
+    --color-neon-accent-mid:  hsl(158 100% 48% / 0.18);
+    --color-neon-ink:         #050608;
+    --color-neon-bg:          hsl(220 30% 3%);
+    --color-neon-bg1:         hsl(222 24% 5%);
+    --color-neon-surface:     hsl(222 24% 7%);
+    --color-neon-surface2:    hsl(222 22% 9%);
+    --color-neon-border:      hsl(0 0% 100% / 0.06);
+    --color-neon-border2:     hsl(0 0% 100% / 0.10);
+    --color-neon-text:        hsl(213 25% 92%);
+    --color-neon-subtle:      hsl(213 15% 65%);
+    --color-neon-muted:       hsl(213 10% 45%);
+    --color-neon-faint:       hsl(213 8% 30%);
+    --color-neon-blue:        #00D9FF;
+    --color-neon-danger:      #FF5E5E;
+    --color-neon-warning:     #F5C542;
+    --color-neon-elevated:    hsl(222 22% 9%);
+    --color-neon-card:        hsl(222 24% 7%);
+    --color-neon-pill-border: hsl(0 0% 100% / 0.08);
 }

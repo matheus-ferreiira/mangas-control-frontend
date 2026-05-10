@@ -1,6 +1,6 @@
 <template>
-    <IonPage class="[--background:#0b0f1a]">
-        <IonContent :fullscreen="true" class="[--background:#0b0f1a]">
+    <IonPage class="[--background:#05070b]">
+        <IonContent :fullscreen="true" class="[--background:#05070b]">
             <div class="px-6 pt-14 pb-10">
                 <div class="flex justify-center mb-6">
                     <div class="w-[60px] h-[60px] bg-neon-accent/12 rounded-[18px] flex items-center justify-center border border-neon-accent/20">
@@ -8,7 +8,7 @@
                     </div>
                 </div>
 
-                <h2 class="text-[24px] font-extrabold text-neon-text m-0 mb-1 text-center">Criar conta</h2>
+                <h2 style="font-size: 24px; font-weight: 800; margin: 0 0 4px; text-align: center; font-family: 'Sora', system-ui, sans-serif; color: #e9edf2;">Criar conta</h2>
                 <p class="text-sm text-neon-muted text-center m-0 mb-6">Junte-se ao Neon Curator</p>
 
                 <div class="bg-neon-surface border border-neon-border rounded-[20px] p-6">
@@ -43,7 +43,7 @@
                             :class="passwordMismatch ? 'input-error' : ''"
                             @keyup.enter="register"
                         />
-                        <p v-if="passwordMismatch" class="text-[11px] text-[#ef4444] mt-1.5 ml-1">As senhas não coincidem.</p>
+                        <p v-if="passwordMismatch" style="font-size: 11px; color: #ef6b6b; margin-top: 6px; margin-left: 4px;">As senhas não coincidem.</p>
                     </div>
 
                     <IonButton
@@ -131,15 +131,15 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.btn-primary { --background: var(--neon-accent); --color: #000; --border-radius: 14px; font-weight: 700; height: 52px; }
+.btn-primary { --background: #00F5A0; --color: #050608; --border-radius: 14px; font-weight: 800; height: 52px; }
 
 .neon-input {
-    --background: #1a2035;
-    --color: #f0f4ff;
-    --placeholder-color: #4a5570;
-    --border-color: #222840;
+    --background: rgba(255,255,255,0.025);
+    --color: #e9edf2;
+    --placeholder-color: rgba(233,237,242,0.28);
+    --border-color: rgba(255,255,255,0.06);
     --border-radius: 12px;
-    --highlight-color-focused: #00d4aa;
+    --highlight-color-focused: #00F5A0;
     --padding-start: 16px;
     --padding-end: 16px;
     min-height: 50px;
@@ -147,7 +147,7 @@ export default defineComponent({
 }
 
 .input-error {
-    --border-color: #ef4444;
-    --highlight-color-focused: #ef4444;
+    --border-color: #ef6b6b;
+    --highlight-color-focused: #ef6b6b;
 }
 </style>

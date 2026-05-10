@@ -101,7 +101,7 @@ export default defineComponent({
 <style scoped>
 .btn-primary-sm {
     --background: var(--neon-accent);
-    --color: #000;
+    --color: #050608;
     --border-radius: 10px;
     font-weight: 600;
     font-size: 12px;
