@@ -177,7 +177,12 @@
                                 <div style="padding: 0 1px;">
                                     <div style="font-size: 12px; font-weight: 700; color: #e9edf2; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;">{{ item.content?.name }}</div>
                                     <div v-if="item.status === 'reading' && item.content?.type !== 'movie'" style="font-size: 10px; color: rgba(233,237,242,0.42); margin-top: 3px;">
-                                        {{ unitLabel(item.content?.type) }} {{ item.current_units }}{{ item.content?.total_units ? ` / ${item.content.total_units}` : '' }}
+                                        <template v-if="item.content?.type === 'tv'">
+                                            T{{ item.current_season ?? 1 }} · Ep {{ item.current_units }}
+                                        </template>
+                                        <template v-else>
+                                            {{ unitLabel(item.content?.type) }} {{ item.current_units }}{{ item.content?.total_units ? ` / ${item.content.total_units}` : '' }}
+                                        </template>
                                     </div>
                                     <div v-else-if="item.status === 'completed'" style="font-size: 10px; color: rgba(233,237,242,0.42); margin-top: 3px;">
                                         {{ item.rating != null ? `★ ${item.rating}/10` : 'Concluído' }}
@@ -456,6 +461,7 @@ export default defineComponent({
             return Math.min(Math.round((uc.current_units / uc.content.total_units) * 100), 100);
         },
         isAtLimit(uc: UserContent): boolean {
+            if (uc.content?.type === 'tv') return false;
             const total = uc.content?.total_units;
             if (!total) return false;
             return uc.current_units >= total;
