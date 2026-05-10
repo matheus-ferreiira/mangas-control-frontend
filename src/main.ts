@@ -37,6 +37,23 @@ import './theme/variables.css';
 /* Tailwind */
 import './theme/tailwind.css';
 
+// Capture beforeinstallprompt before any Vue component mounts — event fires once, early
+window.addEventListener('beforeinstallprompt', (e: Event) => {
+    e.preventDefault();
+    (window as any).__pwaPrompt = e;
+    (window as any).installPWA = async () => {
+        const prompt = (window as any).__pwaPrompt;
+        if (!prompt) return;
+        (prompt as any).prompt();
+        const { outcome } = await (prompt as any).userChoice;
+        if (outcome === 'accepted') {
+            (window as any).__pwaPrompt = null;
+            window.dispatchEvent(new Event('pwa-installed'));
+        }
+    };
+    window.dispatchEvent(new Event('pwa-installprompt-ready'));
+});
+
 const app = createApp(App).use(IonicVue).use(router);
 
 router.isReady().then(() => {

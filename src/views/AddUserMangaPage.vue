@@ -5,8 +5,8 @@
 
                 <!-- Header -->
                 <div style="margin-bottom: 24px;">
-                    <div style="font-size: 22px; font-weight: 900; color: #eef0f5; letter-spacing: -0.03em; margin-bottom: 3px;">Adicionar à Biblioteca</div>
-                    <div style="font-size: 12px; color: #4a5169;">Busque e configure seu registro</div>
+                    <div style="font-size: 22px; font-weight: 800; color: #e9edf2; letter-spacing: -0.03em; margin-bottom: 3px; font-family: 'Sora', system-ui, sans-serif;">Adicionar à Biblioteca</div>
+                    <div style="font-size: 12px; color: rgba(233,237,242,0.42);">Busque e configure seu registro</div>
                 </div>
 
                 <!-- ── Obra section ── -->
@@ -22,15 +22,15 @@
                                 :src="selectedContent.cover"
                                 style="width: 100%; height: 100%; object-fit: cover; filter: blur(22px); transform: scale(1.15); opacity: 0.28;"
                             />
-                            <div style="position: absolute; inset: 0; background: linear-gradient(135deg, rgba(13,17,23,0.88) 0%, rgba(26,31,46,0.94) 100%);" />
+                            <div style="position: absolute; inset: 0; background: linear-gradient(135deg, rgba(5,7,11,0.88) 0%, rgba(8,10,16,0.94) 100%);" />
                         </div>
                         <!-- Border accent using type color -->
                         <div style="position: relative; display: flex; gap: 14px; padding: 16px; border: 1px solid rgba(255,255,255,0.07); border-radius: 16px;" :style="{ borderLeft: `3px solid ${selectedTypeColor}` }">
                             <!-- Cover -->
                             <div style="flex-shrink: 0; width: 88px; height: 124px; border-radius: 10px; overflow: hidden; box-shadow: 0 8px 28px rgba(0,0,0,0.65);">
                                 <img v-if="selectedContent.cover" :src="selectedContent.cover" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
-                                <div v-else style="width: 100%; height: 100%; background: #1a1f2e; display: flex; align-items: center; justify-content: center;">
-                                    <IonIcon :icon="getTypeIcon(selectedContent.type)" style="font-size: 32px; color: #4a5169;" />
+                                <div v-else style="width: 100%; height: 100%; background: rgba(255,255,255,0.025); display: flex; align-items: center; justify-content: center;">
+                                    <IonIcon :icon="getTypeIcon(selectedContent.type)" style="font-size: 32px; color: rgba(233,237,242,0.28);" />
                                 </div>
                             </div>
 
@@ -41,7 +41,7 @@
                                     <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
                                         <span :style="getTypeBadgeStyle(selectedContent.type)">{{ getTypeLabel(selectedContent.type) }}</span>
                                         <span v-if="selectedContent.status" :style="catStatusBadgeStyle(selectedContent.status)">{{ catStatusText(selectedContent.status) }}</span>
-                                        <span v-if="selectedContent.is_adult" style="font-size: 9px; font-weight: 800; color: #f87171; background: rgba(248,113,113,0.12); padding: 2px 6px; border-radius: 20px;">+18</span>
+                                        <span v-if="selectedContent.is_adult" style="font-size: 9px; font-weight: 800; color: #ef6b6b; background: rgba(239,107,107,0.12); padding: 2px 6px; border-radius: 20px;">+18</span>
                                     </div>
                                     <button
                                         style="width: 26px; height: 26px; flex-shrink: 0; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.35); color: #9aa3b8; cursor: pointer; font-size: 16px; line-height: 1; display: flex; align-items: center; justify-content: center;"
@@ -50,22 +50,22 @@
                                 </div>
 
                                 <!-- Title -->
-                                <div style="font-size: 16px; font-weight: 800; color: #eef0f5; line-height: 1.25; letter-spacing: -0.02em; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">{{ selectedContent.name }}</div>
+                                <div style="font-size: 16px; font-weight: 800; color: #e9edf2; line-height: 1.25; letter-spacing: -0.02em; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">{{ selectedContent.name }}</div>
 
                                 <!-- Meta row: year · score · units/duration -->
                                 <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                                    <span v-if="selectedContent.release_year" style="font-size: 11px; color: #6b738a;">{{ selectedContent.release_year }}</span>
+                                    <span v-if="selectedContent.release_year" style="font-size: 11px; color: rgba(233,237,242,0.42);">{{ selectedContent.release_year }}</span>
                                     <template v-if="selectedContent.score != null">
-                                        <span style="color: #2a3045; font-size: 10px;">·</span>
-                                        <span style="font-size: 11px; color: #fbbf24; font-weight: 700;">★ {{ selectedContent.score }}</span>
+                                        <span style="color: rgba(233,237,242,0.18); font-size: 10px;">·</span>
+                                        <span style="font-size: 11px; color: #e6b85c; font-weight: 700;">★ {{ selectedContent.score }}</span>
                                     </template>
                                     <template v-if="selectedContent.type === 'movie' && selectedContent.duration_formatted">
-                                        <span style="color: #2a3045; font-size: 10px;">·</span>
-                                        <span style="font-size: 11px; color: #6b738a;">{{ selectedContent.duration_formatted }}</span>
+                                        <span style="color: rgba(233,237,242,0.18); font-size: 10px;">·</span>
+                                        <span style="font-size: 11px; color: rgba(233,237,242,0.42);">{{ selectedContent.duration_formatted }}</span>
                                     </template>
                                     <template v-else-if="selectedContent.total_units">
-                                        <span style="color: #2a3045; font-size: 10px;">·</span>
-                                        <span style="font-size: 11px; color: #6b738a;">{{ selectedContent.total_units }} {{ getUnitShort(selectedContent.type) }}</span>
+                                        <span style="color: rgba(233,237,242,0.18); font-size: 10px;">·</span>
+                                        <span style="font-size: 11px; color: rgba(233,237,242,0.42);">{{ selectedContent.total_units }} {{ getUnitShort(selectedContent.type) }}</span>
                                     </template>
                                 </div>
 
@@ -74,12 +74,12 @@
                                     <span
                                         v-for="g in selectedContent.genres.slice(0, 3)"
                                         :key="g"
-                                        style="font-size: 9px; color: #6b738a; background: rgba(255,255,255,0.05); padding: 2px 7px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.07);"
+                                        style="font-size: 9px; color: rgba(233,237,242,0.42); background: rgba(255,255,255,0.04); padding: 2px 7px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.06);"
                                     >{{ g }}</span>
                                 </div>
 
                                 <!-- Synopsis preview -->
-                                <div v-if="selectedContent.synopsis" style="font-size: 11px; color: #5a6480; line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top: 2px;">{{ selectedContent.synopsis }}</div>
+                                <div v-if="selectedContent.synopsis" style="font-size: 11px; color: rgba(233,237,242,0.42); line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top: 2px;">{{ selectedContent.synopsis }}</div>
                             </div>
                         </div>
                     </div>
@@ -91,28 +91,28 @@
                                 v-model="contentSearch"
                                 type="text"
                                 placeholder="Buscar no acervo..."
-                                style="width: 100%; box-sizing: border-box; background: #131826; border: 1.5px solid #1e2535; border-radius: 12px; padding: 12px 16px; font-size: 14px; color: #eef0f5; outline: none;"
+                                style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.025); border: 1.5px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 12px 16px; font-size: 14px; color: #e9edf2; outline: none;"
                                 @input="onContentSearch"
                             />
                         </div>
-                        <div v-if="searchResults.length" style="margin-top: 4px; background: #131826; border: 1px solid #1e2535; border-radius: 12px; overflow: hidden; max-height: 260px; overflow-y: auto;">
+                        <div v-if="searchResults.length" style="margin-top: 4px; background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; overflow: hidden; max-height: 260px; overflow-y: auto;">
                             <div
                                 v-for="c in searchResults"
                                 :key="c.id"
-                                style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; cursor: pointer; border-bottom: 1px solid #1e2535; transition: background 0.12s;"
+                                style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.12s;"
                                 @click="selectContent(c)"
                             >
-                                <div style="width: 38px; height: 54px; border-radius: 6px; overflow: hidden; flex-shrink: 0; background: #0d1117; display: flex; align-items: center; justify-content: center;">
+                                <div style="width: 38px; height: 54px; border-radius: 6px; overflow: hidden; flex-shrink: 0; background: rgba(255,255,255,0.04); display: flex; align-items: center; justify-content: center;">
                                     <img v-if="c.cover" :src="c.cover" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
-                                    <IonIcon v-else :icon="getTypeIcon(c.type)" style="font-size: 18px; color: #4a5169;" />
+                                    <IonIcon v-else :icon="getTypeIcon(c.type)" style="font-size: 18px; color: rgba(233,237,242,0.28);" />
                                 </div>
                                 <div style="flex: 1; min-width: 0;">
-                                    <div style="font-size: 13px; font-weight: 700; color: #eef0f5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px;">{{ c.name }}</div>
+                                    <div style="font-size: 13px; font-weight: 700; color: #e9edf2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px;">{{ c.name }}</div>
                                     <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
                                         <span :style="getTypeBadgeStyle(c.type)">{{ getTypeLabel(c.type) }}</span>
-                                        <span v-if="c.score != null" style="font-size: 10px; color: #fbbf24; font-weight: 700;">★ {{ c.score }}</span>
-                                        <span v-if="c.total_units" style="font-size: 10px; color: #4a5169;">{{ c.total_units }} {{ getUnitShort(c.type) }}</span>
-                                        <span v-if="c.is_in_library" style="font-size: 9px; font-weight: 800; color: #34d399; background: rgba(52,211,153,0.12); padding: 2px 7px; border-radius: 20px;">✓ Na lista</span>
+                                        <span v-if="c.score != null" style="font-size: 10px; color: #e6b85c; font-weight: 700;">★ {{ c.score }}</span>
+                                        <span v-if="c.total_units" style="font-size: 10px; color: rgba(233,237,242,0.42);">{{ c.total_units }} {{ getUnitShort(c.type) }}</span>
+                                        <span v-if="c.is_in_library" style="font-size: 9px; font-weight: 800; color: #00F5A0; background: rgba(52,211,153,0.12); padding: 2px 7px; border-radius: 20px;">✓ Na lista</span>
                                     </div>
                                 </div>
                             </div>
@@ -125,13 +125,13 @@
                     v-if="selectedContent?.is_in_library"
                     style="margin-bottom: 20px; background: rgba(52,211,153,0.07); border: 1px solid rgba(52,211,153,0.2); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 12px;"
                 >
-                    <span style="font-size: 18px; flex-shrink: 0; color: #34d399;">✓</span>
+                    <span style="font-size: 18px; flex-shrink: 0; color: #00F5A0;">✓</span>
                     <div style="flex: 1; min-width: 0;">
-                        <div style="font-size: 13px; font-weight: 700; color: #34d399; margin-bottom: 2px;">Já está na sua biblioteca</div>
-                        <div style="font-size: 11px; color: #4a5169;">Este conteúdo já foi adicionado ao seu registro.</div>
+                        <div style="font-size: 13px; font-weight: 700; color: #00F5A0; margin-bottom: 2px;">Já está na sua biblioteca</div>
+                        <div style="font-size: 11px; color: rgba(233,237,242,0.42);">Este conteúdo já foi adicionado ao seu registro.</div>
                     </div>
                     <button
-                        style="flex-shrink: 0; height: 34px; padding: 0 14px; border-radius: 10px; border: 1px solid rgba(52,211,153,0.35); background: rgba(52,211,153,0.1); color: #34d399; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap;"
+                        style="flex-shrink: 0; height: 34px; padding: 0 14px; border-radius: 10px; border: 1px solid rgba(52,211,153,0.35); background: rgba(52,211,153,0.1); color: #00F5A0; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap;"
                         @click="$router.push('/tabs/library')"
                     >Ver na biblioteca</button>
                 </div>
@@ -147,10 +147,10 @@
                                 style="display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 13px; border-radius: 20px; font-size: 11px; font-weight: 700; cursor: pointer; border: 1px solid; transition: all 0.15s; white-space: nowrap;"
                                 :style="form.status === s.value
                                     ? { background: getStatusColor(s.value) + '22', color: getStatusColor(s.value), borderColor: getStatusColor(s.value) + '88' }
-                                    : { background: '#131826', color: '#5a6480', borderColor: '#1e2535' }"
+                                    : { background: 'rgba(255,255,255,0.025)', color: 'rgba(233,237,242,0.42)', borderColor: 'rgba(255,255,255,0.06)' }"
                                 @click="form.status = s.value"
                             >
-                                <span style="width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0;" :style="{ background: form.status === s.value ? getStatusColor(s.value) : '#2a3045' }"></span>
+                                <span style="width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0;" :style="{ background: form.status === s.value ? getStatusColor(s.value) : 'rgba(255,255,255,0.12)' }"></span>
                                 {{ s.label }}
                             </div>
                         </div>
@@ -194,7 +194,7 @@
 
                     <!-- ── Rating ── -->
                     <div style="margin-bottom: 20px;">
-                        <div :style="sectionLabelStyle">Avaliação <span style="font-weight: 600; color: #2a3045; text-transform: none; letter-spacing: 0;">(opcional)</span></div>
+                        <div :style="sectionLabelStyle">Avaliação <span style="font-weight: 600; color: rgba(233,237,242,0.28); text-transform: none; letter-spacing: 0;">(opcional)</span></div>
                         <div style="display: flex; flex-wrap: wrap; gap: 7px;">
                             <div
                                 v-for="n in ratingOptions"
@@ -202,18 +202,18 @@
                                 style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer; border: 1px solid; transition: all 0.15s;"
                                 :style="form.rating === n
                                     ? { background: ratingBg(n), color: ratingColor(n), borderColor: ratingColor(n) + '55' }
-                                    : { background: '#131826', color: '#5a6480', borderColor: '#1e2535' }"
+                                    : { background: 'rgba(255,255,255,0.025)', color: 'rgba(233,237,242,0.42)', borderColor: 'rgba(255,255,255,0.06)' }"
                                 @click="form.rating = (form.rating === n ? null : n)"
                             >{{ n }}</div>
                         </div>
-                        <div v-if="form.rating != null" style="margin-top: 8px; font-size: 12px; color: #9aa3b8; font-weight: 600;">
+                        <div v-if="form.rating != null" style="margin-top: 8px; font-size: 12px; color: rgba(233,237,242,0.62); font-weight: 600;">
                             {{ ratingLabel(form.rating) }}
                         </div>
                     </div>
 
                     <!-- ── Site ── -->
                     <div style="margin-bottom: 28px;">
-                        <div :style="sectionLabelStyle">Fonte <span style="font-weight: 600; color: #2a3045; text-transform: none; letter-spacing: 0;">(opcional)</span></div>
+                        <div :style="sectionLabelStyle">Fonte <span style="font-weight: 600; color: rgba(233,237,242,0.28); text-transform: none; letter-spacing: 0;">(opcional)</span></div>
                         <IonSelect
                             v-model="form.site_id"
                             placeholder="Sem fonte"
@@ -262,18 +262,18 @@ const TYPE_ICONS: Record<ContentType, string> = {
 };
 
 const TYPE_COLORS: Record<ContentType, string> = {
-    manga:  '#5eead4',
+    manga:  '#00F5A0',
     anime:  '#a78bfa',
-    novel:  '#fbbf24',
+    novel:  '#e6b85c',
     movie:  '#f472b6',
-    tv:     '#22d3ee',
+    tv:     '#7da7ff',
 };
 
 const STATUS_COLORS: Record<string, string> = {
-    reading:      '#60a5fa',
-    completed:    '#34d399',
-    paused:       '#fbbf24',
-    dropped:      '#f87171',
+    reading:      '#7da7ff',
+    completed:    '#00F5A0',
+    paused:       '#e6b85c',
+    dropped:      '#ef6b6b',
     plan_to_read: '#a78bfa',
 };
 
@@ -307,7 +307,7 @@ export default defineComponent({
             return this.selectedContentData;
         },
         selectedTypeColor(): string {
-            return TYPE_COLORS[this.selectedContent?.type ?? 'manga'] ?? '#5eead4';
+            return TYPE_COLORS[this.selectedContent?.type ?? 'manga'] ?? '#00F5A0';
         },
         isMovie(): boolean {
             return this.selectedContent?.type === 'movie';
@@ -327,8 +327,8 @@ export default defineComponent({
             return {
                 fontSize: '10px',
                 fontWeight: '800',
-                letterSpacing: '0.08em',
-                color: '#6b738a',
+                letterSpacing: '0.22em',
+                color: 'rgba(233,237,242,0.42)',
                 textTransform: 'uppercase',
                 marginBottom: '10px',
             };
@@ -446,7 +446,7 @@ export default defineComponent({
         },
 
         getTypeBadgeStyle(type: ContentType): Record<string, string> {
-            const col = TYPE_COLORS[type] ?? '#5eead4';
+            const col = TYPE_COLORS[type] ?? '#00F5A0';
             return {
                 fontSize: '9px', fontWeight: '800', letterSpacing: '0.06em',
                 color: col, background: col + '1a',
@@ -455,16 +455,16 @@ export default defineComponent({
         },
 
         ratingBg(n: number): string {
-            if (n >= 9) return 'rgba(94,234,212,0.15)';
-            if (n >= 7) return 'rgba(96,165,250,0.15)';
-            if (n >= 5) return 'rgba(251,191,36,0.15)';
-            return 'rgba(248,113,113,0.12)';
+            if (n >= 9) return 'rgba(52,211,153,0.15)';
+            if (n >= 7) return 'rgba(125,167,255,0.15)';
+            if (n >= 5) return 'rgba(230,184,92,0.15)';
+            return 'rgba(239,107,107,0.12)';
         },
         ratingColor(n: number): string {
-            if (n >= 9) return '#5eead4';
-            if (n >= 7) return '#60a5fa';
-            if (n >= 5) return '#fbbf24';
-            return '#f87171';
+            if (n >= 9) return '#00F5A0';
+            if (n >= 7) return '#7da7ff';
+            if (n >= 5) return '#e6b85c';
+            return '#ef6b6b';
         },
         ratingLabel(n: number): string {
             const labels: Record<number, string> = {
@@ -478,16 +478,16 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.btn-primary { --background: #5eead4; --color: #0d1117; --border-radius: 14px; font-weight: 800; height: 50px; }
-.btn-cancel { --background: #1a1f2e; --color: #6b738a; --border-radius: 14px; height: 50px; }
+.btn-primary { --background: #00F5A0; --color: #050608; --border-radius: 14px; font-weight: 800; height: 50px; }
+.btn-cancel { --background: rgba(255,255,255,0.04); --color: rgba(233,237,242,0.42); --border-radius: 14px; height: 50px; }
 
 .neon-input {
-    --background: #131826;
-    --color: #eef0f5;
-    --placeholder-color: #4a5169;
-    --border-color: #1e2535;
+    --background: rgba(255,255,255,0.025);
+    --color: #e9edf2;
+    --placeholder-color: rgba(233,237,242,0.28);
+    --border-color: rgba(255,255,255,0.06);
     --border-radius: 12px;
-    --highlight-color-focused: #5eead4;
+    --highlight-color-focused: #00F5A0;
     --padding-start: 14px;
     --padding-end: 14px;
     min-height: 48px;
@@ -495,12 +495,12 @@ export default defineComponent({
 }
 
 .neon-select {
-    --background: #131826;
-    --color: #eef0f5;
-    --placeholder-color: #4a5169;
-    --border-color: #1e2535;
+    --background: rgba(255,255,255,0.025);
+    --color: #e9edf2;
+    --placeholder-color: rgba(233,237,242,0.28);
+    --border-color: rgba(255,255,255,0.06);
     --border-radius: 12px;
-    --highlight-color-focused: #5eead4;
+    --highlight-color-focused: #00F5A0;
     --padding-start: 14px;
     --padding-end: 14px;
     min-height: 48px;

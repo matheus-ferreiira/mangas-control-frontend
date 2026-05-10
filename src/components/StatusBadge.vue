@@ -44,27 +44,27 @@ export default defineComponent({
 }
 
 .status-reading {
-    background: rgba(59, 130, 246, 0.15);
-    color: #3b82f6;
+    background: rgba(125, 167, 255, 0.15);
+    color: #7CAEFF;
 }
 
 .status-completed {
-    background: rgba(16, 185, 129, 0.15);
-    color: #10b981;
+    background: rgba(52, 211, 153, 0.15);
+    color: #00F5A0;
 }
 
 .status-plan-to-read {
-    background: rgba(139, 92, 246, 0.15);
-    color: #8b5cf6;
+    background: rgba(167, 139, 250, 0.15);
+    color: #B8A4FF;
 }
 
 .status-dropped {
-    background: rgba(239, 68, 68, 0.15);
-    color: #ef4444;
+    background: rgba(239, 107, 107, 0.15);
+    color: #FF5E5E;
 }
 
 .status-paused {
-    background: rgba(245, 158, 11, 0.15);
-    color: #f59e0b;
+    background: rgba(230, 184, 92, 0.15);
+    color: #F5C542;
 }
 </style>

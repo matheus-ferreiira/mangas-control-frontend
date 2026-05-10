@@ -16,7 +16,7 @@
                 />
                 <span v-else style="font-size: 26px; font-weight: 900; letter-spacing: -0.04em; position: absolute;">{{ typeShort }}</span>
                 <!-- Type corner dot -->
-                <div :style="{ position: 'absolute', bottom: '5px', right: '5px', width: '7px', height: '7px', borderRadius: '50%', background: typeColor, boxShadow: `0 0 0 2px rgba(13,17,23,0.7)` }"></div>
+                <div :style="{ position: 'absolute', bottom: '5px', right: '5px', width: '7px', height: '7px', borderRadius: '50%', background: typeColor, boxShadow: `0 0 0 2px rgba(5,7,11,0.7)` }"></div>
             </div>
 
             <!-- Info -->
@@ -24,52 +24,52 @@
                 <!-- Row 1: type badge + status dot + optional badges -->
                 <div style="display: flex; align-items: center; gap: 5px; margin-bottom: 4px; flex-wrap: wrap;">
                     <span :style="typeBadgeStyle">{{ typeBadgeLabel }}</span>
-                    <span v-if="originTypeBadge" style="font-size: 9px; font-weight: 700; color: #6b738a; background: rgba(107,115,138,0.1); padding: 2px 6px; border-radius: 20px; flex-shrink: 0;">{{ originTypeBadge }}</span>
+                    <span v-if="originTypeBadge" style="font-size: 9px; font-weight: 700; color: rgba(233,237,242,0.42); background: rgba(233,237,242,0.06); padding: 2px 6px; border-radius: 20px; flex-shrink: 0;">{{ originTypeBadge }}</span>
                     <span :style="statusDotStyle"></span>
-                    <span v-if="item.content?.is_adult" style="font-size: 9px; font-weight: 800; color: #f87171; background: rgba(248,113,113,0.1); padding: 2px 6px; border-radius: 20px; flex-shrink: 0;">+18</span>
+                    <span v-if="item.content?.is_adult" style="font-size: 9px; font-weight: 800; color: #FF5E5E; background: rgba(239,107,107,0.1); padding: 2px 6px; border-radius: 20px; flex-shrink: 0;">+18</span>
                 </div>
 
                 <!-- Row 2: title -->
-                <div style="font-size: 15px; font-weight: 800; color: #eef0f5; margin-bottom: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: -0.02em; line-height: 1.2;">
+                <div style="font-size: 15px; font-weight: 800; color: #e9edf2; margin-bottom: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: -0.02em; line-height: 1.2;">
                     {{ item.content?.name || 'Desconhecido' }}
                 </div>
 
                 <!-- Row 3: genres · year -->
-                <div style="font-size: 10px; color: #6b738a; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                <div style="font-size: 10px; color: rgba(233,237,242,0.42); margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                     {{ metaGenreYear }}
                 </div>
 
                 <!-- Bottom: progress line + bar -->
                 <div>
-                    <div style="font-size: 11px; color: #9aa3b8; display: flex; align-items: center; gap: 5px; margin-bottom: 6px;">
+                    <div style="font-size: 11px; color: rgba(233,237,242,0.62); display: flex; align-items: center; gap: 5px; margin-bottom: 6px;">
                         <template v-if="isMovie">
                             <span :style="{ fontWeight: '700', color: statusColor }">{{ statusLabel }}</span>
                             <template v-if="item.rating != null">
-                                <span style="color: #4a5169;">·</span>
-                                <span style="color: #fbbf24; font-weight: 700;">★ {{ item.rating }}</span>
+                                <span style="color: rgba(233,237,242,0.18);">·</span>
+                                <span style="color: #F5C542; font-weight: 700;">★ {{ item.rating }}</span>
                             </template>
                             <template v-if="item.content?.duration_formatted">
-                                <span style="color: #4a5169;">·</span>
-                                <span>{{ item.content.duration_formatted }}</span>
+                                <span style="color: rgba(233,237,242,0.18);">·</span>
+                                <span style="color: rgba(233,237,242,0.42);">{{ item.content.duration_formatted }}</span>
                             </template>
                         </template>
                         <template v-else-if="isTv">
-                            <span style="color: #eef0f5; font-weight: 700;">Ep {{ item.current_units }}{{ item.content?.total_units ? ` / ${item.content.total_units}` : '' }}</span>
+                            <span style="color: #e9edf2; font-weight: 700;">Ep {{ item.current_units }}{{ item.content?.total_units ? ` / ${item.content.total_units}` : '' }}</span>
                             <template v-if="item.rating != null">
-                                <span style="color: #4a5169;">·</span>
-                                <span style="color: #fbbf24; font-weight: 700;">★ {{ item.rating }}</span>
+                                <span style="color: rgba(233,237,242,0.18);">·</span>
+                                <span style="color: #F5C542; font-weight: 700;">★ {{ item.rating }}</span>
                             </template>
                         </template>
                         <template v-else>
-                            <span style="color: #eef0f5; font-weight: 700;">{{ unitLabel }} {{ item.current_units }}{{ item.content?.total_units ? ` / ${item.content.total_units}` : '' }}</span>
+                            <span style="color: #e9edf2; font-weight: 700;">{{ unitLabel }} {{ item.current_units }}{{ item.content?.total_units ? ` / ${item.content.total_units}` : '' }}</span>
                             <template v-if="item.rating != null">
-                                <span style="color: #4a5169;">·</span>
-                                <span style="color: #fbbf24; font-weight: 700;">★ {{ item.rating }}</span>
+                                <span style="color: rgba(233,237,242,0.18);">·</span>
+                                <span style="color: #F5C542; font-weight: 700;">★ {{ item.rating }}</span>
                             </template>
                         </template>
                         <template v-if="lastUpdateText">
-                            <span style="color: #4a5169;">·</span>
-                            <span style="color: #4a5169;">{{ lastUpdateText }}</span>
+                            <span style="color: rgba(233,237,242,0.18);">·</span>
+                            <span style="color: rgba(233,237,242,0.28);">{{ lastUpdateText }}</span>
                         </template>
                     </div>
 
@@ -96,10 +96,10 @@
                     :disabled="atLimit"
                     style="width: 36px; height: 36px; border-radius: 18px; border: none; font-size: 20px; font-weight: 600; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0;"
                     :style="atLimit
-                        ? { background: '#1a1f2e', color: '#3a4255', cursor: 'not-allowed' }
+                        ? { background: 'rgba(255,255,255,0.025)', color: 'rgba(233,237,242,0.18)', cursor: 'not-allowed' }
                         : plusActive
-                            ? { background: typeColor, color: '#0d1117', transform: 'scale(1.15)', cursor: 'pointer', boxShadow: `0 0 12px ${typeColor}66` }
-                            : { background: '#1a1f2e', color: typeColor, cursor: 'pointer', border: '1px solid #262d40' }"
+                            ? { background: typeColor, color: '#05070b', transform: 'scale(1.15)', cursor: 'pointer', boxShadow: `0 0 12px ${typeColor}66` }
+                            : { background: 'rgba(255,255,255,0.04)', color: typeColor, cursor: 'pointer', border: '1px solid rgba(255,255,255,0.06)' }"
                     @click.stop="handlePlus"
                 >+</button>
             </div>
@@ -117,19 +117,19 @@ const TYPE_SHORT: Record<ContentType, string> = {
 };
 
 const TYPE_BADGE: Record<ContentType, { color: string; label: string }> = {
-    manga:  { color: '#5eead4', label: 'MANGA' },
-    anime:  { color: '#a78bfa', label: 'ANIME' },
-    novel:  { color: '#fbbf24', label: 'NOVEL' },
-    movie:  { color: '#f472b6', label: 'FILME' },
-    tv:     { color: '#22d3ee', label: 'SÉRIE' },
+    manga:  { color: '#00F5A0', label: 'MANGA' },
+    anime:  { color: '#B8A4FF', label: 'ANIME' },
+    novel:  { color: '#F5C542', label: 'NOVEL' },
+    movie:  { color: '#FF7EC7', label: 'FILME' },
+    tv:     { color: '#7CAEFF', label: 'SÉRIE' },
 };
 
 const STATUS_COLORS: Record<ContentStatus, string> = {
-    reading:      '#60a5fa',
-    completed:    '#34d399',
-    paused:       '#fbbf24',
-    dropped:      '#f87171',
-    plan_to_read: '#a78bfa',
+    reading:      '#7CAEFF',
+    completed:    '#00F5A0',
+    paused:       '#F5C542',
+    dropped:      '#FF5E5E',
+    plan_to_read: '#B8A4FF',
 };
 
 export default defineComponent({
@@ -146,7 +146,7 @@ export default defineComponent({
             return this.item.content?.type ?? 'manga';
         },
         typeColor(): string {
-            return TYPE_BADGE[this.contentType]?.color ?? '#5eead4';
+            return TYPE_BADGE[this.contentType]?.color ?? '#00F5A0';
         },
         typeShort(): string {
             return TYPE_SHORT[this.contentType] ?? '?';
@@ -166,10 +166,10 @@ export default defineComponent({
         cardStyle(): Record<string, string> {
             const col = this.typeColor;
             return {
-                background: `linear-gradient(120deg, ${col}0e 0%, #131826 100%)`,
-                borderTop: '1px solid #1e2535',
-                borderRight: '1px solid #1e2535',
-                borderBottom: '1px solid #1e2535',
+                background: `linear-gradient(120deg, ${col}0e 0%, rgba(8,10,16,0.8) 100%)`,
+                borderTop: '1px solid rgba(255,255,255,0.06)',
+                borderRight: '1px solid rgba(255,255,255,0.06)',
+                borderBottom: '1px solid rgba(255,255,255,0.06)',
                 borderLeft: `3px solid ${col}`,
                 borderRadius: '12px',
                 marginBottom: '8px',
@@ -185,7 +185,7 @@ export default defineComponent({
             return {
                 flexShrink: '0', borderRadius: '8px', overflow: 'hidden',
                 width: '80px', height: '114px',
-                background: `linear-gradient(135deg, ${col}22, #1a1f2e)`,
+                background: `linear-gradient(135deg, ${col}22, rgba(255,255,255,0.025))`,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 color: col, position: 'relative',
                 boxShadow: '0 4px 16px rgba(0,0,0,0.5)',

@@ -1,118 +1,186 @@
-/* Neon Curator — dark theme overrides */
+/* Neon Curator — Content Cosmos design system */
 :root {
-    --ion-color-primary: #00d4aa;
-    --ion-color-primary-rgb: 0, 212, 170;
-    --ion-color-primary-contrast: #000000;
-    --ion-color-primary-contrast-rgb: 0, 0, 0;
-    --ion-color-primary-shade: #00b894;
-    --ion-color-primary-tint: #1addb5;
+    /* ── Ionic color system ── */
+    --ion-color-primary:             #00F5A0;
+    --ion-color-primary-rgb:         0, 245, 160;
+    --ion-color-primary-contrast:    #050608;
+    --ion-color-primary-contrast-rgb: 5, 6, 8;
+    --ion-color-primary-shade:       #00DC90;
+    --ion-color-primary-tint:        #1AF6A9;
 
-    --ion-color-secondary: #8b5cf6;
-    --ion-color-secondary-rgb: 139, 92, 246;
-    --ion-color-secondary-contrast: #ffffff;
-    --ion-color-secondary-contrast-rgb: 255, 255, 255;
-    --ion-color-secondary-shade: #7a4fdc;
-    --ion-color-secondary-tint: #976cf7;
+    --ion-color-secondary:           #00D9FF;
+    --ion-color-secondary-rgb:       0, 217, 255;
+    --ion-color-secondary-contrast:  #050608;
+    --ion-color-secondary-contrast-rgb: 5, 6, 8;
+    --ion-color-secondary-shade:     #00C2E0;
+    --ion-color-secondary-tint:      #1ADCFF;
 
-    --ion-background-color: #0d1117;
-    --ion-background-color-rgb: 13, 17, 23;
+    --ion-background-color:          hsl(220 30% 3%);
+    --ion-background-color-rgb:      5, 6, 8;
 
-    --ion-text-color: #f0f4ff;
-    --ion-text-color-rgb: 240, 244, 255;
+    --ion-text-color:                hsl(213 25% 92%);
+    --ion-text-color-rgb:            227, 233, 242;
 
-    --ion-card-background: #131826;
-    --ion-item-background: #131826;
-    --ion-font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    --ion-card-background:           hsl(222 24% 7%);
+    --ion-item-background:           transparent;
+    --ion-font-family:               'Sora', 'Inter', system-ui, -apple-system, sans-serif;
 
-    --ion-toolbar-background: #131826;
-    --ion-tab-bar-background: #0d1117;
-    --ion-tab-bar-border-color: rgba(0, 212, 170, 0.2);
-    --ion-tab-bar-color: #5a6480;
-    --ion-tab-bar-color-selected: #00d4aa;
+    --ion-toolbar-background:        hsl(222 24% 7%);
+    --ion-tab-bar-background:        transparent;
+    --ion-tab-bar-border-color:      transparent;
+    --ion-tab-bar-color:             hsl(213 15% 45%);
+    --ion-tab-bar-color-selected:    #00F5A0;
 
-    --ion-color-step-50: #0f1420;
-    --ion-color-step-100: #131826;
-    --ion-color-step-150: #171c2c;
-    --ion-color-step-200: #1a1f2e;
-    --ion-color-step-250: #1e2535;
-    --ion-color-step-300: #222a3c;
-    --ion-color-step-350: #263045;
-    --ion-color-step-400: #2a3650;
-    --ion-color-step-450: #2e3c5c;
-    --ion-color-step-500: #324268;
+    --ion-color-step-50:   hsl(222 24% 6%);
+    --ion-color-step-100:  hsl(222 24% 7%);
+    --ion-color-step-150:  hsl(222 23% 8%);
+    --ion-color-step-200:  hsl(222 23% 9%);
+    --ion-color-step-250:  hsl(222 22% 10%);
+    --ion-color-step-300:  hsl(222 22% 11%);
+    --ion-color-step-350:  hsl(222 22% 12%);
+    --ion-color-step-400:  hsl(222 21% 14%);
+    --ion-color-step-450:  hsl(222 21% 16%);
+    --ion-color-step-500:  hsl(222 20% 18%);
 
-    --ion-placeholder-color: #4a5169;
-    --ion-border-color: #1e2535;
-    --ion-item-border-color: #1e2535;
+    --ion-placeholder-color: hsl(213 10% 40%);
+    --ion-border-color:       hsl(0 0% 100% / 0.07);
+    --ion-item-border-color:  hsl(0 0% 100% / 0.07);
 
-    /* Custom vars */
-    --neon-surface: #131826;
-    --neon-surface-elevated: #1a1f2e;
-    --neon-border: #1e2535;
-    --neon-accent: #5eead4;
-    --neon-accent-dim: rgba(94, 234, 212, 0.13);
-    --neon-accent-glow: rgba(94, 234, 212, 0.28);
-    --neon-blue: #8b5cf6;
-    --neon-text-muted: #5a6480;
-    --neon-gradient: linear-gradient(135deg, #8b5cf6 0%, #00d4aa 100%);
-    --neon-danger: #ef4444;
-    --neon-warning: #f59e0b;
-    --neon-pill-border: #4a5a80;
+    /* ── Background layers ── */
+    --bg:      hsl(220 30% 3%);
+    --bg1:     hsl(222 24% 5%);
+    --bg2:     hsl(222 24% 7%);
 
-    /* Status colors */
-    --status-reading: #60a5fa;
-    --status-completed: #34d399;
-    --status-paused: #fbbf24;
-    --status-dropped: #f87171;
-    --status-plan: #a78bfa;
+    /* ── Named surface layers ── */
+    --surface-1: hsl(222 24% 7%);
+    --surface-2: hsl(222 22% 9%);
+    --surface-3: hsl(222 22% 12%);
+
+    /* ── Border tokens ── */
+    --border:        hsl(220 20% 14%);
+    --border-subtle: hsl(0 0% 100% / 0.06);
+    --border-strong: hsl(0 0% 100% / 0.12);
+
+    /* ── Text scale ── */
+    --text:        hsl(213 25% 92%);
+    --subtle:      hsl(213 15% 65%);
+    --muted:       hsl(213 10% 45%);
+    --faint:       hsl(213 8% 30%);
+
+    /* ── Primary — neon green ── */
+    --primary:     #00F5A0;
+    --primary-rgb: 0, 245, 160;
+    --primary-dim: hsl(158 100% 48% / 0.08);
+    --primary-mid: hsl(158 100% 48% / 0.18);
+    --primary-glow:hsl(158 100% 48% / 0.45);
+    --primary-ink: #050608;
+
+    /* ── Cyan accent ── */
+    --cyan:        #00D9FF;
+    --cyan-rgb:    0, 217, 255;
+    --cyan-dim:    hsl(189 100% 50% / 0.08);
+    --cyan-mid:    hsl(189 100% 50% / 0.18);
+    --cyan-glow:   hsl(189 100% 50% / 0.45);
+
+    /* ── Functional colors ── */
+    --warn:  #F5C542;
+    --bad:   #FF5E5E;
+    --info:  #7CAEFF;
+
+    /* ── Status colors ── */
+    --status-reading:    #00F5A0;
+    --status-completed:  #7CAEFF;
+    --status-paused:     #F5C542;
+    --status-dropped:    #FF5E5E;
+    --status-plan:       #B8A4FF;
+
+    /* ── Gradients ── */
+    --gradient-primary: linear-gradient(135deg, #00F5A0 0%, #00D9FF 100%);
+    --gradient-hero:
+        radial-gradient(ellipse at top,    hsl(158 100% 48% / 0.15) 0%, transparent 60%),
+        radial-gradient(ellipse at bottom-right, hsl(189 100% 50% / 0.10) 0%, transparent 50%);
+    --gradient-surface: linear-gradient(160deg, hsl(222 24% 8%) 0%, hsl(222 22% 6%) 100%);
+    --gradient-poster:  linear-gradient(to top, hsl(220 30% 3%) 0%, transparent 55%);
+
+    /* ── Shadows ── */
+    --shadow-glow:    0 0 30px hsl(158 100% 48% / 0.45), 0 0 60px hsl(158 100% 48% / 0.15);
+    --shadow-elegant: 0 4px 24px rgba(0,0,0,0.5), 0 1px 4px rgba(0,0,0,0.3);
+    --shadow-poster:  0 8px 32px rgba(0,0,0,0.7);
+    --shadow-card:    0 2px 12px rgba(0,0,0,0.4);
+
+    /* ── Legacy compat aliases (used by components pending redesign) ── */
+    --surface:               hsl(222 24% 7%);
+    --surface2:              hsl(222 22% 9%);
+    --line:                  hsl(0 0% 100% / 0.06);
+    --line2:                 hsl(0 0% 100% / 0.10);
+    --accent:                #00F5A0;
+    --accent-dim:            hsl(158 100% 48% / 0.08);
+    --accent-mid:            hsl(158 100% 48% / 0.18);
+    --accent-ink:            #050608;
+
+    --neon-surface:          hsl(222 24% 7%);
+    --neon-surface-elevated: hsl(222 22% 9%);
+    --neon-border:           hsl(0 0% 100% / 0.06);
+    --neon-accent:           #00F5A0;
+    --neon-accent-dim:       hsl(158 100% 48% / 0.08);
+    --neon-accent-glow:      hsl(158 100% 48% / 0.45);
+    --neon-blue:             #00D9FF;
+    --neon-text-muted:       hsl(213 10% 45%);
+    --neon-gradient:         linear-gradient(135deg, #00F5A0 0%, #00D9FF 100%);
+    --neon-danger:           #FF5E5E;
+    --neon-warning:          #F5C542;
+    --neon-pill-border:      hsl(0 0% 100% / 0.08);
 }
 
+/* ── Base typography ── */
 body, ion-app {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Sora', 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
 }
 
+.font-display,
 h1, h2, h3, h4 {
-    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-family: 'Sora', system-ui, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.03em;
 }
 
-.font-display {
-    font-family: 'Space Grotesk', system-ui, sans-serif;
-}
-
+/* ── Ionic overrides ── */
 ion-content {
-    --background: #0d1117;
+    --background: var(--bg);
 }
 
 ion-toolbar {
-    --background: #131826;
-    --border-color: rgba(94, 234, 212, 0.1);
-    border-bottom: 1px solid rgba(94, 234, 212, 0.1);
+    --background: var(--surface-1);
+    --border-color: var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
 }
 
 ion-title {
-    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-family: 'Sora', system-ui, sans-serif;
     font-weight: 700;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.03em;
 }
 
 ion-item {
-    --border-color: #1e2535;
-    --highlight-color-focused: #5eead4;
+    --border-color: var(--border-subtle);
+    --highlight-color-focused: var(--primary);
+    --background: transparent;
 }
 
 ion-tab-bar {
-    border-top: 1px solid rgba(94, 234, 212, 0.15);
-    padding-bottom: env(safe-area-inset-bottom);
-    height: 60px;
+    background: transparent;
+    border-top: none;
     overflow: visible;
 }
 
 ion-tab-button {
-    --color: #4a5169;
-    --color-selected: #5eead4;
-    font-family: 'Inter', system-ui, sans-serif;
+    --color: var(--muted);
+    --color-selected: var(--primary);
+    font-family: 'Sora', system-ui, sans-serif;
     font-size: 10px;
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: 0.5px;
     text-transform: uppercase;
 }
@@ -122,37 +190,73 @@ ion-modal ion-header {
 }
 
 ion-back-button {
-    --color: #5eead4;
+    --color: var(--primary);
 }
 
-.neon-gradient-text {
-    background: var(--neon-gradient);
+/* ── Glassmorphism layers ── */
+.glass {
+    background: hsl(220 30% 4% / 0.5);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    border: 1px solid hsl(0 0% 100% / 0.06);
+}
+
+.glass-strong {
+    background: hsl(220 30% 4% / 0.8);
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
+    border: 1px solid hsl(0 0% 100% / 0.10);
+}
+
+.glass-floating {
+    background: hsl(220 30% 4% / 0.7);
+    backdrop-filter: blur(32px) saturate(180%);
+    -webkit-backdrop-filter: blur(32px) saturate(180%);
+    border: 1px solid hsl(0 0% 100% / 0.08);
+}
+
+.surface-card {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+}
+
+/* ── Gradient text ── */
+.gradient-text {
+    background: var(--gradient-primary);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
 
+.neon-gradient-text {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ── Common UI atoms ── */
 .neon-card {
-    background: var(--neon-surface);
-    border: 1px solid var(--neon-border);
-    border-radius: 16px;
-    margin: 0;
+    background: var(--surface-1);
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
 }
 
 .neon-input-wrapper {
-    background: var(--neon-surface-elevated);
-    border: 1px solid var(--neon-border);
+    background: var(--surface-2);
+    border: 1px solid var(--border-subtle);
     border-radius: 12px;
     padding: 4px 16px;
     margin-bottom: 16px;
 }
 
 .neon-label {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
-    letter-spacing: 1.5px;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: var(--neon-text-muted);
+    color: var(--muted);
     margin-bottom: 8px;
     display: block;
 }
@@ -161,27 +265,70 @@ ion-back-button {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: rgba(94, 234, 212, 0.13);
-    border: 1px solid rgba(94, 234, 212, 0.28);
+    background: var(--primary-dim);
+    border: 1px solid var(--primary-mid);
     border-radius: 20px;
     padding: 4px 12px;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
-    letter-spacing: 1.5px;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: var(--neon-accent);
+    color: var(--primary);
 }
 
-/* Safe-area top padding for pages without IonHeader */
+/* ── Safe-area helpers ── */
 .page-top {
     padding-top: max(16px, env(safe-area-inset-top, 16px));
 }
 
+/* ── Animations ── */
+@keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes fade-in-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scale-in {
+    from { opacity: 0; transform: scale(0.92); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
 @keyframes shimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(250%); }
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(200%); }
+}
+
+@keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 20px hsl(158 100% 48% / 0.3); }
+    50%       { box-shadow: 0 0 40px hsl(158 100% 48% / 0.6); }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-6px); }
+}
+
+/* Legacy animation names */
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+
+@keyframes fade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
 }
 
 .shimmer-bar {
     animation: shimmer 1.8s infinite;
 }
+
+.animate-fade-in     { animation: fade-in 0.3s ease both; }
+.animate-fade-in-up  { animation: fade-in-up 0.4s ease both; }
+.animate-scale-in    { animation: scale-in 0.3s ease both; }
+.animate-pulse-glow  { animation: pulse-glow 2s ease-in-out infinite; }
+.animate-float       { animation: float 3s ease-in-out infinite; }

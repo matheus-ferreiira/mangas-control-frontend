@@ -4,13 +4,13 @@
             <div style="padding: 0 16px 96px; padding-top: max(16px, env(safe-area-inset-top, 16px));">
                 <!-- Header -->
                 <div style="margin-bottom: 20px;">
-                    <div style="font-size: 20px; font-weight: 800; color: #eef2ff; letter-spacing: -0.02em; margin-bottom: 2px;">Minhas Fontes</div>
-                    <div style="font-size: 12px; color: #4a5470;">Sites onde você acompanha seus conteúdos</div>
+                    <div style="font-size: 20px; font-weight: 800; color: #e9edf2; letter-spacing: -0.02em; margin-bottom: 2px; font-family: 'Sora', system-ui, sans-serif;">Minhas Fontes</div>
+                    <div style="font-size: 12px; color: rgba(233,237,242,0.42);">Sites onde você acompanha seus conteúdos</div>
                 </div>
 
                 <!-- Add button -->
                 <button
-                    style="width: 100%; padding: 14px; border-radius: 14px; border: 1.5px dashed #1e2640; background: transparent; color: #00d4aa; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 20px; transition: all 0.15s;"
+                    style="width: 100%; padding: 14px; border-radius: 14px; border: 1.5px dashed rgba(255,255,255,0.08); background: transparent; color: #00F5A0; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 20px; transition: all 0.15s;"
                     @click="openForm(null)"
                 >
                     <span style="font-size: 18px;">+</span> Nova Fonte
@@ -24,15 +24,15 @@
                 <!-- Empty -->
                 <div v-else-if="sites.length === 0" style="text-align: center; padding: 48px 0;">
                     <div style="font-size: 40px; margin-bottom: 12px; opacity: 0.5;">🌐</div>
-                    <div style="font-size: 15px; font-weight: 700; color: #7a87a8; margin-bottom: 6px;">Nenhuma fonte ainda</div>
-                    <div style="font-size: 12px; color: #4a5470;">Adicione sites onde você lê seus conteúdos</div>
+                    <div style="font-size: 15px; font-weight: 700; color: rgba(233,237,242,0.62); margin-bottom: 6px;">Nenhuma fonte ainda</div>
+                    <div style="font-size: 12px; color: rgba(233,237,242,0.42);">Adicione sites onde você lê seus conteúdos</div>
                 </div>
 
                 <!-- Sites list -->
                 <div v-else>
                     <!-- Favorites first -->
                     <div v-if="favoriteSites.length" style="margin-bottom: 6px;">
-                        <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.08em; color: #f59e0b; text-transform: uppercase; margin-bottom: 8px;">⭐ Favoritas</div>
+                        <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.22em; color: #e6b85c; text-transform: uppercase; margin-bottom: 8px;">⭐ Favoritas</div>
                         <div
                             v-for="site in favoriteSites"
                             :key="site.id"
@@ -42,35 +42,35 @@
                                 <span style="font-size: 18px;">⭐</span>
                             </div>
                             <div style="flex: 1; min-width: 0;">
-                                <div style="font-size: 14px; font-weight: 700; color: #eef2ff;">{{ site.name }}</div>
-                                <div style="font-size: 11px; color: #4a5470; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ site.url }}</div>
+                                <div style="font-size: 14px; font-weight: 700; color: #e9edf2;">{{ site.name }}</div>
+                                <div style="font-size: 11px; color: rgba(233,237,242,0.42); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ site.url }}</div>
                             </div>
                             <div style="display: flex; gap: 6px; flex-shrink: 0;">
-                                <button :style="actionBtnStyle('#f59e0b')" title="Remover dos favoritos" @click="toggleFavorite(site)">★</button>
-                                <button :style="actionBtnStyle('#8b5cf6')" @click="openForm(site)">✏</button>
-                                <button :style="actionBtnStyle('#ef4444', true)" @click="confirmDelete(site)">✕</button>
+                                <button :style="actionBtnStyle('#e6b85c')" title="Remover dos favoritos" @click="toggleFavorite(site)">★</button>
+                                <button :style="actionBtnStyle('#a78bfa')" @click="openForm(site)">✏</button>
+                                <button :style="actionBtnStyle('#ef6b6b', true)" @click="confirmDelete(site)">✕</button>
                             </div>
                         </div>
                     </div>
 
                     <div v-if="regularSites.length">
-                        <div v-if="favoriteSites.length" style="font-size: 10px; font-weight: 800; letter-spacing: 0.08em; color: #4a5470; text-transform: uppercase; margin-bottom: 8px; margin-top: 16px;">Outras</div>
+                        <div v-if="favoriteSites.length" style="font-size: 10px; font-weight: 800; letter-spacing: 0.22em; color: rgba(233,237,242,0.42); text-transform: uppercase; margin-bottom: 8px; margin-top: 16px;">Outras</div>
                         <div
                             v-for="site in regularSites"
                             :key="site.id"
                             :style="siteCardStyle(site)"
                         >
-                            <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(0,212,170,0.08); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #4a5470; font-size: 18px;">
+                            <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(52,211,153,0.08); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: rgba(233,237,242,0.42); font-size: 18px;">
                                 🌐
                             </div>
                             <div style="flex: 1; min-width: 0;">
-                                <div style="font-size: 14px; font-weight: 700; color: #eef2ff;">{{ site.name }}</div>
-                                <div style="font-size: 11px; color: #4a5470; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ site.url }}</div>
+                                <div style="font-size: 14px; font-weight: 700; color: #e9edf2;">{{ site.name }}</div>
+                                <div style="font-size: 11px; color: rgba(233,237,242,0.42); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ site.url }}</div>
                             </div>
                             <div style="display: flex; gap: 6px; flex-shrink: 0;">
-                                <button :style="actionBtnStyle('#4a5470')" title="Marcar como favorito" @click="toggleFavorite(site)">☆</button>
-                                <button :style="actionBtnStyle('#8b5cf6')" @click="openForm(site)">✏</button>
-                                <button :style="actionBtnStyle('#ef4444', true)" @click="confirmDelete(site)">✕</button>
+                                <button :style="actionBtnStyle('rgba(233,237,242,0.42)')" title="Marcar como favorito" @click="toggleFavorite(site)">☆</button>
+                                <button :style="actionBtnStyle('#a78bfa')" @click="openForm(site)">✏</button>
+                                <button :style="actionBtnStyle('#ef6b6b', true)" @click="confirmDelete(site)">✕</button>
                             </div>
                         </div>
                     </div>
@@ -89,12 +89,12 @@
         >
             <IonContent class="site-form-content">
                 <div style="padding: 12px 20px 40px;">
-                    <div style="font-size: 17px; font-weight: 800; color: #eef2ff; margin-bottom: 20px; letter-spacing: -0.02em;">
+                    <div style="font-size: 17px; font-weight: 800; color: #e9edf2; margin-bottom: 20px; letter-spacing: -0.02em; font-family: 'Sora', system-ui, sans-serif;">
                         {{ editingId ? 'Editar Fonte' : 'Nova Fonte' }}
                     </div>
 
                     <div style="margin-bottom: 16px;">
-                        <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.08em; color: #4a5470; text-transform: uppercase; margin-bottom: 8px;">Nome</div>
+                        <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.22em; color: rgba(233,237,242,0.42); text-transform: uppercase; margin-bottom: 8px;">Nome</div>
                         <IonInput
                             v-model="form.name"
                             placeholder="ex: MangaDex, Crunchyroll..."
@@ -104,7 +104,7 @@
                     </div>
 
                     <div style="margin-bottom: 16px;">
-                        <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.08em; color: #4a5470; text-transform: uppercase; margin-bottom: 8px;">URL</div>
+                        <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.22em; color: rgba(233,237,242,0.42); text-transform: uppercase; margin-bottom: 8px;">URL</div>
                         <IonInput
                             v-model="form.url"
                             placeholder="https://..."
@@ -113,17 +113,17 @@
                             fill="outline"
                             class="neon-input"
                         />
-                        <div v-if="urlError" style="font-size: 11px; color: #ef4444; margin-top: 4px;">{{ urlError }}</div>
+                        <div v-if="urlError" style="font-size: 11px; color: #ef6b6b; margin-top: 4px;">{{ urlError }}</div>
                     </div>
 
                     <!-- Favorite toggle -->
                     <div
-                        style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-radius: 14px; background: #1a2035; border: 1px solid #1e2640; cursor: pointer; margin-bottom: 20px;"
+                        style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-radius: 14px; background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.06); cursor: pointer; margin-bottom: 20px;"
                         @click="form.is_favorite = !form.is_favorite"
                     >
                         <div>
-                            <div style="font-size: 13px; font-weight: 700; color: #eef2ff;">⭐ Fonte favorita</div>
-                            <div style="font-size: 11px; color: #4a5470; margin-top: 2px;">Aparece primeiro na lista</div>
+                            <div style="font-size: 13px; font-weight: 700; color: #e9edf2;">⭐ Fonte favorita</div>
+                            <div style="font-size: 11px; color: rgba(233,237,242,0.42); margin-top: 2px;">Aparece primeiro na lista</div>
                         </div>
                         <div :style="toggleTrackStyle(form.is_favorite)">
                             <div :style="toggleKnobStyle(form.is_favorite)"></div>
@@ -262,8 +262,8 @@ export default defineComponent({
         siteCardStyle(site: UserSite): Record<string, string> {
             return {
                 display: 'flex', alignItems: 'center', gap: '12px',
-                background: '#1a2035',
-                border: `1px solid ${site.is_favorite ? 'rgba(245,158,11,0.3)' : '#1e2640'}`,
+                background: 'rgba(255,255,255,0.025)',
+                border: `1px solid ${site.is_favorite ? 'rgba(230,184,92,0.3)' : 'rgba(255,255,255,0.06)'}`,
                 borderRadius: '14px', padding: '12px 14px', marginBottom: '8px',
                 transition: 'all 0.15s',
             };
@@ -272,7 +272,7 @@ export default defineComponent({
         actionBtnStyle(color: string, muted = false): Record<string, string> {
             return {
                 width: '30px', height: '30px', borderRadius: '8px',
-                border: `1px solid ${muted ? 'rgba(239,68,68,0.25)' : '#1e2640'}`,
+                border: `1px solid ${muted ? 'rgba(239,107,107,0.25)' : 'rgba(255,255,255,0.06)'}`,
                 background: 'transparent', color,
                 cursor: 'pointer', fontSize: '13px',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -283,7 +283,7 @@ export default defineComponent({
         toggleTrackStyle(active: boolean): Record<string, string> {
             return {
                 width: '44px', height: '26px', borderRadius: '13px', position: 'relative', flexShrink: '0',
-                background: active ? '#f59e0b' : '#1e2640', transition: 'background 0.2s',
+                background: active ? '#e6b85c' : 'rgba(255,255,255,0.06)', transition: 'background 0.2s',
             };
         },
 
@@ -299,16 +299,16 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.btn-primary { --background: #00d4aa; --color: #000; --border-radius: 14px; font-weight: 800; height: 50px; }
-.btn-cancel { --background: #1a2035; --color: #8892aa; --border-radius: 14px; height: 46px; }
+.btn-primary { --background: #00F5A0; --color: #050608; --border-radius: 14px; font-weight: 800; height: 50px; }
+.btn-cancel { --background: rgba(255,255,255,0.04); --color: rgba(233,237,242,0.42); --border-radius: 14px; height: 46px; }
 
 .neon-input {
-    --background: #1a2035;
-    --color: #eef2ff;
-    --placeholder-color: #4a5570;
-    --border-color: #1e2640;
+    --background: rgba(255,255,255,0.025);
+    --color: #e9edf2;
+    --placeholder-color: rgba(233,237,242,0.28);
+    --border-color: rgba(255,255,255,0.06);
     --border-radius: 12px;
-    --highlight-color-focused: #00d4aa;
+    --highlight-color-focused: #00F5A0;
     --padding-start: 14px;
     --padding-end: 14px;
     min-height: 48px;
@@ -317,6 +317,6 @@ export default defineComponent({
 </style>
 
 <style>
-ion-modal.site-form-modal::part(content) { background: #0b0f1a; border-top: 1px solid #1e2640; }
-.site-form-content { --background: #0b0f1a; }
+ion-modal.site-form-modal::part(content) { background: #080a10; border-top: 1px solid rgba(255,255,255,0.06); }
+.site-form-content { --background: #080a10; }
 </style>

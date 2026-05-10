@@ -1,6 +1,6 @@
 <template>
-    <IonPage class="[--background:#0b0f1a]">
-        <IonContent :fullscreen="true" class="[--background:#0b0f1a]">
+    <IonPage class="[--background:#05070b]">
+        <IonContent :fullscreen="true" class="[--background:#05070b]">
             <div class="px-6 pt-14 pb-10">
                 <!-- Icon -->
                 <div class="flex justify-center mb-6">
@@ -9,20 +9,20 @@
                     </div>
                 </div>
 
-                <h2 class="text-[24px] font-extrabold text-neon-text m-0 mb-1.5 text-center">Nova senha</h2>
+                <h2 style="font-size: 24px; font-weight: 800; margin: 0 0 6px; text-align: center; font-family: 'Sora', system-ui, sans-serif; color: #e9edf2;">Nova senha</h2>
                 <p class="text-sm text-neon-muted text-center m-0 mb-6">Escolha uma senha forte para sua conta.</p>
 
                 <!-- Success state -->
-                <div v-if="done" class="bg-[#10b981]/10 border border-[#10b981]/30 rounded-[16px] p-6 text-center">
+                <div v-if="done" class="bg-neon-accent-dim border border-neon-accent-mid rounded-[16px] p-6 text-center">
                     <div class="text-[36px] mb-3">✓</div>
-                    <div class="text-base font-bold text-[#10b981] mb-2">Senha redefinida!</div>
+                    <div class="text-base font-bold text-neon-accent mb-2">Senha redefinida!</div>
                     <div class="text-sm text-neon-muted mb-5">Sua senha foi atualizada com sucesso.</div>
                     <IonButton expand="block" class="btn-primary" @click="$router.replace('/login')">Ir para o Login</IonButton>
                 </div>
 
                 <!-- Invalid token -->
-                <div v-else-if="!token" class="bg-[#ef4444]/10 border border-[#ef4444]/30 rounded-[16px] p-6 text-center">
-                    <div class="text-sm text-[#ef4444] mb-4">Link inválido ou expirado.</div>
+                <div v-else-if="!token" style="background: rgba(239,107,107,0.08); border: 1px solid rgba(239,107,107,0.25); border-radius: 16px; padding: 24px; text-align: center;">
+                    <div style="font-size: 14px; color: #ef6b6b; margin-bottom: 16px;">Link inválido ou expirado.</div>
                     <IonButton expand="block" fill="outline" class="btn-danger-outline" @click="$router.replace('/forgot-password')">Solicitar novo link</IonButton>
                 </div>
 
@@ -39,7 +39,7 @@
                     <div class="mb-5">
                         <span class="block text-[11px] font-bold uppercase tracking-[1.5px] text-neon-muted mb-1.5">Confirmar senha</span>
                         <IonInput v-model="form.password_confirmation" type="password" placeholder="Repita a nova senha" fill="outline" class="neon-input" />
-                        <p v-if="passwordMismatch" class="text-[11px] text-[#ef4444] mt-1 ml-1">As senhas não coincidem.</p>
+                        <p v-if="passwordMismatch" style="font-size: 11px; color: #ef6b6b; margin-top: 4px; margin-left: 4px;">As senhas não coincidem.</p>
                     </div>
 
                     <IonButton
@@ -117,16 +117,16 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.btn-primary { --background: var(--neon-accent); --color: #000; --border-radius: 14px; font-weight: 700; height: 52px; }
-.btn-danger-outline { --border-radius: 12px; --color: #ef4444; --border-color: rgba(239,68,68,0.4); }
+.btn-primary { --background: #00F5A0; --color: #050608; --border-radius: 14px; font-weight: 800; height: 52px; }
+.btn-danger-outline { --border-radius: 12px; --color: #ef6b6b; --border-color: rgba(239,107,107,0.35); }
 
 .neon-input {
-    --background: #1a2035;
-    --color: #f0f4ff;
-    --placeholder-color: #4a5570;
-    --border-color: #222840;
+    --background: rgba(255,255,255,0.025);
+    --color: #e9edf2;
+    --placeholder-color: rgba(233,237,242,0.28);
+    --border-color: rgba(255,255,255,0.06);
     --border-radius: 12px;
-    --highlight-color-focused: #00d4aa;
+    --highlight-color-focused: #00F5A0;
     --padding-start: 16px;
     --padding-end: 16px;
     min-height: 50px;
