@@ -126,7 +126,7 @@
 
                         <!-- Progress (not for movie) -->
                         <template v-if="!isMovie">
-                            <!-- Season (TV/Anime) -->
+                            <!-- Season (TV only — anime tracks season as separate entries) -->
                             <div v-if="isTv" style="margin-bottom: 14px;">
                                 <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.22em; color: rgba(233,237,242,0.42); text-transform: uppercase; margin-bottom: 8px;">Temporada</div>
                                 <div style="display: flex; align-items: center; gap: 10px;">
@@ -135,12 +135,21 @@
                                         :disabled="saving || (item.current_season ?? 1) <= 1"
                                         @click="decrementSeason"
                                     >−</button>
-                                    <div style="flex: 1; text-align: center; font-size: 28px; font-weight: 800; color: #e9edf2; font-family: 'Sora', system-ui, sans-serif;">{{ item.current_season ?? 1 }}</div>
+                                    <div style="flex: 1; text-align: center; line-height: 1.1;">
+                                        <div style="font-size: 28px; font-weight: 800; color: #e9edf2; font-family: 'Sora', system-ui, sans-serif;">{{ item.current_season ?? 1 }}</div>
+                                        <div v-if="item.content?.total_seasons" style="font-size: 10px; color: rgba(233,237,242,0.42);">de {{ item.content.total_seasons }}</div>
+                                    </div>
                                     <button
-                                        style="width: 36px; height: 36px; border-radius: 10px; border: 1px solid #00F5A0; background: #00F5A0; color: #05070b; font-size: 20px; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;"
-                                        :disabled="saving"
+                                        style="width: 36px; height: 36px; border-radius: 10px; font-size: 20px; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: all 0.2s;"
+                                        :style="atSeasonLimit
+                                            ? { border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.025)', color: 'rgba(233,237,242,0.18)', cursor: 'not-allowed' }
+                                            : { border: '1px solid #00F5A0', background: '#00F5A0', color: '#05070b' }"
+                                        :disabled="saving || atSeasonLimit"
                                         @click="incrementSeason"
                                     >+</button>
+                                </div>
+                                <div v-if="item.content?.season_episodes?.[String(item.current_season ?? 1)]" style="margin-top: 6px; font-size: 11px; color: rgba(233,237,242,0.42); text-align: center;">
+                                    {{ item.content.season_episodes[String(item.current_season ?? 1)] }} eps nesta temporada
                                 </div>
                             </div>
 
@@ -163,10 +172,10 @@
                                             inputmode="numeric"
                                             class="unit-input"
                                             min="0"
-                                            :max="item.content?.total_units ?? undefined"
+                                            :max="seasonEpisodeLimit ?? undefined"
                                             ref="unitsField"
                                             @ionBlur="saveUnits"
-                                            @ionInput="unitsInput = Math.min(Number(($event as CustomEvent).detail.value) || 0, item.content?.total_units ?? Infinity)"
+                                            @ionInput="unitsInput = Math.min(Number(($event as CustomEvent).detail.value) || 0, seasonEpisodeLimit ?? Infinity)"
                                         />
                                         <span
                                             v-else
@@ -188,7 +197,7 @@
                                     <div style="height: 3px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden;">
                                         <div style="height: 100%; border-radius: 3px; transition: width 0.3s;" :style="{ width: progressPct + '%', background: statusColor }"></div>
                                     </div>
-                                    <div style="font-size: 10px; color: rgba(233,237,242,0.42); margin-top: 4px;">{{ item.current_units }} / {{ item.content?.total_units }} {{ unitShort }} · {{ progressPct }}%</div>
+                                    <div style="font-size: 10px; color: rgba(233,237,242,0.42); margin-top: 4px;">{{ item.current_units }} / {{ seasonEpisodeLimit ?? '?' }} {{ unitShort }} · {{ progressPct }}%</div>
                                 </div>
                             </div>
                         </template>
@@ -340,8 +349,21 @@ export default defineComponent({
             };
         },
         isMovie(): boolean { return this.contentType === 'movie'; },
-        isTv(): boolean { return this.contentType === 'tv' || this.contentType === 'anime'; },
+        isTv(): boolean { return this.contentType === 'tv'; },
         isOngoing(): boolean { return !this.item?.content?.total_units; },
+        seasonEpisodeLimit(): number | null {
+            const seasonEps = this.item?.content?.season_episodes;
+            if (this.contentType === 'tv' && seasonEps) {
+                const key = String(this.item?.current_season ?? 1);
+                return seasonEps[key] ?? this.item?.content?.total_units ?? null;
+            }
+            return this.item?.content?.total_units ?? null;
+        },
+        atSeasonLimit(): boolean {
+            const total = this.item?.content?.total_seasons;
+            if (!total) return false;
+            return (this.item?.current_season ?? 1) >= total;
+        },
         isHighScore(): boolean {
             const s = this.fullContent?.score ?? this.fullContent?.rating ?? this.item?.content?.score ?? 0;
             return s >= 9;
@@ -349,13 +371,13 @@ export default defineComponent({
         unitShort(): string { return UNIT_LABEL[this.contentType]?.short ?? 'cap.'; },
         statusColor(): string { return this.item ? (STATUS_COLORS[this.item.status] ?? '#5a6480') : '#5a6480'; },
         progressPct(): number {
-            const total = this.item?.content?.total_units;
+            const total = this.seasonEpisodeLimit;
             const current = this.item?.current_units ?? 0;
             if (!total) return 0;
             return Math.min(Math.round((current / total) * 100), 100);
         },
         atLimit(): boolean {
-            const total = this.item?.content?.total_units;
+            const total = this.seasonEpisodeLimit;
             if (!total) return false;
             return (this.item?.current_units ?? 0) >= total;
         },
@@ -430,7 +452,7 @@ export default defineComponent({
         async incrementSeason() {
             if (!this.item) return;
             this.saving = true;
-            try { this.patchItem(await userContentService.update(this.item.id, { current_season: (this.item.current_season ?? 1) + 1 })); }
+            try { this.patchItem(await userContentService.update(this.item.id, { current_season: (this.item.current_season ?? 1) + 1, current_units: 0 })); }
             catch { await this.showError('Falha ao atualizar temporada.'); }
             finally { this.saving = false; }
         },
