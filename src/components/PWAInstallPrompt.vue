@@ -52,13 +52,15 @@ export default defineComponent({
         };
     },
     mounted() {
-        // Ouvir o evento customizado de PWA
         window.addEventListener('pwa-installprompt-ready', this.onInstallPromptReady);
         window.addEventListener('pwa-installed', this.onPWAInstalled);
-
-        // Se o browser suporta a API mas não dispara o evento,
-        // mostrar um ícone alternativo ou link
         this.checkPWASupport();
+
+        // O evento beforeinstallprompt pode ter disparado antes deste componente montar;
+        // se o prompt já foi capturado em main.ts, mostrar o banner imediatamente.
+        if ((window as any).__pwaPrompt) {
+            this.onInstallPromptReady();
+        }
     },
     beforeUnmount() {
         window.removeEventListener('pwa-installprompt-ready', this.onInstallPromptReady);
