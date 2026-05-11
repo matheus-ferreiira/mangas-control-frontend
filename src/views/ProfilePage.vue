@@ -33,8 +33,11 @@
 
                 <!-- Stats row — airy, hairline dividers -->
                 <div style="margin: 0 18px 20px; border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; overflow: hidden; display: flex; align-items: stretch;">
-                    <div v-for="(s, i) in statsCards" :key="s.label" style="flex: 1; padding: 16px 10px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                        <div v-if="i > 0" style="display: none;"></div>
+                    <div
+                        v-for="(s, i) in statsCards"
+                        :key="s.label"
+                        :style="{ flex: '1', padding: '16px 10px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', borderLeft: i > 0 ? '1px solid rgba(255,255,255,0.06)' : 'none' }"
+                    >
                         <div :style="{ fontSize: '26px', fontWeight: '800', color: s.color, letterSpacing: '-0.03em', lineHeight: '1', fontFamily: '\'Sora\', system-ui, sans-serif' }">{{ s.value }}</div>
                         <div style="font-size: 9px; color: rgba(233,237,242,0.42); font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; margin-top: 5px;">{{ s.label }}</div>
                     </div>
@@ -164,7 +167,8 @@
                                     >★</button>
                                     <div style="flex: 1; min-width: 0;">
                                         <div style="font-size: 12px; font-weight: 700; color: #e9edf2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ site.name }}</div>
-                                        <div style="font-size: 10px; color: rgba(233,237,242,0.28); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ site.url }}</div>
+                                        <div v-if="site.url" style="font-size: 10px; color: rgba(233,237,242,0.28); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ site.url }}</div>
+                                        <div v-else style="font-size: 10px; color: rgba(233,237,242,0.18); font-style: italic;">sem URL</div>
                                     </div>
                                     <button
                                         style="width: 28px; height: 28px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); background: transparent; color: rgba(233,237,242,0.42); font-size: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;"
@@ -238,11 +242,11 @@
                         />
                     </div>
                     <div style="margin-bottom: 16px;">
-                        <div style="font-size: 10px; font-weight: 800; color: rgba(233,237,242,0.42); text-transform: uppercase; letter-spacing: 0.18em; margin-bottom: 6px;">URL</div>
+                        <div style="font-size: 10px; font-weight: 800; color: rgba(233,237,242,0.42); text-transform: uppercase; letter-spacing: 0.18em; margin-bottom: 6px;">URL <span style="font-weight: 600; text-transform: none; letter-spacing: 0; color: rgba(233,237,242,0.28);">— opcional</span></div>
                         <input
                             v-model="siteForm.url"
-                            placeholder="https://mangadex.org"
-                            type="url"
+                            placeholder="mangadex.org  (deixe vazio para apps)"
+                            type="text"
                             style="width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.025); color: #e9edf2; font-size: 14px; outline: none; box-sizing: border-box;"
                         />
                     </div>
@@ -256,9 +260,9 @@
                         </div>
                     </div>
                     <button
-                        :disabled="!siteForm.name.trim() || !siteForm.url.trim() || siteSaving"
+                        :disabled="!siteForm.name.trim() || siteSaving"
                         style="width: 100%; padding: 14px; border-radius: 14px; border: none; font-size: 14px; font-weight: 800; cursor: pointer; transition: opacity 0.2s;"
-                        :style="{ background: '#00F5A0', color: '#050608', opacity: (!siteForm.name.trim() || !siteForm.url.trim()) ? 0.5 : 1 }"
+                        :style="{ background: '#00F5A0', color: '#050608', opacity: !siteForm.name.trim() ? 0.5 : 1 }"
                         @click="saveSite"
                     >{{ siteSaving ? 'Salvando...' : (editingSite ? 'Salvar' : 'Adicionar') }}</button>
                 </div>
@@ -359,13 +363,13 @@ export default defineComponent({
                 const t = uc.content?.type ?? 'manga';
                 counts[t] = (counts[t] ?? 0) + 1;
             }
-            const max = Math.max(...Object.values(counts), 1);
+            const total = Math.max(this.userContents.length, 1);
             return Object.keys(TYPE_META).map((t) => ({
                 type: t,
                 label: TYPE_META[t].label,
                 color: TYPE_META[t].color,
                 count: counts[t] ?? 0,
-                pct: counts[t] ? Math.round((counts[t] / max) * 100) : 0,
+                pct: counts[t] ? Math.round((counts[t] / total) * 100) : 0,
             }));
         },
         topGenres(): [string, number][] {
@@ -412,8 +416,17 @@ export default defineComponent({
                 : emptySiteForm();
             this.siteModalOpen = true;
         },
+        normalizeUrl(url: string): string {
+            const trimmed = url?.trim() ?? '';
+            if (!trimmed) return '';
+            if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
+                return 'https://' + trimmed;
+            }
+            return trimmed;
+        },
         async saveSite() {
-            if (!this.siteForm.name.trim() || !this.siteForm.url.trim()) return;
+            if (!this.siteForm.name.trim()) return;
+            this.siteForm.url = this.normalizeUrl(this.siteForm.url);
             this.siteSaving = true;
             try {
                 if (this.editingSite) {
