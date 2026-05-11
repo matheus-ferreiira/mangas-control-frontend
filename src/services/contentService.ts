@@ -71,6 +71,7 @@ export interface Content {
     trailer_embed_url?: string;
     country?: string;
     total_seasons?: number;
+    season_episodes?: Record<string, number> | null;
     duration_formatted?: string;
     studios?: string[];
     demographics?: string[];
