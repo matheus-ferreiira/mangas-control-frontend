@@ -158,7 +158,7 @@
 
                     <!-- ── Progress (not for movie) ── -->
                     <template v-if="!isMovie">
-                        <!-- Current season (TV/Anime) -->
+                        <!-- Current season (TV only — anime uses separate catalog entries per season) -->
                         <div v-if="isTv" style="margin-bottom: 16px;">
                             <div :style="sectionLabelStyle">Temporada atual</div>
                             <IonInput
@@ -167,10 +167,14 @@
                                 inputmode="numeric"
                                 placeholder="1"
                                 :min="1"
+                                :max="selectedContent.total_seasons ?? undefined"
                                 fill="outline"
                                 class="neon-input"
-                                @ionInput="form.current_season = Number(($event as CustomEvent).detail.value) || 1"
+                                @ionInput="form.current_season = Math.min(Number(($event as CustomEvent).detail.value) || 1, selectedContent.total_seasons ?? Infinity)"
                             />
+                            <div v-if="selectedContent.season_episodes?.[String(form.current_season ?? 1)]" style="margin-top: 6px; font-size: 11px; color: rgba(233,237,242,0.42);">
+                                {{ selectedContent.season_episodes[String(form.current_season ?? 1)] }} eps nesta temporada
+                            </div>
                         </div>
 
                         <!-- Current units -->
@@ -184,10 +188,10 @@
                                 inputmode="numeric"
                                 placeholder="0"
                                 :min="0"
-                                :max="selectedContent.total_units ?? undefined"
+                                :max="seasonEpisodeLimit ?? undefined"
                                 fill="outline"
                                 class="neon-input"
-                                @ionInput="form.current_units = Math.min(Number(($event as CustomEvent).detail.value) || 0, selectedContent.total_units ?? Infinity)"
+                                @ionInput="form.current_units = Math.min(Number(($event as CustomEvent).detail.value) || 0, seasonEpisodeLimit ?? Infinity)"
                             />
                         </div>
                     </template>
@@ -313,7 +317,16 @@ export default defineComponent({
             return this.selectedContent?.type === 'movie';
         },
         isTv(): boolean {
-            return this.selectedContent?.type === 'tv' || this.selectedContent?.type === 'anime';
+            return this.selectedContent?.type === 'tv';
+        },
+        seasonEpisodeLimit(): number | null {
+            const s = this.selectedContent;
+            if (!s) return null;
+            if (s.type === 'tv' && s.season_episodes) {
+                const key = String(this.form.current_season ?? 1);
+                return s.season_episodes[key] ?? s.total_units ?? null;
+            }
+            return s.total_units ?? null;
         },
         canSubmit(): boolean {
             return !!this.form.content_id && !this.selectedContent?.is_in_library;
