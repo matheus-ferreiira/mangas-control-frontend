@@ -262,14 +262,14 @@
                                             inputmode="numeric"
                                             class="unit-input"
                                             min="0"
-                                            :max="content.total_units ?? undefined"
+                                            :max="seasonUnitLimit ?? undefined"
                                             ref="unitsField"
                                             @ionBlur="saveUnits"
-                                            @ionInput="unitsInput = Math.min(Number(($event as CustomEvent).detail.value) || 0, content.total_units ?? Infinity)"
+                                            @ionInput="unitsInput = Math.min(Number(($event as CustomEvent).detail.value) || 0, seasonUnitLimit ?? Infinity)"
                                         />
                                         <div v-else @click="startEditUnits" style="cursor: pointer;">
                                             <div style="font-size: 40px; font-weight: 900; color: #e9edf2; line-height: 1; letter-spacing: -0.03em; font-family: 'Sora', system-ui, sans-serif;">{{ userContent.current_units }}</div>
-                                            <div v-if="content.total_units" style="font-size: 11px; color: rgba(233,237,242,0.28); margin-top: 2px;">de {{ content.total_units }} {{ unitShort }}</div>
+                                            <div v-if="seasonUnitLimit" style="font-size: 11px; color: rgba(233,237,242,0.28); margin-top: 2px;">de {{ seasonUnitLimit }} {{ unitShort }}</div>
                                         </div>
                                     </div>
                                     <button
@@ -279,12 +279,12 @@
                                     >+</button>
                                 </div>
                                 <!-- Progress bar -->
-                                <div v-if="!isOngoing && content.total_units" style="margin-top: 14px;">
+                                <div v-if="!isOngoing && seasonUnitLimit" style="margin-top: 14px;">
                                     <div style="height: 4px; background: rgba(255,255,255,0.06); border-radius: 4px; overflow: hidden;">
                                         <div style="height: 100%; border-radius: 4px; transition: width 0.35s;" :style="{ width: progressPct + '%', background: statusColor }" />
                                     </div>
                                     <div style="display: flex; justify-content: space-between; font-size: 11px; color: rgba(233,237,242,0.28); margin-top: 5px;">
-                                        <span>{{ userContent.current_units }} / {{ content.total_units }} {{ unitShort }}</span>
+                                        <span>{{ userContent.current_units }} / {{ seasonUnitLimit }} {{ unitShort }}</span>
                                         <span style="font-weight: 700; color: rgba(233,237,242,0.42);">{{ progressPct }}%</span>
                                     </div>
                                 </div>
@@ -469,12 +469,26 @@ export default defineComponent({
         headerImage(): string { return this.content?.background || this.content?.cover || ''; },
         statusColor(): string { return this.userContent ? (STATUS_COLORS[this.userContent.status] ?? '#5a6480') : '#5a6480'; },
         progressPct(): number {
-            const total = this.content?.total_units;
+            const total = this.seasonUnitLimit;
             const current = this.userContent?.current_units ?? 0;
             if (!total) return 0;
             return Math.min(Math.round((current / total) * 100), 100);
         },
+        seasonUnitLimit(): number | null {
+            const seasonEpisodes = this.content?.season_episodes;
+            if (this.contentType === 'tv' && seasonEpisodes) {
+                const season = this.userContent?.current_season ?? 1;
+                return seasonEpisodes[String(season)] ?? this.content?.total_units ?? null;
+            }
+            return this.content?.total_units ?? null;
+        },
         atLimit(): boolean {
+            const seasonEpisodes = this.content?.season_episodes;
+            if (this.contentType === 'tv' && seasonEpisodes) {
+                const season = this.userContent?.current_season ?? 1;
+                const limit = seasonEpisodes[String(season)];
+                if (limit) return (this.userContent?.current_units ?? 0) >= limit;
+            }
             const total = this.content?.total_units;
             if (!total) return false;
             return (this.userContent?.current_units ?? 0) >= total;
@@ -645,7 +659,7 @@ export default defineComponent({
         async incrementSeason() {
             if (!this.userContent) return;
             this.saving = true;
-            try { this.patchUserContent(await userContentService.update(this.userContent.id, { current_season: (this.userContent.current_season ?? 1) + 1 })); }
+            try { this.patchUserContent(await userContentService.update(this.userContent.id, { current_season: (this.userContent.current_season ?? 1) + 1, current_units: 0 })); }
             catch { await this.showError('Falha ao atualizar temporada.'); }
             finally { this.saving = false; }
         },
