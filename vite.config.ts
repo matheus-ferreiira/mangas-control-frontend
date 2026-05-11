@@ -16,7 +16,7 @@ export default defineConfig({
         VitePWA({
             registerType: 'autoUpdate',
             injectRegister: 'auto',
-            includeAssets: ['favicon.png'],
+            includeAssets: ['favicon.png', 'icon-192.png', 'icon-512.png'],
             workbox: {
                 globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
                 navigateFallback: '/index.html',
@@ -40,19 +40,31 @@ export default defineConfig({
                 icons: [
                     {
                         src: '/favicon.png',
+                        sizes: '64x64',
+                        type: 'image/png',
+                        purpose: 'any',
+                    },
+                    {
+                        src: '/icon-192.png',
                         sizes: '192x192',
                         type: 'image/png',
                         purpose: 'any',
                     },
                     {
-                        src: '/favicon.png',
+                        src: '/icon-512.png',
                         sizes: '512x512',
                         type: 'image/png',
                         purpose: 'any',
                     },
                     {
-                        src: '/favicon.png',
+                        src: '/icon-192.png',
                         sizes: '192x192',
+                        type: 'image/png',
+                        purpose: 'maskable',
+                    },
+                    {
+                        src: '/icon-512.png',
+                        sizes: '512x512',
                         type: 'image/png',
                         purpose: 'maskable',
                     },
@@ -63,21 +75,21 @@ export default defineConfig({
                         short_name: 'Biblioteca',
                         description: 'Acesse sua biblioteca de conteúdos',
                         url: '/tabs/library',
-                        icons: [{ src: '/favicon.png', sizes: '192x192', type: 'image/png' }],
+                        icons: [{ src: '/icon-192.png', sizes: '192x192', type: 'image/png' }],
                     },
                     {
                         name: 'Descobrir',
                         short_name: 'Descobrir',
                         description: 'Descubra novos conteúdos',
                         url: '/tabs/discover',
-                        icons: [{ src: '/favicon.png', sizes: '192x192', type: 'image/png' }],
+                        icons: [{ src: '/icon-192.png', sizes: '192x192', type: 'image/png' }],
                     },
                     {
                         name: 'Adicionar',
                         short_name: 'Adicionar',
                         description: 'Adicione um novo conteúdo à biblioteca',
                         url: '/tabs/add',
-                        icons: [{ src: '/favicon.png', sizes: '192x192', type: 'image/png' }],
+                        icons: [{ src: '/icon-192.png', sizes: '192x192', type: 'image/png' }],
                     },
                 ],
             } as ManifestOptions,
