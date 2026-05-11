@@ -36,7 +36,7 @@
                             :key="chip.value ?? 'all'"
                             :style="typeChipStyle(chip.value)"
                             @click="activeType = chip.value"
-                        >{{ chip.label }}</button>
+                        >{{ chip.label }}<span style="margin-left: 5px; font-size: 10px; opacity: 0.55; font-weight: 600;">{{ chip.count }}</span></button>
                     </div>
                 </div>
 
@@ -151,11 +151,15 @@ function fmtTimeAgo(iso: string): string {
 }
 
 function dayKey(iso: string): string {
-    const d = Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
-    if (d === 0) return 'Hoje';
-    if (d === 1) return 'Ontem';
-    if (d < 7)   return 'Esta semana';
-    if (d < 30)  return 'Este mês';
+    const now = new Date();
+    const item = new Date(iso);
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const itemDay = new Date(item.getFullYear(), item.getMonth(), item.getDate()).getTime();
+    const diffDays = Math.round((today - itemDay) / 86400000);
+    if (diffDays === 0) return 'Hoje';
+    if (diffDays === 1) return 'Ontem';
+    if (diffDays < 7)   return 'Esta semana';
+    if (diffDays < 30)  return 'Este mês';
     return 'Mais antigo';
 }
 
@@ -199,14 +203,15 @@ export default defineComponent({
             const t = this.stats.favType;
             return t ? (TYPE_LABELS[t] ?? t) : '–';
         },
-        typeChips(): { value: ContentType | null; label: string; color: string }[] {
-            const present = new Set(this.allItems.map(i => i.type));
-            const chips: { value: ContentType | null; label: string; color: string }[] = [
-                { value: null, label: 'Todos', color: '#00F5A0' },
+        typeChips(): { value: ContentType | null; label: string; color: string; count: number }[] {
+            const countMap: Record<string, number> = {};
+            for (const i of this.allItems) { countMap[i.type] = (countMap[i.type] ?? 0) + 1; }
+            const chips: { value: ContentType | null; label: string; color: string; count: number }[] = [
+                { value: null, label: 'Todos', color: '#00F5A0', count: this.allItems.length },
             ];
             for (const t of ['manga', 'anime', 'novel', 'movie', 'tv']) {
-                if (present.has(t)) {
-                    chips.push({ value: t as ContentType, label: TYPE_LABELS[t], color: TYPE_COLORS[t] });
+                if (countMap[t]) {
+                    chips.push({ value: t as ContentType, label: TYPE_LABELS[t], color: TYPE_COLORS[t], count: countMap[t] });
                 }
             }
             return chips;
