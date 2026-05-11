@@ -178,7 +178,7 @@
                                     <div style="font-size: 12px; font-weight: 700; color: #e9edf2; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;">{{ item.content?.name }}</div>
                                     <div v-if="item.status === 'reading' && item.content?.type !== 'movie'" style="font-size: 10px; color: rgba(233,237,242,0.42); margin-top: 3px;">
                                         <template v-if="item.content?.type === 'tv'">
-                                            T{{ item.current_season ?? 1 }} · Ep {{ item.current_units }}
+                                            T{{ item.current_season ?? 1 }} · Ep {{ item.current_units }}<template v-if="item.content.season_episodes?.[String(item.current_season ?? 1)]">/{{ item.content.season_episodes[String(item.current_season ?? 1)] }}</template>
                                         </template>
                                         <template v-else>
                                             {{ unitLabel(item.content?.type) }} {{ item.current_units }}{{ item.content?.total_units ? ` / ${item.content.total_units}` : '' }}
@@ -457,12 +457,21 @@ export default defineComponent({
             }
         },
         progressPct(uc: UserContent): number {
-            if (!uc.content?.total_units || !uc.current_units) return 0;
-            return Math.min(Math.round((uc.current_units / uc.content.total_units) * 100), 100);
+            if (!uc.current_units) return 0;
+            const seasonEps = uc.content?.season_episodes;
+            const season = String(uc.current_season ?? 1);
+            const total = (uc.content?.type === 'tv' && seasonEps)
+                ? (seasonEps[season] ?? uc.content?.total_units)
+                : uc.content?.total_units;
+            if (!total) return 0;
+            return Math.min(Math.round((uc.current_units / total) * 100), 100);
         },
         isAtLimit(uc: UserContent): boolean {
-            if (uc.content?.type === 'tv') return false;
-            const total = uc.content?.total_units;
+            const seasonEps = uc.content?.season_episodes;
+            const season = String(uc.current_season ?? 1);
+            const total = (uc.content?.type === 'tv' && seasonEps)
+                ? (seasonEps[season] ?? uc.content?.total_units)
+                : uc.content?.total_units;
             if (!total) return false;
             return uc.current_units >= total;
         },
