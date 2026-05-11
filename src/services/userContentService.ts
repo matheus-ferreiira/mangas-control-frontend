@@ -40,6 +40,7 @@ export interface UserContent {
         type: ContentType;
         total_units?: number;
         total_seasons?: number;
+        season_episodes?: Record<string, number> | null;
         status?: ContentCatalogStatus;
         last_unit_update?: string;
         genres?: string[];
