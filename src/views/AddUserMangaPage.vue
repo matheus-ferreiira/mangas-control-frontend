@@ -414,7 +414,8 @@ export default defineComponent({
                     content_id: this.form.content_id!,
                     status: this.form.status,
                 };
-                if (this.form.site_id) payload.site_id = Number(this.form.site_id);
+                // O seletor lista fontes do usuário (user_sites), então envia user_site_id
+                if (this.form.site_id) payload.user_site_id = Number(this.form.site_id);
                 if (!this.isMovie) {
                     payload.current_units = this.form.current_units;
                     if (this.isTv) payload.current_season = this.form.current_season;
