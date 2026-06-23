@@ -315,7 +315,7 @@
                             />
                             <button
                                 class="w-[52px] h-[52px] rounded-[12px] flex items-center justify-center flex-shrink-0 border transition-colors"
-                                style="background: rgba(52,211,153,0.1); border-color: rgba(52,211,153,0.3); color: #00F5A0"
+                                style="background: rgba(245,166,35,0.1); border-color: rgba(245,166,35,0.3); color: #f5a623"
                                 @click="addGenre"
                             >
                                 <IonIcon :icon="addOutline" class="text-[20px]" />
@@ -326,7 +326,7 @@
                                 v-for="(genre, i) in form.genres"
                                 :key="i"
                                 class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold"
-                                style="background: rgba(52,211,153,0.1); color: #00F5A0; border: 1px solid rgba(52,211,153,0.25)"
+                                style="background: rgba(245,166,35,0.1); color: #f5a623; border: 1px solid rgba(245,166,35,0.25)"
                             >
                                 {{ genre }}
                                 <button class="flex items-center opacity-60 active:opacity-100" @click="removeGenre(i)">
@@ -746,7 +746,7 @@ export default defineComponent({
 
         typeActiveStyle(type: ContentType): Record<string, string> {
             const map: Record<ContentType, Record<string, string>> = {
-                manga:  { background: 'rgba(52,211,153,0.15)',   color: '#00F5A0', borderColor: 'rgba(52,211,153,0.5)' },
+                manga:  { background: 'rgba(245,166,35,0.15)',   color: '#f5a623', borderColor: 'rgba(245,166,35,0.5)' },
                 anime:  { background: 'rgba(167,139,250,0.15)',  color: '#a78bfa', borderColor: 'rgba(167,139,250,0.5)' },
                 novel:  { background: 'rgba(230,184,92,0.15)',   color: '#e6b85c', borderColor: 'rgba(230,184,92,0.5)' },
                 movie:  { background: 'rgba(244,114,182,0.15)',  color: '#f472b6', borderColor: 'rgba(244,114,182,0.5)' },
@@ -766,8 +766,8 @@ export default defineComponent({
 <style scoped>
 .ion-header .toolbar-background { border-bottom: 1px solid #222840; }
 
-.btn-primary  { --background: #00F5A0; --color: #050608; --border-radius: 12px; font-weight: 700; height: 48px; }
-.btn-outline  { --border-radius: 12px; --color: #00F5A0; --border-color: #00F5A0; }
+.btn-primary  { --background: #f5a623; --color: #050608; --border-radius: 12px; font-weight: 700; height: 48px; }
+.btn-outline  { --border-radius: 12px; --color: #f5a623; --border-color: #f5a623; }
 
 .neon-input {
     --background: rgba(255,255,255,0.025);
@@ -775,7 +775,7 @@ export default defineComponent({
     --placeholder-color: rgba(233,237,242,0.28);
     --border-color: rgba(255,255,255,0.06);
     --border-radius: 12px;
-    --highlight-color-focused: #00F5A0;
+    --highlight-color-focused: #f5a623;
     --padding-start: 16px;
     --padding-end: 16px;
     min-height: 52px;

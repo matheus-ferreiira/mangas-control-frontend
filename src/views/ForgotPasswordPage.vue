@@ -93,8 +93,8 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.btn-primary { --background: #00F5A0; --color: #050608; --border-radius: 14px; font-weight: 800; height: 52px; }
-.btn-outline { --border-radius: 12px; --color: #00F5A0; --border-color: #00F5A0; }
+.btn-primary { --background: #f5a623; --color: #050608; --border-radius: 14px; font-weight: 800; height: 52px; }
+.btn-outline { --border-radius: 12px; --color: #f5a623; --border-color: #f5a623; }
 
 .neon-input {
     --background: rgba(255,255,255,0.025);
@@ -102,7 +102,7 @@ export default defineComponent({
     --placeholder-color: rgba(233,237,242,0.28);
     --border-color: rgba(255,255,255,0.06);
     --border-radius: 12px;
-    --highlight-color-focused: #00F5A0;
+    --highlight-color-focused: #f5a623;
     --padding-start: 16px;
     --padding-end: 16px;
     min-height: 50px;

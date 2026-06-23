@@ -361,7 +361,7 @@ export default defineComponent({
 
         typeActiveStyle(type: ContentType): Record<string, string> {
             const map: Record<ContentType, Record<string, string>> = {
-                manga: { '--background': 'rgba(52,211,153,0.15)', '--color': '#00F5A0', '--border-color': 'rgba(52,211,153,0.5)' },
+                manga: { '--background': 'rgba(245,166,35,0.15)', '--color': '#f5a623', '--border-color': 'rgba(245,166,35,0.5)' },
                 anime: { '--background': 'rgba(167,139,250,0.15)', '--color': '#a78bfa', '--border-color': 'rgba(167,139,250,0.5)' },
                 novel: { '--background': 'rgba(230,184,92,0.15)', '--color': '#e6b85c', '--border-color': 'rgba(230,184,92,0.5)' },
                 movie: { '--background': 'rgba(244,114,182,0.15)', '--color': '#f472b6', '--border-color': 'rgba(244,114,182,0.5)' },
@@ -384,7 +384,7 @@ export default defineComponent({
     --placeholder-color: rgba(233,237,242,0.28);
     --border-color: rgba(255,255,255,0.06);
     --border-radius: 12px;
-    --highlight-color-focused: #00F5A0;
+    --highlight-color-focused: #f5a623;
     --padding-start: 16px;
     --padding-end: 16px;
     min-height: 52px;
@@ -399,10 +399,10 @@ export default defineComponent({
     margin: 0;
 }
 
-.btn-primary { --background: #00F5A0; --color: #050608; --border-radius: 12px; font-weight: 700; height: 50px; }
+.btn-primary { --background: #f5a623; --color: #050608; --border-radius: 12px; font-weight: 700; height: 50px; }
 
 .approve-btn {
-    --background: #00F5A0;
+    --background: #f5a623;
     --color: #050608;
     --border-radius: 10px;
     font-weight: 700;

@@ -9,7 +9,7 @@
                 <!-- ─── Header ─── -->
                 <div style="padding: 20px 18px 0;">
                     <div style="font-size: 10px; color: rgba(233,237,242,0.42); font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; margin-bottom: 4px;">Atividade</div>
-                    <div style="font-size: 28px; font-weight: 800; letter-spacing: -0.04em; line-height: 1.1; font-family: 'Sora', system-ui, sans-serif; background: linear-gradient(135deg, #00F5A0, #00D9FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Histórico</div>
+                    <div style="font-size: 28px; font-weight: 800; letter-spacing: -0.04em; line-height: 1.1; font-family: 'Sora', system-ui, sans-serif; background: linear-gradient(135deg, #f5a623, #ff6b35); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Histórico</div>
 
                     <!-- Stats row — airy, hairline dividers -->
                     <div v-if="!loading && allItems.length > 0" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 16px;">
@@ -138,7 +138,7 @@ interface ActivityItem {
 }
 
 const TYPE_SHORT: Record<string, string>  = { manga: 'M', anime: 'A', novel: 'N', movie: 'F', tv: 'S' };
-const TYPE_COLORS: Record<string, string> = { manga: '#00F5A0', anime: '#B8A4FF', novel: '#F5C542', movie: '#FF7EC7', tv: '#7CAEFF' };
+const TYPE_COLORS: Record<string, string> = { manga: '#f5a623', anime: '#B8A4FF', novel: '#F5C542', movie: '#FF7EC7', tv: '#7CAEFF' };
 const TYPE_LABELS: Record<string, string> = { manga: 'Manga', anime: 'Anime', novel: 'Novel', movie: 'Filme', tv: 'Série' };
 
 function fmtTimeAgo(iso: string): string {
@@ -207,7 +207,7 @@ export default defineComponent({
             const countMap: Record<string, number> = {};
             for (const i of this.allItems) { countMap[i.type] = (countMap[i.type] ?? 0) + 1; }
             const chips: { value: ContentType | null; label: string; color: string; count: number }[] = [
-                { value: null, label: 'Todos', color: '#00F5A0', count: this.allItems.length },
+                { value: null, label: 'Todos', color: '#f5a623', count: this.allItems.length },
             ];
             for (const t of ['manga', 'anime', 'novel', 'movie', 'tv']) {
                 if (countMap[t]) {
@@ -286,11 +286,11 @@ export default defineComponent({
             await this.loadActivity();
             (event.target as HTMLIonRefresherElement).complete();
         },
-        typeColor(type: string): string { return TYPE_COLORS[type] ?? '#00F5A0'; },
+        typeColor(type: string): string { return TYPE_COLORS[type] ?? '#f5a623'; },
         typeShort(type: string): string { return TYPE_SHORT[type] ?? '?'; },
         eventColor(t: ActivityItem['eventType']): string {
             const m: Record<string, string> = {
-                progress: '#7CAEFF', completed: '#00F5A0', rated: '#F5C542', added: '#00F5A0', paused: '#F5C542',
+                progress: '#7CAEFF', completed: '#f5a623', rated: '#F5C542', added: '#f5a623', paused: '#F5C542',
             };
             return m[t] ?? 'rgba(233,237,242,0.42)';
         },
@@ -317,7 +317,7 @@ export default defineComponent({
             };
         },
         coverStyle(type: string): Record<string, string> {
-            const col = TYPE_COLORS[type] ?? '#00F5A0';
+            const col = TYPE_COLORS[type] ?? '#f5a623';
             return {
                 width: '54px', height: '76px', borderRadius: '8px', flexShrink: '0',
                 background: `linear-gradient(135deg, ${col}22, rgba(255,255,255,0.02))`,
@@ -327,7 +327,7 @@ export default defineComponent({
         },
         typeChipStyle(val: ContentType | null): Record<string, string> {
             const active = this.activeType === val;
-            const col = val ? (TYPE_COLORS[val] ?? '#00F5A0') : '#00F5A0';
+            const col = val ? (TYPE_COLORS[val] ?? '#f5a623') : '#f5a623';
             return {
                 padding: '6px 13px', borderRadius: '20px', border: 'none', cursor: 'pointer',
                 fontSize: '12px', fontWeight: '700',

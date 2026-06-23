@@ -5,37 +5,37 @@
     --font-family-sans: 'Sora', 'Inter', system-ui, -apple-system, sans-serif;
     --font-family-display: 'Sora', system-ui, sans-serif;
 
-    /* ── Primary — neon green ── */
-    --color-primary:     #00F5A0;
-    --color-primary-dim: hsl(158 100% 48% / 0.08);
-    --color-primary-mid: hsl(158 100% 48% / 0.18);
-    --color-primary-ink: #050608;
+    /* ── Primary — âmbar (accent do design system) ── */
+    --color-primary:     #f5a623;
+    --color-primary-dim: hsl(38 91% 55% / 0.10);
+    --color-primary-mid: hsl(38 91% 55% / 0.22);
+    --color-primary-ink: #0f0f0f;
 
-    /* ── Cyan ── */
-    --color-cyan:     #00D9FF;
-    --color-cyan-dim: hsl(189 100% 50% / 0.08);
-    --color-cyan-mid: hsl(189 100% 50% / 0.18);
+    /* ── Fire accent ── */
+    --color-cyan:     #ff6b35;
+    --color-cyan-dim: hsl(16 100% 60% / 0.10);
+    --color-cyan-mid: hsl(16 100% 60% / 0.22);
 
     /* ── Background layers ── */
-    --color-bg:  hsl(220 30% 3%);
-    --color-bg1: hsl(222 24% 5%);
-    --color-bg2: hsl(222 24% 7%);
+    --color-bg:  #0f0f0f;
+    --color-bg1: #141414;
+    --color-bg2: #1a1a1a;
 
     /* ── Named surfaces ── */
-    --color-surface-1: hsl(222 24% 7%);
-    --color-surface-2: hsl(222 22% 9%);
-    --color-surface-3: hsl(222 22% 12%);
+    --color-surface-1: #1a1a1a;
+    --color-surface-2: #1f1f1f;
+    --color-surface-3: #242424;
 
     /* ── Borders ── */
-    --color-border:        hsl(220 20% 14%);
-    --color-border-subtle: hsl(0 0% 100% / 0.06);
-    --color-border-strong: hsl(0 0% 100% / 0.12);
+    --color-border:        #2a2a2a;
+    --color-border-subtle: #2a2a2a;
+    --color-border-strong: #3a3a3a;
 
     /* ── Text scale ── */
-    --color-text:        hsl(213 25% 92%);
-    --color-text-subtle: hsl(213 15% 65%);
-    --color-text-muted:  hsl(213 10% 45%);
-    --color-text-faint:  hsl(213 8% 30%);
+    --color-text:        #f0f0f0;
+    --color-text-subtle: #a0a0a0;
+    --color-text-muted:  #606060;
+    --color-text-faint:  #3a3a3a;
 
     /* ── Functional ── */
     --color-warn:    #F5C542;
@@ -44,31 +44,31 @@
     --color-purple:  #B8A4FF;
 
     /* ── Status ── */
-    --color-status-reading:    #00F5A0;
-    --color-status-completed:  #7CAEFF;
+    --color-status-reading:    #f5a623;
+    --color-status-completed:  #4ade80;
     --color-status-paused:     #F5C542;
     --color-status-dropped:    #FF5E5E;
     --color-status-plan:       #B8A4FF;
 
     /* ── Legacy compat (components pending redesign) ── */
-    --color-neon-accent:      #00F5A0;
-    --color-neon-accent-dim:  hsl(158 100% 48% / 0.08);
-    --color-neon-accent-mid:  hsl(158 100% 48% / 0.18);
-    --color-neon-ink:         #050608;
-    --color-neon-bg:          hsl(220 30% 3%);
-    --color-neon-bg1:         hsl(222 24% 5%);
-    --color-neon-surface:     hsl(222 24% 7%);
-    --color-neon-surface2:    hsl(222 22% 9%);
-    --color-neon-border:      hsl(0 0% 100% / 0.06);
-    --color-neon-border2:     hsl(0 0% 100% / 0.10);
-    --color-neon-text:        hsl(213 25% 92%);
-    --color-neon-subtle:      hsl(213 15% 65%);
-    --color-neon-muted:       hsl(213 10% 45%);
-    --color-neon-faint:       hsl(213 8% 30%);
-    --color-neon-blue:        #00D9FF;
+    --color-neon-accent:      #f5a623;
+    --color-neon-accent-dim:  hsl(38 91% 55% / 0.10);
+    --color-neon-accent-mid:  hsl(38 91% 55% / 0.22);
+    --color-neon-ink:         #0f0f0f;
+    --color-neon-bg:          #0f0f0f;
+    --color-neon-bg1:         #141414;
+    --color-neon-surface:     #1a1a1a;
+    --color-neon-surface2:    #1f1f1f;
+    --color-neon-border:      #2a2a2a;
+    --color-neon-border2:     #3a3a3a;
+    --color-neon-text:        #f0f0f0;
+    --color-neon-subtle:      #a0a0a0;
+    --color-neon-muted:       #606060;
+    --color-neon-faint:       #3a3a3a;
+    --color-neon-blue:        #ff6b35;
     --color-neon-danger:      #FF5E5E;
     --color-neon-warning:     #F5C542;
-    --color-neon-elevated:    hsl(222 22% 9%);
-    --color-neon-card:        hsl(222 24% 7%);
-    --color-neon-pill-border: hsl(0 0% 100% / 0.08);
+    --color-neon-elevated:    #1f1f1f;
+    --color-neon-card:        #1a1a1a;
+    --color-neon-pill-border: #3a3a3a;
 }
