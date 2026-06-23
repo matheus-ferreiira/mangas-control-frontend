@@ -42,7 +42,7 @@
                         style="width: 100%; height: 100%; object-fit: cover; display: block;"
                         alt="Capa"
                     />
-                    <div v-else style="width: 100%; height: 100%; background: linear-gradient(135deg, rgba(52,211,153,0.08), rgba(255,255,255,0.02)); display: flex; align-items: center; justify-content: center;">
+                    <div v-else style="width: 100%; height: 100%; background: linear-gradient(135deg, rgba(245,166,35,0.08), rgba(255,255,255,0.02)); display: flex; align-items: center; justify-content: center;">
                         <span style="font-size: 80px; opacity: 0.12;">{{ typeEmoji }}</span>
                     </div>
                     <!-- Gradient overlay -->
@@ -55,7 +55,7 @@
                             <span v-if="content.is_adult" style="font-size: 9px; font-weight: 800; color: #FF5E5E; background: rgba(239,107,107,0.15); padding: 2px 6px; border-radius: 20px; letter-spacing: 0.04em;">+18</span>
                             <span v-if="content.age_rating && !content.is_adult" style="font-size: 9px; font-weight: 700; color: rgba(233,237,242,0.62); background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 20px;">{{ content.age_rating }}</span>
                             <span v-if="isHighScore" style="font-size: 9px; font-weight: 800; color: #F5C542; background: rgba(230,184,92,0.15); padding: 2px 6px; border-radius: 20px; letter-spacing: 0.04em;">TOP</span>
-                            <span v-if="isInLibrary" style="font-size: 9px; font-weight: 800; color: #00F5A0; background: rgba(52,211,153,0.12); padding: 2px 6px; border-radius: 20px; letter-spacing: 0.04em;">✓ Na lista</span>
+                            <span v-if="isInLibrary" style="font-size: 9px; font-weight: 800; color: #f5a623; background: rgba(245,166,35,0.12); padding: 2px 6px; border-radius: 20px; letter-spacing: 0.04em;">✓ Na lista</span>
                         </div>
                         <h1 style="font-size: 24px; font-weight: 800; color: #e9edf2; margin: 0; line-height: 1.2; letter-spacing: -0.03em; font-family: 'Sora', system-ui, sans-serif;">{{ content.name }}</h1>
                         <div v-if="content.tagline" style="font-size: 12px; color: rgba(233,237,242,0.62); margin-top: 5px; font-style: italic; line-height: 1.4;">{{ content.tagline }}</div>
@@ -68,13 +68,16 @@
                 <div style="padding: 16px 16px 140px;">
                     <!-- Stats row — airy, hairline dividers -->
                     <div style="display: flex; align-items: stretch; margin-bottom: 18px; border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; overflow: hidden; flex-wrap: wrap;">
-                        <div v-if="content.rating != null" style="flex: 1; min-width: 60px; padding: 14px 6px; text-align: center; border-right: 1px solid rgba(255,255,255,0.06);">
-                            <div style="font-size: 18px; font-weight: 800; color: #F5C542; font-family: 'Sora', system-ui, sans-serif;">★ {{ content.rating.toFixed(1) }}</div>
-                            <div :style="statLabelStyle">Nota</div>
+                        <!-- Minha Nota — só quando o usuário avaliou -->
+                        <div v-if="userContent && userContent.rating != null" style="flex: 1; min-width: 64px; padding: 14px 6px; text-align: center; border-right: 1px solid rgba(255,255,255,0.06);">
+                            <div style="font-size: 18px; font-weight: 800; color: #F5C542; font-family: 'Sora', system-ui, sans-serif;">★ {{ userContent.rating }}</div>
+                            <div :style="statLabelStyle">Minha Nota</div>
                         </div>
-                        <div v-if="content.score != null" style="flex: 1; min-width: 60px; padding: 14px 6px; text-align: center; border-right: 1px solid rgba(255,255,255,0.06);">
-                            <div style="font-size: 18px; font-weight: 800; color: #00F5A0; font-family: 'Sora', system-ui, sans-serif;">{{ content.score }}</div>
+                        <!-- Score da comunidade (API) -->
+                        <div v-if="communityScore != null" style="flex: 1; min-width: 64px; padding: 14px 6px; text-align: center; border-right: 1px solid rgba(255,255,255,0.06);">
+                            <div style="font-size: 18px; font-weight: 800; color: #f5a623; font-family: 'Sora', system-ui, sans-serif;">{{ communityScore }}</div>
                             <div :style="statLabelStyle">Score</div>
+                            <div style="font-size: 8px; font-weight: 600; color: rgba(233,237,242,0.28); text-transform: uppercase; letter-spacing: 0.12em; margin-top: 2px;">comunidade</div>
                         </div>
                         <div v-if="content.release_year" style="flex: 1; min-width: 60px; padding: 14px 6px; text-align: center; border-right: 1px solid rgba(255,255,255,0.06);">
                             <div style="font-size: 18px; font-weight: 800; color: #e9edf2; font-family: 'Sora', system-ui, sans-serif;">{{ content.release_year }}</div>
@@ -95,6 +98,125 @@
                         <div v-if="content.country" style="flex: 1; min-width: 60px; padding: 14px 6px; text-align: center; border-left: 1px solid rgba(255,255,255,0.06);">
                             <div style="font-size: 14px; font-weight: 800; color: #e9edf2;">{{ content.country }}</div>
                             <div :style="statLabelStyle">País</div>
+                        </div>
+                    </div>
+
+                    <!-- ══ MEU REGISTRO — topo da página p/ ação rápida (only when in library) ══ -->
+                    <div v-if="isInLibrary && userContent" style="background: var(--bg-secondary); border-radius: 16px; padding: 18px; margin-bottom: 18px; border: 1px solid var(--border-default);">
+                        <!-- Section header -->
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                            <div style="font-size: 15px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.01em;">Meu Registro</div>
+                            <div v-if="lastUpdateText" style="font-size: 11px; color: var(--text-muted); font-weight: 600; display: flex; align-items: center; gap: 4px;">
+                                <span style="font-size: 10px;">⏱</span> {{ lastUpdateText }}
+                            </div>
+                        </div>
+
+                        <!-- Status selector — só fundo muda (DESIGN_SYSTEM §5.2) -->
+                        <div style="margin-bottom: 18px;">
+                            <div :style="sectionLabelStyle">Status</div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                <button
+                                    v-for="s in availableStatuses"
+                                    :key="s.value"
+                                    class="status-btn"
+                                    :class="{ active: userContent.status === s.value }"
+                                    @click="changeStatus(s.value)"
+                                >{{ s.label }}</button>
+                            </div>
+                        </div>
+
+                        <!-- Progress — hidden for movie -->
+                        <template v-if="!isMovie">
+                            <!-- Season (TV) — 100% largura -->
+                            <div v-if="isTv" style="margin-bottom: 16px; width: 100%;">
+                                <div :style="sectionLabelStyle">Temporada atual</div>
+                                <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                                    <button :style="stepBtnStyle(false)" :disabled="saving || (userContent.current_season ?? 1) <= 1" @click="decrementSeason">−</button>
+                                    <div style="flex: 1; text-align: center;">
+                                        <div style="font-size: 2.5rem; font-weight: 700; color: var(--text-primary); line-height: 1;">{{ userContent.current_season ?? 1 }}</div>
+                                        <span style="display: block; text-align: center; font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">de {{ content.total_seasons ?? '?' }} temp.</span>
+                                    </div>
+                                    <button :style="stepBtnStyle(true)" :disabled="saving" @click="incrementSeason">+</button>
+                                </div>
+                            </div>
+
+                            <!-- Chapter / Episode — 100% largura -->
+                            <div style="margin-bottom: 18px; width: 100%;">
+                                <div :style="sectionLabelStyle">{{ isTv || contentType === 'anime' ? 'Episódio atual' : 'Capítulo atual' }}</div>
+                                <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                                    <button :style="stepBtnStyle(false)" :disabled="saving || userContent.current_units <= 0" @click="decrement">−</button>
+                                    <div style="flex: 1; text-align: center; min-width: 0;">
+                                        <IonInput
+                                            v-if="editingUnits"
+                                            :value="unitsInput"
+                                            type="number"
+                                            inputmode="numeric"
+                                            class="unit-input"
+                                            min="0"
+                                            :max="seasonUnitLimit ?? undefined"
+                                            ref="unitsField"
+                                            @ionBlur="saveUnits"
+                                            @ionInput="unitsInput = Math.min(Number(($event as CustomEvent).detail.value) || 0, seasonUnitLimit ?? Infinity)"
+                                        />
+                                        <div v-else @click="startEditUnits" style="cursor: pointer;">
+                                            <div style="font-size: 2.5rem; font-weight: 700; color: var(--text-primary); line-height: 1;">{{ userContent.current_units }}</div>
+                                            <span v-if="seasonUnitLimit" style="display: block; text-align: center; font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">de {{ seasonUnitLimit }} {{ unitShort }}</span>
+                                            <span v-else style="display: block; text-align: center; font-size: 0.7rem; color: var(--text-muted); font-style: italic; margin-top: 4px;">em andamento</span>
+                                        </div>
+                                    </div>
+                                    <button
+                                        :style="atLimit ? stepBtnStyleDisabled : stepBtnStyle(true)"
+                                        :disabled="saving || atLimit"
+                                        @click="increment"
+                                    >+</button>
+                                </div>
+                                <!-- Progress bar (100% largura, 4px, laranja) -->
+                                <div v-if="!isOngoing && seasonUnitLimit" style="margin-top: 12px; width: 100%;">
+                                    <div style="height: 4px; background: var(--border-default); border-radius: 4px; overflow: hidden;">
+                                        <div style="height: 100%; border-radius: 4px; transition: width 0.35s; background: var(--accent-primary);" :style="{ width: progressPct + '%' }" />
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-top: 5px;">
+                                        <span>{{ userContent.current_units }} / {{ seasonUnitLimit }} {{ unitShort }}</span>
+                                        <span style="font-weight: 700; color: var(--text-secondary);">{{ progressPct }}%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+
+                        <!-- Rating 0–10 -->
+                        <div style="margin-bottom: 18px;">
+                            <div :style="sectionLabelStyle">Minha Avaliação</div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 7px;">
+                                <div
+                                    v-for="n in ratingOptions"
+                                    :key="n"
+                                    style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; border: 1px solid; transition: all 0.15s; flex-shrink: 0;"
+                                    :style="userContent.rating === n
+                                        ? { background: ratingBg(n), color: ratingColor(n), borderColor: ratingBorderColor(n) }
+                                        : { background: 'var(--bg-tertiary)', color: 'var(--text-secondary)', borderColor: 'var(--border-default)' }"
+                                    @click="changeRating(userContent.rating === n ? null : n)"
+                                >{{ n }}</div>
+                            </div>
+                            <div v-if="userContent.rating != null" style="margin-top: 8px; font-size: 12px; color: var(--text-secondary); text-align: center;">
+                                {{ ratingLabel(userContent.rating) }}
+                            </div>
+                        </div>
+
+                        <!-- Site -->
+                        <div v-if="sites.length">
+                            <div :style="sectionLabelStyle">Fonte de leitura</div>
+                            <IonSelect
+                                v-model="selectedSiteId"
+                                :compareWith="compareSiteId"
+                                placeholder="Sem fonte"
+                                fill="outline"
+                                interface="action-sheet"
+                                class="neon-select"
+                                @ionChange="changeSite"
+                            >
+                                <IonSelectOption value="">Sem fonte</IonSelectOption>
+                                <IonSelectOption v-for="site in sites" :key="site.id" :value="site.id">{{ site.name }}</IonSelectOption>
+                            </IonSelect>
                         </div>
                     </div>
 
@@ -141,7 +263,7 @@
                                 <span
                                     v-for="d in content.demographics"
                                     :key="d"
-                                    style="font-size: 12px; font-weight: 700; color: #00F5A0; background: rgba(52,211,153,0.10); border: 1px solid rgba(52,211,153,0.2); padding: 4px 12px; border-radius: 8px;"
+                                    style="font-size: 12px; font-weight: 700; color: #f5a623; background: rgba(245,166,35,0.10); border: 1px solid rgba(245,166,35,0.2); padding: 4px 12px; border-radius: 8px;"
                                 >{{ d }}</span>
                             </div>
                         </div>
@@ -165,7 +287,7 @@
                             :style="synopsisExpanded ? {} : { display: '-webkit-box', WebkitLineClamp: '4', WebkitBoxOrient: 'vertical', overflow: 'hidden' }"
                         >{{ content.synopsis }}</div>
                         <button
-                            style="margin-top: 10px; font-size: 12px; font-weight: 700; color: #00F5A0; background: none; border: none; cursor: pointer; padding: 0;"
+                            style="margin-top: 10px; font-size: 12px; font-weight: 700; color: #f5a623; background: none; border: none; cursor: pointer; padding: 0;"
                             @click="synopsisExpanded = !synopsisExpanded"
                         >{{ synopsisExpanded ? 'Ver menos ↑' : 'Ver mais ↓' }}</button>
                     </div>
@@ -205,129 +327,6 @@
                         </div>
                     </div>
 
-                    <!-- ══ MEU REGISTRO (only when in library) ══ -->
-                    <div v-if="isInLibrary && userContent" style="background: rgba(255,255,255,0.025); border-radius: 18px; padding: 18px; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.06);" :style="{ borderLeft: `3px solid ${typeColor}` }">
-                        <!-- Section header -->
-                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px;">
-                            <div style="font-size: 15px; font-weight: 800; color: #e9edf2; letter-spacing: -0.01em;">Meu Registro</div>
-                            <div v-if="lastUpdateText" style="font-size: 11px; color: rgba(233,237,242,0.28); font-weight: 600; display: flex; align-items: center; gap: 4px;">
-                                <span style="font-size: 10px;">⏱</span> {{ lastUpdateText }}
-                            </div>
-                        </div>
-
-                        <!-- Status selector -->
-                        <div style="margin-bottom: 18px;">
-                            <div :style="sectionLabelStyle">Status</div>
-                            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
-                                <div
-                                    v-for="s in availableStatuses"
-                                    :key="s.value"
-                                    style="display: flex; align-items: center; gap: 5px; height: 34px; padding: 0 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; border: 1px solid; transition: all 0.15s; white-space: nowrap;"
-                                    :style="userContent.status === s.value
-                                        ? { background: getStatusColor(s.value) + '22', color: getStatusColor(s.value), borderColor: getStatusColor(s.value) + '88' }
-                                        : { background: 'rgba(255,255,255,0.025)', color: 'rgba(233,237,242,0.42)', borderColor: 'rgba(255,255,255,0.06)' }"
-                                    @click="changeStatus(s.value)"
-                                >
-                                    <span style="width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;" :style="{ background: userContent.status === s.value ? getStatusColor(s.value) : '#4a5169' }" />
-                                    {{ s.label }}
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Progress — hidden for movie -->
-                        <template v-if="!isMovie">
-                            <!-- Season (TV / Anime) -->
-                            <div v-if="isTv" style="margin-bottom: 18px;">
-                                <div :style="sectionLabelStyle">Temporada atual</div>
-                                <div style="display: flex; align-items: center; gap: 12px;">
-                                    <button :style="stepBtnStyle(false)" :disabled="saving || (userContent.current_season ?? 1) <= 1" @click="decrementSeason">−</button>
-                                    <div style="flex: 1; text-align: center;">
-                                        <div style="font-size: 40px; font-weight: 900; color: #e9edf2; line-height: 1; letter-spacing: -0.03em; font-family: 'Sora', system-ui, sans-serif;">{{ userContent.current_season ?? 1 }}</div>
-                                        <div style="font-size: 11px; color: rgba(233,237,242,0.28); margin-top: 2px;">de {{ content.total_seasons ?? '?' }}</div>
-                                    </div>
-                                    <button :style="stepBtnStyle(true)" :disabled="saving" @click="incrementSeason">+</button>
-                                </div>
-                            </div>
-
-                            <!-- Chapter / Episode -->
-                            <div style="margin-bottom: 18px;">
-                                <div :style="sectionLabelStyle">{{ isTv || contentType === 'anime' ? 'Episódio atual' : 'Capítulo atual' }}</div>
-                                <div style="display: flex; align-items: center; gap: 12px;">
-                                    <button :style="stepBtnStyle(false)" :disabled="saving || userContent.current_units <= 0" @click="decrement">−</button>
-                                    <div style="flex: 1; text-align: center;">
-                                        <IonInput
-                                            v-if="editingUnits"
-                                            :value="unitsInput"
-                                            type="number"
-                                            inputmode="numeric"
-                                            class="unit-input"
-                                            min="0"
-                                            :max="seasonUnitLimit ?? undefined"
-                                            ref="unitsField"
-                                            @ionBlur="saveUnits"
-                                            @ionInput="unitsInput = Math.min(Number(($event as CustomEvent).detail.value) || 0, seasonUnitLimit ?? Infinity)"
-                                        />
-                                        <div v-else @click="startEditUnits" style="cursor: pointer;">
-                                            <div style="font-size: 40px; font-weight: 900; color: #e9edf2; line-height: 1; letter-spacing: -0.03em; font-family: 'Sora', system-ui, sans-serif;">{{ userContent.current_units }}</div>
-                                            <div v-if="seasonUnitLimit" style="font-size: 11px; color: rgba(233,237,242,0.28); margin-top: 2px;">de {{ seasonUnitLimit }} {{ unitShort }}</div>
-                                        </div>
-                                    </div>
-                                    <button
-                                        :style="atLimit ? stepBtnStyleDisabled : stepBtnStyle(true)"
-                                        :disabled="saving || atLimit"
-                                        @click="increment"
-                                    >+</button>
-                                </div>
-                                <!-- Progress bar -->
-                                <div v-if="!isOngoing && seasonUnitLimit" style="margin-top: 14px;">
-                                    <div style="height: 4px; background: rgba(255,255,255,0.06); border-radius: 4px; overflow: hidden;">
-                                        <div style="height: 100%; border-radius: 4px; transition: width 0.35s;" :style="{ width: progressPct + '%', background: statusColor }" />
-                                    </div>
-                                    <div style="display: flex; justify-content: space-between; font-size: 11px; color: rgba(233,237,242,0.28); margin-top: 5px;">
-                                        <span>{{ userContent.current_units }} / {{ seasonUnitLimit }} {{ unitShort }}</span>
-                                        <span style="font-weight: 700; color: rgba(233,237,242,0.42);">{{ progressPct }}%</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </template>
-
-                        <!-- Rating 0–10 -->
-                        <div style="margin-bottom: 18px;">
-                            <div :style="sectionLabelStyle">Minha Avaliação</div>
-                            <div style="display: flex; flex-wrap: wrap; gap: 7px;">
-                                <div
-                                    v-for="n in ratingOptions"
-                                    :key="n"
-                                    style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; border: 1px solid; transition: all 0.15s; flex-shrink: 0;"
-                                    :style="userContent.rating === n
-                                        ? { background: ratingBg(n), color: ratingColor(n), borderColor: ratingBorderColor(n) }
-                                        : { background: 'rgba(255,255,255,0.025)', color: 'rgba(233,237,242,0.42)', borderColor: 'rgba(255,255,255,0.06)' }"
-                                    @click="changeRating(userContent.rating === n ? null : n)"
-                                >{{ n }}</div>
-                            </div>
-                            <div v-if="userContent.rating != null" style="margin-top: 8px; font-size: 12px; color: rgba(233,237,242,0.62); text-align: center;">
-                                {{ ratingLabel(userContent.rating) }}
-                            </div>
-                        </div>
-
-                        <!-- Site -->
-                        <div v-if="sites.length">
-                            <div :style="sectionLabelStyle">Fonte de leitura</div>
-                            <IonSelect
-                                v-model="selectedSiteId"
-                                :compareWith="compareSiteId"
-                                placeholder="Sem fonte"
-                                fill="outline"
-                                interface="action-sheet"
-                                class="neon-select"
-                                @ionChange="changeSite"
-                            >
-                                <IonSelectOption value="">Sem fonte</IonSelectOption>
-                                <IonSelectOption v-for="site in sites" :key="site.id" :value="site.id">{{ site.name }}</IonSelectOption>
-                            </IonSelect>
-                        </div>
-                    </div>
-
                     <!-- Remove button -->
                     <div v-if="isInLibrary && userContent" style="display: flex; justify-content: center; padding-bottom: 4px;">
                         <button
@@ -364,7 +363,7 @@
         <!-- ── FAB: Add to library (only when NOT in library) ── -->
         <div v-if="content && !isInLibrary && !loading" style="position: fixed; bottom: 0; left: 0; right: 0; padding: 16px 16px max(16px, env(safe-area-inset-bottom, 16px)); background: linear-gradient(to top, #05070b 70%, transparent); pointer-events: none; z-index: 100;">
             <button
-                style="width: 100%; padding: 16px; border-radius: 16px; border: none; background: #00F5A0; color: #050608; font-size: 16px; font-weight: 800; cursor: pointer; pointer-events: all; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 6px 28px rgba(52,211,153,0.33); transition: all 0.2s;"
+                style="width: 100%; padding: 16px; border-radius: 16px; border: none; background: #f5a623; color: #050608; font-size: 16px; font-weight: 800; cursor: pointer; pointer-events: all; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 6px 28px rgba(245,166,35,0.33); transition: all 0.2s;"
                 @click="addToLibrary"
             >
                 <span style="font-size: 20px; font-weight: 900; line-height: 1;">+</span> Adicionar à Biblioteca
@@ -393,7 +392,7 @@ import {
 import { siteService, Site } from '@/services/siteService';
 
 const TYPE_BADGE_COLOR: Record<ContentType, string> = {
-    manga: '#00F5A0',
+    manga: '#f5a623',
     anime: '#B8A4FF',
     novel: '#fbbf24',
     movie: '#f472b6',
@@ -409,8 +408,8 @@ const TYPE_EMOJI: Record<ContentType, string> = {
 };
 
 const STATUS_COLORS: Record<ContentStatus, string> = {
-    reading:      '#7CAEFF',
-    completed:    '#00F5A0',
+    reading:      '#f5a623',
+    completed:    '#4ade80',
     paused:       '#F5C542',
     dropped:      '#FF5E5E',
     plan_to_read: '#B8A4FF',
@@ -461,6 +460,13 @@ export default defineComponent({
             return { fontSize: '9px', fontWeight: '700', letterSpacing: '0.05em', color: col, background: col + '18', padding: '2px 8px', borderRadius: '20px' };
         },
         isInLibrary(): boolean { return !!(this.content?.is_in_library) || !!this.userContent; },
+        // Nota da comunidade vinda da API (score; cai para rating quando ausente).
+        // Após a migração AniList, score == rating — exibimos um único campo para evitar redundância.
+        communityScore(): string | null {
+            const raw = this.content?.score ?? this.content?.rating;
+            if (raw == null) return null;
+            return Number.isInteger(raw) ? String(raw) : raw.toFixed(1);
+        },
         isHighScore(): boolean { return (this.content?.score ?? this.content?.rating ?? 0) >= 9; },
         isMovie(): boolean { return this.contentType === 'movie'; },
         isTv(): boolean { return this.contentType === 'tv' || this.contentType === 'anime'; },
@@ -529,7 +535,7 @@ export default defineComponent({
         metaKeyStyle(): Record<string, string> { return { fontSize: '13px', color: 'rgba(233,237,242,0.42)' }; },
         metaValStyle(): Record<string, string> { return { fontSize: '13px', fontWeight: '600', color: 'rgba(233,237,242,0.62)' }; },
         stepBtnStyleDisabled(): Record<string, string> {
-            return { width: '52px', height: '52px', borderRadius: '26px', border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.025)', color: 'rgba(233,237,242,0.14)', fontSize: '24px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'not-allowed', flexShrink: '0' };
+            return { width: '36px', height: '36px', borderRadius: '6px', border: '1px solid #2a2a2a', background: '#1a1a1a', color: '#3a3a3a', fontSize: '18px', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'not-allowed', flexShrink: '0' };
         },
     },
 
@@ -539,24 +545,22 @@ export default defineComponent({
     },
 
     methods: {
-        stepBtnStyle(active: boolean): Record<string, string> {
+        // Controles +/- (DESIGN_SYSTEM §5.3): 36×36, neutros, sem cor por status
+        stepBtnStyle(_active: boolean): Record<string, string> {
             return {
-                width: '52px', height: '52px', borderRadius: '26px', fontSize: '24px', fontWeight: '700',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: '0', transition: 'all 0.2s',
-                ...(active
-                    ? { border: `1px solid ${this.typeColor}`, background: this.typeColor, color: '#05070b' }
-                    : { border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.025)', color: '#e9edf2' }
-                ),
+                width: '36px', height: '36px', borderRadius: '6px', fontSize: '18px', fontWeight: '700',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: '0', transition: 'all 0.15s',
+                border: '1px solid #3a3a3a', background: '#242424', color: '#f0f0f0',
             };
         },
         ratingBg(n: number): string {
-            if (n >= 9) return 'rgba(52,211,153,0.15)';
+            if (n >= 9) return 'rgba(245,166,35,0.15)';
             if (n >= 7) return 'rgba(125,167,255,0.15)';
             if (n >= 5) return 'rgba(230,184,92,0.15)';
             return 'rgba(239,107,107,0.12)';
         },
         ratingColor(n: number): string {
-            if (n >= 9) return '#00F5A0';
+            if (n >= 9) return '#f5a623';
             if (n >= 7) return '#7CAEFF';
             if (n >= 5) return '#F5C542';
             return '#FF5E5E';
@@ -693,7 +697,21 @@ export default defineComponent({
         async changeStatus(status: ContentStatus) {
             if (!this.userContent || this.userContent.status === status) return;
             this.saving = true;
-            try { this.patchUserContent(await userContentService.update(this.userContent.id, { status })); }
+
+            // Auto-preenchimento ao marcar como Completo (espelhado no backend)
+            const payload: Partial<Pick<UserContent, 'status' | 'current_units' | 'current_season'>> = { status };
+            if (status === 'completed' && this.content) {
+                if (this.content.total_units)   payload.current_units  = this.content.total_units;
+                if (this.content.total_seasons) payload.current_season = this.content.total_seasons;
+            }
+
+            try {
+                this.patchUserContent(await userContentService.update(this.userContent.id, payload));
+                if (status === 'completed' && this.content?.total_units) {
+                    const unit = this.unitShort;
+                    await this.showSuccess(`✓ Marcado como completo — ${unit} ${this.content.total_units}/${this.content.total_units}`);
+                }
+            }
             catch { await this.showError('Falha ao atualizar status.'); }
             finally { this.saving = false; }
         },
@@ -753,6 +771,11 @@ export default defineComponent({
             const toast = await toastController.create({ message: msg, duration: 2000, color: 'danger', position: 'top' });
             await toast.present();
         },
+
+        async showSuccess(msg: string) {
+            const toast = await toastController.create({ message: msg, duration: 2500, color: 'success', position: 'top' });
+            await toast.present();
+        },
     },
 });
 </script>
@@ -766,8 +789,8 @@ export default defineComponent({
 .unit-input {
     --background: transparent;
     --color: #e9edf2;
-    --highlight-color-focused: #00F5A0;
-    --border-color: #00F5A0;
+    --highlight-color-focused: #f5a623;
+    --border-color: #f5a623;
     --padding-start: 0;
     --padding-end: 0;
     font-size: 40px;
@@ -782,7 +805,7 @@ export default defineComponent({
     --placeholder-color: rgba(233,237,242,0.42);
     --border-color: rgba(255,255,255,0.06);
     --border-radius: 12px;
-    --highlight-color-focused: #00F5A0;
+    --highlight-color-focused: #f5a623;
     --padding-start: 14px;
     --padding-end: 14px;
     min-height: 48px;
@@ -804,6 +827,25 @@ export default defineComponent({
     transition: color 0.15s;
 }
 .remove-btn:hover { color: #FF5E5E; }
+
+/* Botões de status — só fundo muda, sem borda colorida (DESIGN_SYSTEM §5.2) */
+.status-btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    border: 1px solid var(--border-default);
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.status-btn.active {
+    background: var(--accent-primary);
+    color: #0f0f0f;
+    border-color: var(--accent-primary);
+}
 
 button:disabled { opacity: 0.38; cursor: not-allowed; }
 </style>

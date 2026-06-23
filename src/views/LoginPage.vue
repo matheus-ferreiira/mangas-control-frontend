@@ -28,7 +28,7 @@
                     :disabled="loading"
                     @click="loginWithGoogle"
                 >
-                    <IonSpinner v-if="loading && loginMode === 'google'" slot="start" name="crescent" style="width:20px;height:20px;--color:#00F5A0" />
+                    <IonSpinner v-if="loading && loginMode === 'google'" slot="start" name="crescent" style="width:20px;height:20px;--color:#f5a623" />
                     <template v-else>
                         <span slot="start" style="display:flex;align-items:center;margin-inline-end:10px">
                             <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true">
@@ -210,10 +210,10 @@ export default defineComponent({
 }
 
 .btn-primary {
-    --background: #00F5A0;
+    --background: #f5a623;
     --color: #050608;
     --border-radius: 14px;
-    --box-shadow: 0 0 24px hsl(158 100% 48% / 0.35);
+    --box-shadow: 0 0 24px hsl(38 91% 55% / 0.35);
     font-weight: 700;
     height: 52px;
 }
@@ -224,7 +224,7 @@ export default defineComponent({
     --placeholder-color: hsl(213 10% 40%);
     --border-color: hsl(0 0% 100% / 0.07);
     --border-radius: 12px;
-    --highlight-color-focused: #00F5A0;
+    --highlight-color-focused: #f5a623;
     --padding-start: 16px;
     --padding-end: 16px;
     min-height: 50px;

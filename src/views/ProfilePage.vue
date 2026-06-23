@@ -9,11 +9,11 @@
 
                 <!-- Hero header -->
                 <div style="position: relative; overflow: hidden;">
-                    <div style="height: 190px; background: linear-gradient(135deg, hsl(158 100% 48% / 0.16) 0%, hsl(189 100% 50% / 0.10) 50%, hsl(258 89% 70% / 0.08) 100%); position: relative;">
+                    <div style="height: 190px; background: linear-gradient(135deg, hsl(38 91% 55% / 0.16) 0%, hsl(16 100% 60% / 0.10) 50%, hsl(258 89% 70% / 0.08) 100%); position: relative;">
                         <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 0%, hsl(220 30% 3%) 100%);"></div>
                     </div>
                     <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 0;">
-                        <div style="width: 88px; height: 88px; border-radius: 44px; background: linear-gradient(135deg, #00F5A0, #00D9FF); display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 900; color: #050608; box-shadow: 0 0 0 4px hsl(220 30% 3%), 0 0 30px hsl(158 100% 48% / 0.4); overflow: hidden; flex-shrink: 0;">
+                        <div style="width: 88px; height: 88px; border-radius: 44px; background: linear-gradient(135deg, #f5a623, #ff6b35); display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 900; color: #050608; box-shadow: 0 0 0 4px hsl(220 30% 3%), 0 0 30px hsl(38 91% 55% / 0.4); overflow: hidden; flex-shrink: 0;">
                             <img v-if="user?.avatar" :src="user.avatar" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover;" />
                             <span v-else>{{ userInitial }}</span>
                         </div>
@@ -22,7 +22,7 @@
 
                 <!-- Name + username -->
                 <div style="text-align: center; padding: 10px 18px 20px;">
-                    <div style="font-size: 22px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.2; font-family: 'Sora', system-ui, sans-serif; background: linear-gradient(135deg, #00F5A0, #00D9FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">{{ user?.name || 'Curador' }}</div>
+                    <div style="font-size: 22px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.2; font-family: 'Sora', system-ui, sans-serif; background: linear-gradient(135deg, #f5a623, #ff6b35); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">{{ user?.name || 'Curador' }}</div>
                     <div style="font-size: 12px; color: rgba(233,237,242,0.42); margin-top: 4px; display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap;">
                         <span v-if="user?.username" style="color: rgba(233,237,242,0.62);">@{{ user.username }}</span>
                         <span v-if="user?.username" style="color: rgba(233,237,242,0.22);">·</span>
@@ -56,8 +56,8 @@
                             </div>
                         </div>
                         <div style="flex: 1; background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 14px; display: flex; align-items: center; gap: 10px; min-width: 0;">
-                            <div style="width: 38px; height: 38px; border-radius: 12px; background: rgba(52,211,153,0.10); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#00F5A0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                            <div style="width: 38px; height: 38px; border-radius: 12px; background: rgba(245,166,35,0.10); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#f5a623" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
                             </div>
                             <div style="min-width: 0;">
                                 <div style="font-size: 20px; font-weight: 800; color: #e9edf2; line-height: 1; font-family: 'Sora', system-ui, sans-serif;">{{ totalChapters }}</div>
@@ -110,8 +110,8 @@
                         style="background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 14px 16px; margin-bottom: 6px; display: flex; align-items: center; gap: 12px; cursor: pointer;"
                         @click="$router.push('/manage-contents')"
                     >
-                        <div style="width: 34px; height: 34px; border-radius: 10px; background: rgba(52,211,153,0.10); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00F5A0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                        <div style="width: 34px; height: 34px; border-radius: 10px; background: rgba(245,166,35,0.10); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f5a623" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
                         </div>
                         <div style="flex: 1; min-width: 0;">
                             <div style="font-size: 13px; font-weight: 700; color: #e9edf2;">Catálogo de Obras</div>
@@ -141,7 +141,7 @@
                             </div>
                             <div style="flex: 1; min-width: 0; font-size: 13px; font-weight: 700; color: #e9edf2;">Minhas Fontes</div>
                             <button
-                                style="width: 28px; height: 28px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); background: transparent; color: #00F5A0; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; line-height: 1;"
+                                style="width: 28px; height: 28px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); background: transparent; color: #f5a623; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; line-height: 1;"
                                 @click.stop="openSiteModal(null)"
                             >+</button>
                             <svg
@@ -204,8 +204,24 @@
                     </div>
                 </template>
 
-                <!-- Conta -->
+                <!-- Configurações -->
                 <div style="padding: 0 18px; margin-top: 8px;">
+                    <div style="font-size: 10px; color: rgba(233,237,242,0.42); font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; margin-bottom: 10px;">Configurações</div>
+                    <div style="background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 14px 16px;">
+                        <div style="display: flex; align-items: center; gap: 12px; cursor: pointer;" @click="toggleAdult">
+                            <div style="flex: 1; min-width: 0;">
+                                <div style="font-size: 0.9rem; font-weight: 700; color: #f0f0f0;">Exibir conteúdo adulto (+18)</div>
+                                <div style="font-size: 0.75rem; color: #606060; margin-top: 3px; line-height: 1.4;">Conteúdo explícito será exibido em todo o app</div>
+                            </div>
+                            <div :style="adultTrackStyle">
+                                <div :style="adultKnobStyle"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conta -->
+                <div style="padding: 0 18px; margin-top: 18px;">
                     <div style="font-size: 10px; color: rgba(233,237,242,0.42); font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; margin-bottom: 10px;">Conta</div>
                     <button
                         @click="confirmLogout"
@@ -262,7 +278,7 @@
                     <button
                         :disabled="!siteForm.name.trim() || siteSaving"
                         style="width: 100%; padding: 14px; border-radius: 14px; border: none; font-size: 14px; font-weight: 800; cursor: pointer; transition: opacity 0.2s;"
-                        :style="{ background: '#00F5A0', color: '#050608', opacity: !siteForm.name.trim() ? 0.5 : 1 }"
+                        :style="{ background: '#f5a623', color: '#050608', opacity: !siteForm.name.trim() ? 0.5 : 1 }"
                         @click="saveSite"
                     >{{ siteSaving ? 'Salvando...' : (editingSite ? 'Salvar' : 'Adicionar') }}</button>
                 </div>
@@ -282,7 +298,7 @@ import { userContentService, UserContent } from '@/services/userContentService';
 import { userSiteService, UserSite } from '@/services/userSiteService';
 
 const TYPE_META: Record<string, { label: string; color: string }> = {
-    manga:  { label: 'Manga',  color: '#00F5A0' },
+    manga:  { label: 'Manga',  color: '#f5a623' },
     anime:  { label: 'Anime',  color: '#B8A4FF' },
     novel:  { label: 'Novel',  color: '#F5C542' },
     movie:  { label: 'Filme',  color: '#FF7EC7' },
@@ -300,6 +316,7 @@ export default defineComponent({
         return {
             userContents: [] as UserContent[],
             canInstall: false,
+            adultSaving: false,
             sitesExpanded: false,
             sites: [] as UserSite[],
             sitesLoading: false,
@@ -331,13 +348,34 @@ export default defineComponent({
         userInitial(): string {
             return (authStore.user?.name ?? '').charAt(0).toUpperCase() || 'U';
         },
+        showAdult(): boolean {
+            return !!authStore.user?.show_adult_content;
+        },
+        adultTrackStyle(): Record<string, string> {
+            const on = this.showAdult;
+            return {
+                width: '44px', height: '26px', borderRadius: '13px', position: 'relative', flexShrink: '0',
+                background: on ? 'rgba(245,166,35,0.3)' : '#2a2a2a',
+                transition: 'background 0.2s',
+                opacity: this.adultSaving ? '0.6' : '1',
+            };
+        },
+        adultKnobStyle(): Record<string, string> {
+            const on = this.showAdult;
+            return {
+                position: 'absolute', top: '3px', borderRadius: '10px',
+                left: on ? '21px' : '3px', width: '20px', height: '20px',
+                background: on ? '#f5a623' : '#606060',
+                transition: 'left 0.2s, background 0.2s', boxShadow: '0 1px 4px rgba(0,0,0,0.3)',
+            };
+        },
         statsCards(): { label: string; value: number; color: string }[] {
             const watching = this.userContents.filter((m) => m.status === 'reading').length;
             const completed = this.userContents.filter((m) => m.status === 'completed').length;
             return [
                 { label: 'Títulos',   value: this.userContents.length, color: '#e9edf2' },
                 { label: 'Completos', value: completed,                 color: '#7CAEFF' },
-                { label: 'Em Curso',  value: watching,                  color: '#00F5A0' },
+                { label: 'Em Curso',  value: watching,                  color: '#f5a623' },
             ];
         },
         totalHours(): number {
@@ -385,9 +423,38 @@ export default defineComponent({
         },
     },
     async ionViewWillEnter() {
+        this.syncUser();
         await Promise.all([this.loadUserContents(), this.loadSites()]);
     },
     methods: {
+        // Sincroniza o flag show_adult_content de sessões antigas (cache local sem o campo)
+        async syncUser() {
+            try {
+                const fresh = await authService.getUser();
+                authStore.setUser(fresh);
+            } catch {
+                // non-blocking
+            }
+        },
+        async toggleAdult() {
+            if (this.adultSaving) return;
+            const next = !this.showAdult;
+            this.adultSaving = true;
+            try {
+                const updated = await authService.updateProfile({ show_adult_content: next });
+                authStore.setUser(updated);
+                const toast = await toastController.create({
+                    message: next ? 'Conteúdo adulto ativado' : 'Conteúdo adulto ocultado',
+                    duration: 1800, color: 'success', position: 'top',
+                });
+                await toast.present();
+            } catch {
+                const toast = await toastController.create({ message: 'Falha ao atualizar configuração.', duration: 2000, color: 'danger', position: 'top' });
+                await toast.present();
+            } finally {
+                this.adultSaving = false;
+            }
+        },
         async loadUserContents() {
             try {
                 this.userContents = await userContentService.getAll();
@@ -481,7 +548,7 @@ export default defineComponent({
         toggleStyle(active: boolean): Record<string, string> {
             return {
                 width: '44px', height: '26px', borderRadius: '13px', position: 'relative',
-                background: active ? '#00F5A0' : 'rgba(255,255,255,0.08)',
+                background: active ? '#f5a623' : 'rgba(255,255,255,0.08)',
                 transition: 'background 0.2s', flexShrink: '0',
             };
         },

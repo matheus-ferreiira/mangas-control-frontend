@@ -10,7 +10,7 @@
 
                 <!-- Add button -->
                 <button
-                    style="width: 100%; padding: 14px; border-radius: 14px; border: 1.5px dashed rgba(255,255,255,0.08); background: transparent; color: #00F5A0; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 20px; transition: all 0.15s;"
+                    style="width: 100%; padding: 14px; border-radius: 14px; border: 1.5px dashed rgba(255,255,255,0.08); background: transparent; color: #f5a623; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 20px; transition: all 0.15s;"
                     @click="openForm(null)"
                 >
                     <span style="font-size: 18px;">+</span> Nova Fonte
@@ -60,7 +60,7 @@
                             :key="site.id"
                             :style="siteCardStyle(site)"
                         >
-                            <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(52,211,153,0.08); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: rgba(233,237,242,0.42); font-size: 18px;">
+                            <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(245,166,35,0.08); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: rgba(233,237,242,0.42); font-size: 18px;">
                                 🌐
                             </div>
                             <div style="flex: 1; min-width: 0;">
@@ -299,7 +299,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.btn-primary { --background: #00F5A0; --color: #050608; --border-radius: 14px; font-weight: 800; height: 50px; }
+.btn-primary { --background: #f5a623; --color: #050608; --border-radius: 14px; font-weight: 800; height: 50px; }
 .btn-cancel { --background: rgba(255,255,255,0.04); --color: rgba(233,237,242,0.42); --border-radius: 14px; height: 46px; }
 
 .neon-input {
@@ -308,7 +308,7 @@ export default defineComponent({
     --placeholder-color: rgba(233,237,242,0.28);
     --border-color: rgba(255,255,255,0.06);
     --border-radius: 12px;
-    --highlight-color-focused: #00F5A0;
+    --highlight-color-focused: #f5a623;
     --padding-start: 14px;
     --padding-end: 14px;
     min-height: 48px;

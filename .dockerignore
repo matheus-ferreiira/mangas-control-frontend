@@ -1,0 +1,10 @@
+# Dependências e build regenerados na imagem
+node_modules
+dist
+
+# Git
+.git
+.gitignore
+
+# Lixo
+UsersasdasAppDataLocalTempcontent-cosmos-app/

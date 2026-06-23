@@ -48,7 +48,7 @@
                             <div style="font-size: 9px; color: rgba(233,237,242,0.42); text-transform: uppercase; letter-spacing: 0.14em; margin-top: 3px;">Nota</div>
                         </div>
                         <div v-if="fullContent?.score != null" style="flex: 1; padding: 12px 8px; text-align: center; border-right: 1px solid rgba(255,255,255,0.06);">
-                            <div style="font-size: 18px; font-weight: 800; color: #00F5A0; font-family: 'Sora', system-ui, sans-serif;">{{ fullContent.score }}</div>
+                            <div style="font-size: 18px; font-weight: 800; color: #f5a623; font-family: 'Sora', system-ui, sans-serif;">{{ fullContent.score }}</div>
                             <div style="font-size: 9px; color: rgba(233,237,242,0.42); text-transform: uppercase; letter-spacing: 0.14em; margin-top: 3px;">Score</div>
                         </div>
                         <div v-if="fullContent?.release_year" style="flex: 1; padding: 12px 8px; text-align: center; border-right: 1px solid rgba(255,255,255,0.06);">
@@ -86,7 +86,7 @@
                             :style="synopsisExpanded ? {} : { display: '-webkit-box', WebkitLineClamp: '4', WebkitBoxOrient: 'vertical', overflow: 'hidden' }"
                         >{{ synopsis }}</div>
                         <button
-                            style="margin-top: 8px; font-size: 11px; font-weight: 700; color: #00F5A0; background: none; border: none; cursor: pointer; padding: 0;"
+                            style="margin-top: 8px; font-size: 11px; font-weight: 700; color: #f5a623; background: none; border: none; cursor: pointer; padding: 0;"
                             @click="synopsisExpanded = !synopsisExpanded"
                         >{{ synopsisExpanded ? 'Ver menos ↑' : 'Ver mais ↓' }}</button>
                     </div>
@@ -143,7 +143,7 @@
                                         style="width: 36px; height: 36px; border-radius: 10px; font-size: 20px; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: all 0.2s;"
                                         :style="atSeasonLimit
                                             ? { border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.025)', color: 'rgba(233,237,242,0.18)', cursor: 'not-allowed' }
-                                            : { border: '1px solid #00F5A0', background: '#00F5A0', color: '#05070b' }"
+                                            : { border: '1px solid #f5a623', background: '#f5a623', color: '#05070b' }"
                                         :disabled="saving || atSeasonLimit"
                                         @click="incrementSeason"
                                     >+</button>
@@ -187,7 +187,7 @@
                                         style="width: 36px; height: 36px; border-radius: 10px; font-size: 20px; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: all 0.2s;"
                                         :style="atLimit
                                             ? { border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.025)', color: 'rgba(233,237,242,0.18)', cursor: 'not-allowed' }
-                                            : { border: '1px solid #00F5A0', background: '#00F5A0', color: '#05070b' }"
+                                            : { border: '1px solid #f5a623', background: '#f5a623', color: '#05070b' }"
                                         :disabled="saving || atLimit"
                                         @click="increment"
                                     >+</button>
@@ -282,7 +282,7 @@ const TYPE_ICONS: Record<ContentType, string> = {
 };
 
 const TYPE_BADGE_STYLES: Record<ContentType, { color: string }> = {
-    manga:  { color: '#00F5A0' },
+    manga:  { color: '#f5a623' },
     anime:  { color: '#B8A4FF' },
     novel:  { color: '#F5C542' },
     movie:  { color: '#FF7EC7' },
@@ -291,7 +291,7 @@ const TYPE_BADGE_STYLES: Record<ContentType, { color: string }> = {
 
 const STATUS_COLORS: Record<ContentStatus, string> = {
     reading:      '#7CAEFF',
-    completed:    '#00F5A0',
+    completed:    '#f5a623',
     paused:       '#F5C542',
     dropped:      '#FF5E5E',
     plan_to_read: '#B8A4FF',
@@ -328,7 +328,7 @@ export default defineComponent({
             return CONTENT_TYPE_LABELS[this.contentType];
         },
         typeBadgeStyle(): Record<string, string> {
-            const col = TYPE_BADGE_STYLES[this.contentType]?.color ?? '#00F5A0';
+            const col = TYPE_BADGE_STYLES[this.contentType]?.color ?? '#f5a623';
             return {
                 fontSize: '9px', fontWeight: '800', letterSpacing: '0.07em',
                 color: col, background: col + '20',
@@ -546,8 +546,8 @@ export default defineComponent({
 .unit-input {
     --background: transparent;
     --color: #e9edf2;
-    --highlight-color-focused: #00F5A0;
-    --border-color: #00F5A0;
+    --highlight-color-focused: #f5a623;
+    --border-color: #f5a623;
     --padding-start: 0;
     --padding-end: 0;
     font-size: 32px;
@@ -562,7 +562,7 @@ export default defineComponent({
     --placeholder-color: rgba(233,237,242,0.28);
     --border-color: rgba(255,255,255,0.06);
     --border-radius: 12px;
-    --highlight-color-focused: #00F5A0;
+    --highlight-color-focused: #f5a623;
     --padding-start: 14px;
     --padding-end: 14px;
     min-height: 48px;

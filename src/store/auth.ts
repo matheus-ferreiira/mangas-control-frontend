@@ -18,6 +18,11 @@ export const authStore = reactive({
         localStorage.setItem('auth_user', JSON.stringify(user));
     },
 
+    setUser(user: User) {
+        this.user = user;
+        localStorage.setItem('auth_user', JSON.stringify(user));
+    },
+
     clearAuth() {
         this.token = null;
         this.user = null;

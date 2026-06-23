@@ -112,7 +112,7 @@
                                         <span :style="getTypeBadgeStyle(c.type)">{{ getTypeLabel(c.type) }}</span>
                                         <span v-if="c.score != null" style="font-size: 10px; color: #e6b85c; font-weight: 700;">★ {{ c.score }}</span>
                                         <span v-if="c.total_units" style="font-size: 10px; color: rgba(233,237,242,0.42);">{{ c.total_units }} {{ getUnitShort(c.type) }}</span>
-                                        <span v-if="c.is_in_library" style="font-size: 9px; font-weight: 800; color: #00F5A0; background: rgba(52,211,153,0.12); padding: 2px 7px; border-radius: 20px;">✓ Na lista</span>
+                                        <span v-if="c.is_in_library" style="font-size: 9px; font-weight: 800; color: #f5a623; background: rgba(245,166,35,0.12); padding: 2px 7px; border-radius: 20px;">✓ Na lista</span>
                                     </div>
                                 </div>
                             </div>
@@ -123,15 +123,15 @@
                 <!-- Already in library warning -->
                 <div
                     v-if="selectedContent?.is_in_library"
-                    style="margin-bottom: 20px; background: rgba(52,211,153,0.07); border: 1px solid rgba(52,211,153,0.2); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 12px;"
+                    style="margin-bottom: 20px; background: rgba(245,166,35,0.07); border: 1px solid rgba(245,166,35,0.2); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 12px;"
                 >
-                    <span style="font-size: 18px; flex-shrink: 0; color: #00F5A0;">✓</span>
+                    <span style="font-size: 18px; flex-shrink: 0; color: #f5a623;">✓</span>
                     <div style="flex: 1; min-width: 0;">
-                        <div style="font-size: 13px; font-weight: 700; color: #00F5A0; margin-bottom: 2px;">Já está na sua biblioteca</div>
+                        <div style="font-size: 13px; font-weight: 700; color: #f5a623; margin-bottom: 2px;">Já está na sua biblioteca</div>
                         <div style="font-size: 11px; color: rgba(233,237,242,0.42);">Este conteúdo já foi adicionado ao seu registro.</div>
                     </div>
                     <button
-                        style="flex-shrink: 0; height: 34px; padding: 0 14px; border-radius: 10px; border: 1px solid rgba(52,211,153,0.35); background: rgba(52,211,153,0.1); color: #00F5A0; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap;"
+                        style="flex-shrink: 0; height: 34px; padding: 0 14px; border-radius: 10px; border: 1px solid rgba(245,166,35,0.35); background: rgba(245,166,35,0.1); color: #f5a623; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap;"
                         @click="$router.push('/tabs/library')"
                     >Ver na biblioteca</button>
                 </div>
@@ -266,7 +266,7 @@ const TYPE_ICONS: Record<ContentType, string> = {
 };
 
 const TYPE_COLORS: Record<ContentType, string> = {
-    manga:  '#00F5A0',
+    manga:  '#f5a623',
     anime:  '#a78bfa',
     novel:  '#e6b85c',
     movie:  '#f472b6',
@@ -275,7 +275,7 @@ const TYPE_COLORS: Record<ContentType, string> = {
 
 const STATUS_COLORS: Record<string, string> = {
     reading:      '#7da7ff',
-    completed:    '#00F5A0',
+    completed:    '#f5a623',
     paused:       '#e6b85c',
     dropped:      '#ef6b6b',
     plan_to_read: '#a78bfa',
@@ -311,7 +311,7 @@ export default defineComponent({
             return this.selectedContentData;
         },
         selectedTypeColor(): string {
-            return TYPE_COLORS[this.selectedContent?.type ?? 'manga'] ?? '#00F5A0';
+            return TYPE_COLORS[this.selectedContent?.type ?? 'manga'] ?? '#f5a623';
         },
         isMovie(): boolean {
             return this.selectedContent?.type === 'movie';
@@ -459,7 +459,7 @@ export default defineComponent({
         },
 
         getTypeBadgeStyle(type: ContentType): Record<string, string> {
-            const col = TYPE_COLORS[type] ?? '#00F5A0';
+            const col = TYPE_COLORS[type] ?? '#f5a623';
             return {
                 fontSize: '9px', fontWeight: '800', letterSpacing: '0.06em',
                 color: col, background: col + '1a',
@@ -468,13 +468,13 @@ export default defineComponent({
         },
 
         ratingBg(n: number): string {
-            if (n >= 9) return 'rgba(52,211,153,0.15)';
+            if (n >= 9) return 'rgba(245,166,35,0.15)';
             if (n >= 7) return 'rgba(125,167,255,0.15)';
             if (n >= 5) return 'rgba(230,184,92,0.15)';
             return 'rgba(239,107,107,0.12)';
         },
         ratingColor(n: number): string {
-            if (n >= 9) return '#00F5A0';
+            if (n >= 9) return '#f5a623';
             if (n >= 7) return '#7da7ff';
             if (n >= 5) return '#e6b85c';
             return '#ef6b6b';
@@ -491,7 +491,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.btn-primary { --background: #00F5A0; --color: #050608; --border-radius: 14px; font-weight: 800; height: 50px; }
+.btn-primary { --background: #f5a623; --color: #050608; --border-radius: 14px; font-weight: 800; height: 50px; }
 .btn-cancel { --background: rgba(255,255,255,0.04); --color: rgba(233,237,242,0.42); --border-radius: 14px; height: 50px; }
 
 .neon-input {
@@ -500,7 +500,7 @@ export default defineComponent({
     --placeholder-color: rgba(233,237,242,0.28);
     --border-color: rgba(255,255,255,0.06);
     --border-radius: 12px;
-    --highlight-color-focused: #00F5A0;
+    --highlight-color-focused: #f5a623;
     --padding-start: 14px;
     --padding-end: 14px;
     min-height: 48px;
@@ -513,7 +513,7 @@ export default defineComponent({
     --placeholder-color: rgba(233,237,242,0.28);
     --border-color: rgba(255,255,255,0.06);
     --border-radius: 12px;
-    --highlight-color-focused: #00F5A0;
+    --highlight-color-focused: #f5a623;
     --padding-start: 14px;
     --padding-end: 14px;
     min-height: 48px;

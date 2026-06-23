@@ -30,3 +30,12 @@ npm-debug.log*
 /platforms
 /plugins
 /www
+
+# Variáveis de ambiente — .env.production e .env.example vão no repo (sem segredos)
+.env
+.env.*
+!.env.example
+!.env.production
+
+# Diretório-lixo de projeto não relacionado (caiu aqui por engano)
+UsersasdasAppDataLocalTempcontent-cosmos-app/

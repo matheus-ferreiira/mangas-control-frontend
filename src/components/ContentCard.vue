@@ -117,7 +117,7 @@ const TYPE_SHORT: Record<ContentType, string> = {
 };
 
 const TYPE_BADGE: Record<ContentType, { color: string; label: string }> = {
-    manga:  { color: '#00F5A0', label: 'MANGA' },
+    manga:  { color: '#f5a623', label: 'MANGA' },
     anime:  { color: '#B8A4FF', label: 'ANIME' },
     novel:  { color: '#F5C542', label: 'NOVEL' },
     movie:  { color: '#FF7EC7', label: 'FILME' },
@@ -126,7 +126,7 @@ const TYPE_BADGE: Record<ContentType, { color: string; label: string }> = {
 
 const STATUS_COLORS: Record<ContentStatus, string> = {
     reading:      '#7CAEFF',
-    completed:    '#00F5A0',
+    completed:    '#f5a623',
     paused:       '#F5C542',
     dropped:      '#FF5E5E',
     plan_to_read: '#B8A4FF',
@@ -146,7 +146,7 @@ export default defineComponent({
             return this.item.content?.type ?? 'manga';
         },
         typeColor(): string {
-            return TYPE_BADGE[this.contentType]?.color ?? '#00F5A0';
+            return TYPE_BADGE[this.contentType]?.color ?? '#f5a623';
         },
         typeShort(): string {
             return TYPE_SHORT[this.contentType] ?? '?';

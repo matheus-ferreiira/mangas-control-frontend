@@ -49,8 +49,8 @@ export default defineComponent({
 }
 
 .status-completed {
-    background: rgba(52, 211, 153, 0.15);
-    color: #00F5A0;
+    background: rgba(245, 166, 35, 0.15);
+    color: #f5a623;
 }
 
 .status-plan-to-read {

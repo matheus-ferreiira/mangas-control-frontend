@@ -150,11 +150,11 @@ export default defineComponent({
 
 /* Inner pill — active */
 .float-btn.active .float-inner {
-    background: hsl(158 100% 48% / 0.13);
+    background: hsl(38 91% 55% / 0.13);
     box-shadow:
-        0 0 18px hsl(158 100% 48% / 0.22),
-        inset 0 0 0 1px hsl(158 100% 48% / 0.28);
-    color: #00F5A0;
+        0 0 18px hsl(38 91% 55% / 0.22),
+        inset 0 0 0 1px hsl(38 91% 55% / 0.28);
+    color: #f5a623;
 }
 
 .float-icon {

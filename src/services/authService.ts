@@ -7,6 +7,7 @@ export interface User {
     email: string;
     avatar?: string;
     role?: string;
+    show_adult_content?: boolean;
 }
 
 export const authService = {
@@ -46,6 +47,11 @@ export const authService = {
 
     async getUser(): Promise<User> {
         const { data } = await api.get('/auth/me');
+        return data as User;
+    },
+
+    async updateProfile(payload: { show_adult_content: boolean }): Promise<User> {
+        const { data } = await api.patch('/user/profile', payload);
         return data as User;
     },
 

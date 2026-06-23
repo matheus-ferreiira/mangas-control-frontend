@@ -1,35 +1,55 @@
-/* Neon Curator — Content Cosmos design system */
+/* Neon Curator — ToonLivre design system (orange/amber, dark-first) */
 :root {
-    /* ── Ionic color system ── */
-    --ion-color-primary:             #00F5A0;
-    --ion-color-primary-rgb:         0, 245, 160;
-    --ion-color-primary-contrast:    #050608;
-    --ion-color-primary-contrast-rgb: 5, 6, 8;
-    --ion-color-primary-shade:       #00DC90;
-    --ion-color-primary-tint:        #1AF6A9;
+    /* ──────────────────────────────────────────────────────────────
+       DESIGN SYSTEM TOKENS (DESIGN_SYSTEM.md — fonte da verdade)
+       ────────────────────────────────────────────────────────────── */
+    --bg-primary:    #0f0f0f;
+    --bg-secondary:  #1a1a1a;
+    --bg-tertiary:   #242424;
+    --bg-navbar:     #111111;
+    --border-default:#2a2a2a;
+    --border-hover:  #3a3a3a;
+    --text-primary:  #f0f0f0;
+    --text-secondary:#a0a0a0;
+    --text-muted:    #606060;
+    --text-title-card:#f5a623;
+    --accent-primary:#f5a623;
+    --accent-fire:   #ff6b35;
+    --dot-new:       #4ade80;
+    --dot-old:       #3a3a3a;
+    --badge-bg:      rgba(0,0,0,0.65);
+    --badge-text:    #ffffff;
 
-    --ion-color-secondary:           #00D9FF;
-    --ion-color-secondary-rgb:       0, 217, 255;
-    --ion-color-secondary-contrast:  #050608;
-    --ion-color-secondary-contrast-rgb: 5, 6, 8;
-    --ion-color-secondary-shade:     #00C2E0;
-    --ion-color-secondary-tint:      #1ADCFF;
+    /* ── Ionic color system (primary = âmbar do design system) ── */
+    --ion-color-primary:             #f5a623;
+    --ion-color-primary-rgb:         245, 166, 35;
+    --ion-color-primary-contrast:    #0f0f0f;
+    --ion-color-primary-contrast-rgb: 15, 15, 15;
+    --ion-color-primary-shade:       #e0941a;
+    --ion-color-primary-tint:        #f7b347;
 
-    --ion-background-color:          hsl(220 30% 3%);
-    --ion-background-color-rgb:      5, 6, 8;
+    --ion-color-secondary:           #ff6b35;
+    --ion-color-secondary-rgb:       255, 107, 53;
+    --ion-color-secondary-contrast:  #0f0f0f;
+    --ion-color-secondary-contrast-rgb: 15, 15, 15;
+    --ion-color-secondary-shade:     #e55a24;
+    --ion-color-secondary-tint:      #ff8254;
 
-    --ion-text-color:                hsl(213 25% 92%);
-    --ion-text-color-rgb:            227, 233, 242;
+    --ion-background-color:          #0f0f0f;
+    --ion-background-color-rgb:      15, 15, 15;
 
-    --ion-card-background:           hsl(222 24% 7%);
+    --ion-text-color:                #f0f0f0;
+    --ion-text-color-rgb:            240, 240, 240;
+
+    --ion-card-background:           #1a1a1a;
     --ion-item-background:           transparent;
-    --ion-font-family:               'Sora', 'Inter', system-ui, -apple-system, sans-serif;
+    --ion-font-family:               -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Sora', 'Inter', sans-serif;
 
-    --ion-toolbar-background:        hsl(222 24% 7%);
-    --ion-tab-bar-background:        transparent;
-    --ion-tab-bar-border-color:      transparent;
-    --ion-tab-bar-color:             hsl(213 15% 45%);
-    --ion-tab-bar-color-selected:    #00F5A0;
+    --ion-toolbar-background:        #111111;
+    --ion-tab-bar-background:        #111111;
+    --ion-tab-bar-border-color:      #2a2a2a;
+    --ion-tab-bar-color:             #a0a0a0;
+    --ion-tab-bar-color-selected:    #f5a623;
 
     --ion-color-step-50:   hsl(222 24% 6%);
     --ion-color-step-100:  hsl(222 24% 7%);
@@ -47,40 +67,40 @@
     --ion-item-border-color:  hsl(0 0% 100% / 0.07);
 
     /* ── Background layers ── */
-    --bg:      hsl(220 30% 3%);
-    --bg1:     hsl(222 24% 5%);
-    --bg2:     hsl(222 24% 7%);
+    --bg:      #0f0f0f;
+    --bg1:     #141414;
+    --bg2:     #1a1a1a;
 
     /* ── Named surface layers ── */
-    --surface-1: hsl(222 24% 7%);
-    --surface-2: hsl(222 22% 9%);
-    --surface-3: hsl(222 22% 12%);
+    --surface-1: #1a1a1a;
+    --surface-2: #1f1f1f;
+    --surface-3: #242424;
 
     /* ── Border tokens ── */
-    --border:        hsl(220 20% 14%);
-    --border-subtle: hsl(0 0% 100% / 0.06);
-    --border-strong: hsl(0 0% 100% / 0.12);
+    --border:        #2a2a2a;
+    --border-subtle: #2a2a2a;
+    --border-strong: #3a3a3a;
 
     /* ── Text scale ── */
-    --text:        hsl(213 25% 92%);
-    --subtle:      hsl(213 15% 65%);
-    --muted:       hsl(213 10% 45%);
-    --faint:       hsl(213 8% 30%);
+    --text:        #f0f0f0;
+    --subtle:      #a0a0a0;
+    --muted:       #606060;
+    --faint:       #3a3a3a;
 
-    /* ── Primary — neon green ── */
-    --primary:     #00F5A0;
-    --primary-rgb: 0, 245, 160;
-    --primary-dim: hsl(158 100% 48% / 0.08);
-    --primary-mid: hsl(158 100% 48% / 0.18);
-    --primary-glow:hsl(158 100% 48% / 0.45);
-    --primary-ink: #050608;
+    /* ── Primary — âmbar (accent do design system) ── */
+    --primary:     #f5a623;
+    --primary-rgb: 245, 166, 35;
+    --primary-dim: hsl(38 91% 55% / 0.10);
+    --primary-mid: hsl(38 91% 55% / 0.22);
+    --primary-glow:hsl(38 91% 55% / 0.40);
+    --primary-ink: #0f0f0f;
 
-    /* ── Cyan accent ── */
-    --cyan:        #00D9FF;
-    --cyan-rgb:    0, 217, 255;
-    --cyan-dim:    hsl(189 100% 50% / 0.08);
-    --cyan-mid:    hsl(189 100% 50% / 0.18);
-    --cyan-glow:   hsl(189 100% 50% / 0.45);
+    /* ── Fire accent (CTAs quentes / lançamentos) ── */
+    --cyan:        #ff6b35;
+    --cyan-rgb:    255, 107, 53;
+    --cyan-dim:    hsl(16 100% 60% / 0.10);
+    --cyan-mid:    hsl(16 100% 60% / 0.22);
+    --cyan-glow:   hsl(16 100% 60% / 0.40);
 
     /* ── Functional colors ── */
     --warn:  #F5C542;
@@ -88,48 +108,48 @@
     --info:  #7CAEFF;
 
     /* ── Status colors ── */
-    --status-reading:    #00F5A0;
-    --status-completed:  #7CAEFF;
+    --status-reading:    #f5a623;
+    --status-completed:  #4ade80;
     --status-paused:     #F5C542;
     --status-dropped:    #FF5E5E;
     --status-plan:       #B8A4FF;
 
     /* ── Gradients ── */
-    --gradient-primary: linear-gradient(135deg, #00F5A0 0%, #00D9FF 100%);
+    --gradient-primary: linear-gradient(135deg, #f5a623 0%, #ff6b35 100%);
     --gradient-hero:
-        radial-gradient(ellipse at top,    hsl(158 100% 48% / 0.15) 0%, transparent 60%),
-        radial-gradient(ellipse at bottom-right, hsl(189 100% 50% / 0.10) 0%, transparent 50%);
-    --gradient-surface: linear-gradient(160deg, hsl(222 24% 8%) 0%, hsl(222 22% 6%) 100%);
-    --gradient-poster:  linear-gradient(to top, hsl(220 30% 3%) 0%, transparent 55%);
+        radial-gradient(ellipse at top,    hsl(38 91% 55% / 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse at bottom-right, hsl(16 100% 60% / 0.08) 0%, transparent 50%);
+    --gradient-surface: linear-gradient(160deg, #1c1c1c 0%, #141414 100%);
+    --gradient-poster:  linear-gradient(to top, #0f0f0f 0%, transparent 55%);
 
     /* ── Shadows ── */
-    --shadow-glow:    0 0 30px hsl(158 100% 48% / 0.45), 0 0 60px hsl(158 100% 48% / 0.15);
+    --shadow-glow:    0 0 30px hsl(38 91% 55% / 0.35), 0 0 60px hsl(38 91% 55% / 0.12);
     --shadow-elegant: 0 4px 24px rgba(0,0,0,0.5), 0 1px 4px rgba(0,0,0,0.3);
     --shadow-poster:  0 8px 32px rgba(0,0,0,0.7);
     --shadow-card:    0 2px 12px rgba(0,0,0,0.4);
 
     /* ── Legacy compat aliases (used by components pending redesign) ── */
-    --surface:               hsl(222 24% 7%);
-    --surface2:              hsl(222 22% 9%);
-    --line:                  hsl(0 0% 100% / 0.06);
-    --line2:                 hsl(0 0% 100% / 0.10);
-    --accent:                #00F5A0;
-    --accent-dim:            hsl(158 100% 48% / 0.08);
-    --accent-mid:            hsl(158 100% 48% / 0.18);
-    --accent-ink:            #050608;
+    --surface:               #1a1a1a;
+    --surface2:              #1f1f1f;
+    --line:                  #2a2a2a;
+    --line2:                 #3a3a3a;
+    --accent:                #f5a623;
+    --accent-dim:            hsl(38 91% 55% / 0.10);
+    --accent-mid:            hsl(38 91% 55% / 0.22);
+    --accent-ink:            #0f0f0f;
 
-    --neon-surface:          hsl(222 24% 7%);
-    --neon-surface-elevated: hsl(222 22% 9%);
-    --neon-border:           hsl(0 0% 100% / 0.06);
-    --neon-accent:           #00F5A0;
-    --neon-accent-dim:       hsl(158 100% 48% / 0.08);
-    --neon-accent-glow:      hsl(158 100% 48% / 0.45);
-    --neon-blue:             #00D9FF;
-    --neon-text-muted:       hsl(213 10% 45%);
-    --neon-gradient:         linear-gradient(135deg, #00F5A0 0%, #00D9FF 100%);
+    --neon-surface:          #1a1a1a;
+    --neon-surface-elevated: #1f1f1f;
+    --neon-border:           #2a2a2a;
+    --neon-accent:           #f5a623;
+    --neon-accent-dim:       hsl(38 91% 55% / 0.10);
+    --neon-accent-glow:      hsl(38 91% 55% / 0.40);
+    --neon-blue:             #ff6b35;
+    --neon-text-muted:       #606060;
+    --neon-gradient:         linear-gradient(135deg, #f5a623 0%, #ff6b35 100%);
     --neon-danger:           #FF5E5E;
     --neon-warning:          #F5C542;
-    --neon-pill-border:      hsl(0 0% 100% / 0.08);
+    --neon-pill-border:      #3a3a3a;
 }
 
 /* ── Base typography ── */
@@ -303,8 +323,8 @@ ion-back-button {
 }
 
 @keyframes pulse-glow {
-    0%, 100% { box-shadow: 0 0 20px hsl(158 100% 48% / 0.3); }
-    50%       { box-shadow: 0 0 40px hsl(158 100% 48% / 0.6); }
+    0%, 100% { box-shadow: 0 0 20px hsl(38 91% 55% / 0.3); }
+    50%       { box-shadow: 0 0 40px hsl(38 91% 55% / 0.6); }
 }
 
 @keyframes float {
