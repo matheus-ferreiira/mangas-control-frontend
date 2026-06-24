@@ -104,83 +104,19 @@
                 <div style="padding: 0 18px; margin-bottom: 8px;">
                     <div style="font-size: 10px; color: rgba(233,237,242,0.42); font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; margin-bottom: 10px;">Gerenciamento</div>
 
-                    <!-- Admin: catalog -->
-                    <div
-                        v-if="isAdmin"
-                        style="background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 14px 16px; margin-bottom: 6px; display: flex; align-items: center; gap: 12px; cursor: pointer;"
-                        @click="$router.push('/manage-contents')"
-                    >
-                        <div style="width: 34px; height: 34px; border-radius: 10px; background: rgba(245,166,35,0.10); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f5a623" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-                        </div>
-                        <div style="flex: 1; min-width: 0;">
-                            <div style="font-size: 13px; font-weight: 700; color: #e9edf2;">Catálogo de Obras</div>
-                        </div>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(233,237,242,0.28)" stroke-width="1.7" stroke-linecap="round" style="flex-shrink: 0;"><path d="m9 6 6 6-6 6"/></svg>
-                    </div>
-
-                    <!-- Content requests -->
+                    <!-- Minhas Fontes (tela dedicada) -->
                     <div
                         style="background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 14px 16px; margin-bottom: 6px; display: flex; align-items: center; gap: 12px; cursor: pointer;"
-                        @click="$router.push('/content-requests')"
+                        @click="$router.push('/tabs/sources')"
                     >
-                        <div style="width: 34px; height: 34px; border-radius: 10px; background: rgba(125,167,255,0.10); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7CAEFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+                        <div style="width: 34px; height: 34px; border-radius: 10px; background: rgba(167,139,250,0.10); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#B8A4FF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
                         </div>
                         <div style="flex: 1; min-width: 0;">
-                            <div style="font-size: 13px; font-weight: 700; color: #e9edf2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ isAdmin ? 'Solicitações de Conteúdo' : 'Sugerir Conteúdo' }}</div>
+                            <div style="font-size: 13px; font-weight: 700; color: #e9edf2;">Minhas Fontes</div>
+                            <div style="font-size: 10px; color: rgba(233,237,242,0.42); margin-top: 1px;">Gerenciar sites e apps de leitura</div>
                         </div>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(233,237,242,0.28)" stroke-width="1.7" stroke-linecap="round" style="flex-shrink: 0;"><path d="m9 6 6 6-6 6"/></svg>
-                    </div>
-
-                    <!-- Sources (collapsible) -->
-                    <div style="background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; overflow: hidden; margin-bottom: 6px;">
-                        <div style="padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer;" @click="sitesExpanded = !sitesExpanded">
-                            <div style="width: 34px; height: 34px; border-radius: 10px; background: rgba(167,139,250,0.10); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#B8A4FF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                            </div>
-                            <div style="flex: 1; min-width: 0; font-size: 13px; font-weight: 700; color: #e9edf2;">Minhas Fontes</div>
-                            <button
-                                style="width: 28px; height: 28px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); background: transparent; color: #f5a623; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; line-height: 1;"
-                                @click.stop="openSiteModal(null)"
-                            >+</button>
-                            <svg
-                                width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(233,237,242,0.28)" stroke-width="1.7" stroke-linecap="round" style="flex-shrink: 0;"
-                                :style="{ transform: sitesExpanded ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }"
-                            ><path d="m9 6 6 6-6 6"/></svg>
-                        </div>
-                        <div v-if="sitesExpanded" style="border-top: 1px solid rgba(255,255,255,0.06); padding: 8px 12px 12px;">
-                            <div v-if="sitesLoading" style="display: flex; justify-content: center; padding: 12px 0;">
-                                <IonSpinner name="crescent" style="width: 20px; height: 20px; --color: rgba(233,237,242,0.28);" />
-                            </div>
-                            <div v-else-if="sites.length === 0" style="text-align: center; padding: 12px 0; font-size: 12px; color: rgba(233,237,242,0.28);">Nenhuma fonte cadastrada</div>
-                            <div v-else style="display: flex; flex-direction: column; gap: 6px;">
-                                <div
-                                    v-for="site in sites"
-                                    :key="site.id"
-                                    style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.02);"
-                                >
-                                    <button
-                                        style="background: none; border: none; cursor: pointer; font-size: 14px; padding: 0; flex-shrink: 0; line-height: 1; color: #F5C542;"
-                                        :style="{ opacity: site.is_favorite ? 1 : 0.3 }"
-                                        @click="toggleFavorite(site)"
-                                    >★</button>
-                                    <div style="flex: 1; min-width: 0;">
-                                        <div style="font-size: 12px; font-weight: 700; color: #e9edf2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ site.name }}</div>
-                                        <div v-if="site.url" style="font-size: 10px; color: rgba(233,237,242,0.28); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ site.url }}</div>
-                                        <div v-else style="font-size: 10px; color: rgba(233,237,242,0.18); font-style: italic;">sem URL</div>
-                                    </div>
-                                    <button
-                                        style="width: 28px; height: 28px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); background: transparent; color: rgba(233,237,242,0.42); font-size: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;"
-                                        @click="openSiteModal(site)"
-                                    >✏</button>
-                                    <button
-                                        style="width: 28px; height: 28px; border-radius: 8px; border: 1px solid rgba(239,107,107,0.2); background: transparent; color: #FF5E5E; font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; line-height: 1;"
-                                        @click="deleteSite(site)"
-                                    >×</button>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
@@ -235,67 +171,17 @@
                 <div style="text-align: center; margin-top: 28px; margin-bottom: 8px; font-size: 10px; color: rgba(233,237,242,0.12); letter-spacing: 0.04em;">Neon Curator · v1.0.0</div>
             </div>
         </IonContent>
-
-        <!-- Site modal -->
-        <IonModal
-            :is-open="siteModalOpen"
-            :initial-breakpoint="0.72"
-            :breakpoints="[0, 0.72, 1]"
-            :handle="true"
-            @didDismiss="siteModalOpen = false"
-        >
-            <IonContent style="--background: hsl(222 24% 7%);">
-                <div style="padding: 8px 20px 40px;">
-                    <div style="font-size: 16px; font-weight: 800; color: #e9edf2; margin-bottom: 16px;">
-                        {{ editingSite ? 'Editar Fonte' : 'Nova Fonte' }}
-                    </div>
-                    <div style="margin-bottom: 12px;">
-                        <div style="font-size: 10px; font-weight: 800; color: rgba(233,237,242,0.42); text-transform: uppercase; letter-spacing: 0.18em; margin-bottom: 6px;">Nome</div>
-                        <input
-                            v-model="siteForm.name"
-                            placeholder="Ex: MangaDex"
-                            style="width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.025); color: #e9edf2; font-size: 14px; outline: none; box-sizing: border-box;"
-                        />
-                    </div>
-                    <div style="margin-bottom: 16px;">
-                        <div style="font-size: 10px; font-weight: 800; color: rgba(233,237,242,0.42); text-transform: uppercase; letter-spacing: 0.18em; margin-bottom: 6px;">URL <span style="font-weight: 600; text-transform: none; letter-spacing: 0; color: rgba(233,237,242,0.28);">— opcional</span></div>
-                        <input
-                            v-model="siteForm.url"
-                            placeholder="mangadex.org  (deixe vazio para apps)"
-                            type="text"
-                            style="width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.025); color: #e9edf2; font-size: 14px; outline: none; box-sizing: border-box;"
-                        />
-                    </div>
-                    <div
-                        style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.025); margin-bottom: 20px; cursor: pointer;"
-                        @click="siteForm.is_favorite = !siteForm.is_favorite"
-                    >
-                        <span style="font-size: 13px; font-weight: 600; color: #e9edf2;">Marcar como favorita</span>
-                        <div :style="toggleStyle(siteForm.is_favorite)">
-                            <div :style="toggleKnobStyle(siteForm.is_favorite)"></div>
-                        </div>
-                    </div>
-                    <button
-                        :disabled="!siteForm.name.trim() || siteSaving"
-                        style="width: 100%; padding: 14px; border-radius: 14px; border: none; font-size: 14px; font-weight: 800; cursor: pointer; transition: opacity 0.2s;"
-                        :style="{ background: '#f5a623', color: '#050608', opacity: !siteForm.name.trim() ? 0.5 : 1 }"
-                        @click="saveSite"
-                    >{{ siteSaving ? 'Salvando...' : (editingSite ? 'Salvar' : 'Adicionar') }}</button>
-                </div>
-            </IonContent>
-        </IonModal>
     </IonPage>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 import {
-    IonPage, IonContent, IonModal, IonSpinner, IonRefresher, IonRefresherContent, alertController, toastController,
+    IonPage, IonContent, IonRefresher, IonRefresherContent, alertController, toastController,
 } from '@ionic/vue';
 import { authStore } from '@/store/auth';
 import { authService } from '@/services/authService';
 import { userContentService, UserContent } from '@/services/userContentService';
-import { userSiteService, UserSite } from '@/services/userSiteService';
 
 const TYPE_META: Record<string, { label: string; color: string }> = {
     manga:  { label: 'Manga',  color: '#f5a623' },
@@ -305,25 +191,14 @@ const TYPE_META: Record<string, { label: string; color: string }> = {
     tv:     { label: 'Série',  color: '#7CAEFF' },
 };
 
-function emptySiteForm() {
-    return { name: '', url: '', is_favorite: false };
-}
-
 export default defineComponent({
     name: 'ProfilePage',
-    components: { IonPage, IonContent, IonModal, IonSpinner, IonRefresher, IonRefresherContent },
+    components: { IonPage, IonContent, IonRefresher, IonRefresherContent },
     data() {
         return {
             userContents: [] as UserContent[],
             canInstall: false,
             adultSaving: false,
-            sitesExpanded: false,
-            sites: [] as UserSite[],
-            sitesLoading: false,
-            siteModalOpen: false,
-            siteSaving: false,
-            editingSite: null as UserSite | null,
-            siteForm: emptySiteForm(),
         };
     },
     mounted() {
@@ -424,7 +299,7 @@ export default defineComponent({
     },
     async ionViewWillEnter() {
         this.syncUser();
-        await Promise.all([this.loadUserContents(), this.loadSites()]);
+        await this.loadUserContents();
     },
     methods: {
         // Sincroniza o flag show_adult_content de sessões antigas (cache local sem o campo)
@@ -462,102 +337,9 @@ export default defineComponent({
                 // non-blocking
             }
         },
-        async loadSites() {
-            this.sitesLoading = true;
-            try {
-                this.sites = await userSiteService.getAll();
-            } catch {
-                // non-blocking
-            } finally {
-                this.sitesLoading = false;
-            }
-        },
         async handleRefresh(event: CustomEvent) {
-            await Promise.all([this.loadUserContents(), this.loadSites()]);
+            await this.loadUserContents();
             (event.target as HTMLIonRefresherElement).complete();
-        },
-        openSiteModal(site: UserSite | null) {
-            this.editingSite = site;
-            this.siteForm = site
-                ? { name: site.name, url: site.url, is_favorite: site.is_favorite }
-                : emptySiteForm();
-            this.siteModalOpen = true;
-        },
-        normalizeUrl(url: string): string {
-            const trimmed = url?.trim() ?? '';
-            if (!trimmed) return '';
-            if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
-                return 'https://' + trimmed;
-            }
-            return trimmed;
-        },
-        async saveSite() {
-            if (!this.siteForm.name.trim()) return;
-            this.siteForm.url = this.normalizeUrl(this.siteForm.url);
-            this.siteSaving = true;
-            try {
-                if (this.editingSite) {
-                    const updated = await userSiteService.update(this.editingSite.id, this.siteForm);
-                    const idx = this.sites.findIndex((s) => s.id === this.editingSite!.id);
-                    if (idx >= 0) this.sites.splice(idx, 1, updated);
-                } else {
-                    const created = await userSiteService.create(this.siteForm);
-                    this.sites.push(created);
-                    this.sites.sort((a, b) => (b.is_favorite ? 1 : 0) - (a.is_favorite ? 1 : 0));
-                }
-                this.siteModalOpen = false;
-            } catch {
-                const toast = await toastController.create({ message: 'Falha ao salvar fonte.', duration: 2000, color: 'danger', position: 'top' });
-                await toast.present();
-            } finally {
-                this.siteSaving = false;
-            }
-        },
-        async toggleFavorite(site: UserSite) {
-            try {
-                const updated = await userSiteService.toggleFavorite(site);
-                const idx = this.sites.findIndex((s) => s.id === site.id);
-                if (idx >= 0) this.sites.splice(idx, 1, updated);
-                this.sites.sort((a, b) => (b.is_favorite ? 1 : 0) - (a.is_favorite ? 1 : 0));
-            } catch {
-                // silent
-            }
-        },
-        async deleteSite(site: UserSite) {
-            const alert = await alertController.create({
-                header: 'Remover fonte',
-                message: `Remover "${site.name}"?`,
-                buttons: [
-                    { text: 'Cancelar', role: 'cancel' },
-                    {
-                        text: 'Remover', role: 'destructive',
-                        handler: async () => {
-                            try {
-                                await userSiteService.delete(site.id);
-                                this.sites = this.sites.filter((s) => s.id !== site.id);
-                            } catch {
-                                const toast = await toastController.create({ message: 'Falha ao remover.', duration: 2000, color: 'danger', position: 'top' });
-                                await toast.present();
-                            }
-                        },
-                    },
-                ],
-            });
-            await alert.present();
-        },
-        toggleStyle(active: boolean): Record<string, string> {
-            return {
-                width: '44px', height: '26px', borderRadius: '13px', position: 'relative',
-                background: active ? '#f5a623' : 'rgba(255,255,255,0.08)',
-                transition: 'background 0.2s', flexShrink: '0',
-            };
-        },
-        toggleKnobStyle(active: boolean): Record<string, string> {
-            return {
-                position: 'absolute', top: '3px', borderRadius: '10px',
-                left: active ? '21px' : '3px', width: '20px', height: '20px',
-                background: '#fff', transition: 'left 0.2s', boxShadow: '0 1px 4px rgba(0,0,0,0.3)',
-            };
         },
         async confirmLogout() {
             const alert = await alertController.create({

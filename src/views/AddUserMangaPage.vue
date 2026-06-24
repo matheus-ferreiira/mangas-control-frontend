@@ -148,7 +148,7 @@
                                 :style="form.status === s.value
                                     ? { background: getStatusColor(s.value) + '22', color: getStatusColor(s.value), borderColor: getStatusColor(s.value) + '88' }
                                     : { background: 'rgba(255,255,255,0.025)', color: 'rgba(233,237,242,0.42)', borderColor: 'rgba(255,255,255,0.06)' }"
-                                @click="form.status = s.value"
+                                @click="selectStatus(s.value)"
                             >
                                 <span style="width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0;" :style="{ background: form.status === s.value ? getStatusColor(s.value) : 'rgba(255,255,255,0.12)' }"></span>
                                 {{ s.label }}
@@ -397,6 +397,29 @@ export default defineComponent({
             this.form.content_id = null;
             this.contentSearch = '';
             this.searchResults = [];
+        },
+
+        // Seleciona o status e, ao marcar "Completo", auto-preenche o progresso final.
+        // Demais status não alteram o progresso.
+        selectStatus(value: ContentStatus) {
+            this.form.status = value;
+            if (value !== 'completed') return;
+            const c = this.selectedContent;
+            if (!c || this.isMovie) return;
+
+            if (this.isTv) {
+                // Série: última temporada + episódios dessa temporada
+                if (c.total_seasons) this.form.current_season = c.total_seasons;
+                const lastKey = String(c.total_seasons ?? this.form.current_season ?? 1);
+                const lastEps = c.season_episodes?.[lastKey];
+                if (lastEps != null) this.form.current_units = lastEps;
+                else if (c.total_units != null) this.form.current_units = c.total_units;
+                // se ambos ausentes (em andamento): deixa em branco
+            } else {
+                // Manga / novel / anime: total de capítulos/episódios
+                if (c.total_units != null) this.form.current_units = c.total_units;
+                // se ausente (em andamento): deixa em branco
+            }
         },
 
         resetForm() {

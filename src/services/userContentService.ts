@@ -89,6 +89,13 @@ export const userContentService = {
         return [];
     },
 
+    async getWithUpdates(): Promise<UserContent[]> {
+        const { data } = await api.get('/user-contents/with-updates');
+        if (Array.isArray(data)) return data as UserContent[];
+        if (Array.isArray(data?.data)) return data.data as UserContent[];
+        return [];
+    },
+
     async getOne(id: number): Promise<UserContent> {
         const { data } = await api.get(`/user-contents/${id}`);
         return data as UserContent;
@@ -109,7 +116,14 @@ export const userContentService = {
 
     async update(
         id: number,
-        payload: Partial<Pick<UserContent, 'current_units' | 'current_season' | 'status' | 'site_id' | 'user_site_id' | 'rating'>>
+        payload: {
+            current_units?: number;
+            current_season?: number;
+            status?: ContentStatus;
+            site_id?: number | null;
+            user_site_id?: number | null;
+            rating?: number | null;
+        }
     ): Promise<UserContent> {
         const { data } = await api.patch(`/user-contents/${id}`, payload);
         return data as UserContent;

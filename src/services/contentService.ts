@@ -97,7 +97,7 @@ export interface PaginatedContent {
 
 export interface ContentFilters {
     type?: ContentType;
-    status?: ContentCatalogStatus;
+    status?: ContentCatalogStatus | ContentCatalogStatus[];
     search?: string;
     recent?: boolean;
     genres?: string[];
@@ -161,71 +161,6 @@ export const contentService = {
         };
     },
 
-    async create(payload: Omit<Content, 'id'>, coverFile?: File): Promise<Content> {
-        const formData = new FormData();
-        formData.append('name', payload.name);
-        formData.append('type', payload.type);
-        if (payload.total_units != null) formData.append('total_units', String(payload.total_units));
-        if (payload.total_seasons != null) formData.append('total_seasons', String(payload.total_seasons));
-        if (payload.duration != null) formData.append('duration', String(payload.duration));
-        if (payload.status) formData.append('status', payload.status);
-        if (payload.synopsis) formData.append('synopsis', payload.synopsis);
-        if (payload.release_year != null) formData.append('release_year', String(payload.release_year));
-        if (payload.rating != null) formData.append('rating', String(payload.rating));
-        if (payload.country) formData.append('country', payload.country);
-        if (payload.original_language) formData.append('original_language', payload.original_language);
-        if (payload.genres?.length) payload.genres.forEach((g) => formData.append('genres[]', g));
-        if (payload.alternative_names?.length) {
-            payload.alternative_names.forEach((n) => formData.append('alternative_names[]', n));
-        }
-        if (coverFile) formData.append('cover', coverFile);
-        const { data } = await api.post('/contents', formData);
-        return data as Content;
-    },
-
-    async update(id: number, payload: Partial<Omit<Content, 'id'>>, coverFile?: File): Promise<Content> {
-        const formData = new FormData();
-        formData.append('_method', 'PUT');
-        if (payload.name != null) formData.append('name', payload.name);
-        if (payload.type != null) formData.append('type', payload.type);
-        if (payload.total_units !== undefined) {
-            formData.append('total_units', payload.total_units != null ? String(payload.total_units) : '');
-        }
-        if (payload.total_seasons !== undefined) {
-            formData.append('total_seasons', payload.total_seasons != null ? String(payload.total_seasons) : '');
-        }
-        if (payload.duration !== undefined) {
-            formData.append('duration', payload.duration != null ? String(payload.duration) : '');
-        }
-        if (payload.status !== undefined) formData.append('status', payload.status ?? '');
-        if (payload.synopsis !== undefined) formData.append('synopsis', payload.synopsis ?? '');
-        if (payload.release_year !== undefined) {
-            formData.append('release_year', payload.release_year != null ? String(payload.release_year) : '');
-        }
-        if (payload.rating !== undefined) {
-            formData.append('rating', payload.rating != null ? String(payload.rating) : '');
-        }
-        if (payload.country !== undefined) formData.append('country', payload.country ?? '');
-        if (payload.original_language !== undefined) formData.append('original_language', payload.original_language ?? '');
-        if (payload.genres !== undefined) {
-            if (payload.genres.length) {
-                payload.genres.forEach((g) => formData.append('genres[]', g));
-            } else {
-                formData.append('genres', '');
-            }
-        }
-        if (payload.alternative_names !== undefined) {
-            if (payload.alternative_names.length) {
-                payload.alternative_names.forEach((n) => formData.append('alternative_names[]', n));
-            } else {
-                formData.append('alternative_names', '');
-            }
-        }
-        if (coverFile) formData.append('cover', coverFile);
-        const { data } = await api.post(`/contents/${id}`, formData);
-        return data as Content;
-    },
-
     async getById(id: number): Promise<Content | null> {
         try {
             const { data } = await api.get(`/contents/${id}`);
@@ -234,9 +169,5 @@ export const contentService = {
         } catch {
             return null;
         }
-    },
-
-    async delete(id: number): Promise<void> {
-        await api.delete(`/contents/${id}`);
     },
 };

@@ -10,11 +10,6 @@
                             <div style="font-size: 10px; color: rgba(233,237,242,0.42); font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; margin-bottom: 5px;">CATÁLOGO</div>
                             <div style="font-size: 30px; font-weight: 800; letter-spacing: -0.04em; line-height: 1.1; font-family: 'Sora', system-ui, sans-serif; background: linear-gradient(135deg, #f5a623, #ff6b35); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Explorar</div>
                         </div>
-                        <button
-                            v-if="isAdmin"
-                            style="width: 36px; height: 36px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.025); color: rgba(233,237,242,0.62); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 15px;"
-                            @click="$router.push('/manage-contents')"
-                        >⚙</button>
                     </div>
 
                     <!-- Search bar -->
@@ -216,7 +211,7 @@
                                                 <span :style="typePillStyle(item.type)" style="font-size: 8px; padding: 2px 6px;">{{ typeLabel(item.type) }}</span>
                                             </div>
                                             <!-- Score badge -->
-                                            <div v-if="item.rating && item.rating >= 8.5" style="position: absolute; top: 6px; right: 6px; padding: 2px 6px; border-radius: 10px; background: rgba(13,17,23,0.85); backdrop-filter: blur(4px); font-size: 9px; font-weight: 800; color: #fbbf24; display: flex; align-items: center; gap: 2px;">
+                                            <div v-if="item.rating && item.rating > 0" style="position: absolute; top: 6px; right: 6px; padding: 2px 6px; border-radius: 10px; background: rgba(13,17,23,0.85); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); font-size: 9px; font-weight: 800; display: flex; align-items: center; gap: 2px;" :style="{ color: item.rating >= 8.5 ? '#fbbf24' : '#e2e8f0' }">
                                                 ★ {{ item.rating.toFixed(1) }}
                                             </div>
                                             <!-- In library badge -->
@@ -300,7 +295,7 @@
                                     <span :style="typePillStyle(content.type)" style="font-size: 8px; padding: 1px 5px;">{{ typeLabel(content.type) }}</span>
                                 </div>
                                 <!-- Score -->
-                                <div v-if="content.rating && content.rating >= 8.5" style="position: absolute; top: 5px; right: 5px; padding: 2px 5px; border-radius: 8px; background: rgba(13,17,23,0.85); font-size: 9px; font-weight: 800; color: #fbbf24;">★ {{ content.rating.toFixed(1) }}</div>
+                                <div v-if="content.rating && content.rating > 0" style="position: absolute; top: 5px; right: 5px; padding: 2px 5px; border-radius: 8px; background: rgba(13,17,23,0.85); font-size: 9px; font-weight: 800;" :style="{ color: content.rating >= 8.5 ? '#fbbf24' : '#e2e8f0' }">★ {{ content.rating.toFixed(1) }}</div>
                                 <!-- In library -->
                                 <div v-if="content.is_in_library" style="position: absolute; bottom: 5px; right: 5px; width: 18px; height: 18px; border-radius: 9px; background: rgba(94,234,212,0.9); display: flex; align-items: center; justify-content: center;">
                                     <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#0d1117" stroke-width="2.5" stroke-linecap="round"><path d="m4 12 5 5 11-11"/></svg>
@@ -368,6 +363,19 @@
             </IonHeader>
             <IonContent class="sheet-content">
                 <div style="padding: 0 20px 120px;">
+                    <!-- Nota mínima -->
+                    <div style="margin-bottom: 22px;">
+                        <div class="filter-label">Nota mínima</div>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <input
+                                type="range" min="0" max="10" step="0.5" :value="filterScoreMin"
+                                style="flex: 1; min-width: 0; accent-color: #f5a623;"
+                                @input="filterScoreMin = Number(($event.target as HTMLInputElement).value)"
+                            />
+                            <span style="min-width: 70px; text-align: right; font-size: 13px; font-weight: 700;" :style="{ color: filterScoreMin > 0 ? '#f5a623' : 'rgba(233,237,242,0.42)' }">{{ filterScoreMin > 0 ? `★ ${filterScoreMin.toFixed(1)}+` : 'Qualquer' }}</span>
+                        </div>
+                    </div>
+                    <!-- Status -->
                     <div style="margin-bottom: 22px;">
                         <div class="filter-label">Status de publicação</div>
                         <div style="display: flex; gap: 6px; flex-wrap: wrap;">
@@ -377,23 +385,36 @@
                             </button>
                         </div>
                     </div>
+                    <!-- Ano de lançamento -->
+                    <div style="margin-bottom: 22px;">
+                        <div class="filter-label">Ano de lançamento</div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <input
+                                type="number" inputmode="numeric" placeholder="De" min="1900" max="2100" :value="filterYearMin ?? ''"
+                                style="flex: 1; min-width: 0; padding: 11px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.025); color: #e9edf2; font-size: 13px; outline: none; box-sizing: border-box;"
+                                @input="filterYearMin = parseYear(($event.target as HTMLInputElement).value)"
+                            />
+                            <span style="color: rgba(233,237,242,0.42);">—</span>
+                            <input
+                                type="number" inputmode="numeric" placeholder="Até" min="1900" max="2100" :value="filterYearMax ?? ''"
+                                style="flex: 1; min-width: 0; padding: 11px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.025); color: #e9edf2; font-size: 13px; outline: none; box-sizing: border-box;"
+                                @input="filterYearMax = parseYear(($event.target as HTMLInputElement).value)"
+                            />
+                        </div>
+                    </div>
+                    <!-- Gêneros -->
                     <div style="margin-bottom: 22px;">
                         <div class="filter-label">Gêneros</div>
                         <div style="display: flex; gap: 6px; flex-wrap: wrap;">
                             <button v-for="g in genresList" :key="g" :style="genreChipStyle(g)" @click="toggleGenre(g)">{{ g }}</button>
                         </div>
                     </div>
+                    <!-- Outros -->
                     <div>
                         <div class="filter-label">Outros</div>
-                        <div style="display: flex; flex-direction: column; gap: 8px;">
-                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-radius: 12px; background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.06); cursor: pointer;" @click="filterRecentOnly = !filterRecentOnly">
-                                <div style="font-size: 13px; font-weight: 700; color: #e9edf2;">Atualizados recentemente</div>
-                                <div :style="toggleTrack(filterRecentOnly)"><div :style="toggleKnob(filterRecentOnly)"></div></div>
-                            </div>
-                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-radius: 12px; background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.06); cursor: pointer;" @click="filterIsAdult = filterIsAdult === true ? null : true">
-                                <div style="font-size: 13px; font-weight: 700; color: #e9edf2;">+18 apenas</div>
-                                <div :style="toggleTrack(filterIsAdult === true)"><div :style="toggleKnob(filterIsAdult === true)"></div></div>
-                            </div>
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-radius: 12px; background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.06); cursor: pointer;" @click="filterIsAdult = filterIsAdult === true ? null : true">
+                            <div style="font-size: 13px; font-weight: 700; color: #e9edf2;">+18 apenas</div>
+                            <div :style="toggleTrack(filterIsAdult === true)"><div :style="toggleKnob(filterIsAdult === true)"></div></div>
                         </div>
                     </div>
                 </div>
@@ -418,13 +439,11 @@ import {
 } from '@ionic/vue';
 import { contentService, Content, ContentMeta, ContentType, ContentCatalogStatus, ContentSortField } from '@/services/contentService';
 import { discoverService, DiscoverHome } from '@/services/discoverService';
-import { authStore } from '@/store/auth';
 
 const SORT_OPTIONS = [
     { id: 'score_desc',   label: 'Mais relevantes',  icon: '◆', desc: 'Score combinado',      apiSort: 'score' as ContentSortField,       apiOrder: 'desc' as const },
     { id: 'popular',      label: 'Mais populares',   icon: '🔥', desc: 'Maior audiência',     apiSort: 'popularity' as ContentSortField,  apiOrder: 'desc' as const },
     { id: 'note_desc',    label: 'Melhor avaliação', icon: '★',  desc: 'Maior nota primeiro',  apiSort: 'rating' as ContentSortField,      apiOrder: 'desc' as const },
-    { id: 'votes_desc',   label: 'Mais votados',     icon: '👍', desc: 'Mais avaliações',     apiSort: 'votes_count' as ContentSortField, apiOrder: 'desc' as const },
     { id: 'updated_desc', label: 'Recentes',         icon: '⚡', desc: 'Atualizados primeiro', apiSort: 'updated_at' as ContentSortField,  apiOrder: 'desc' as const },
     { id: 'name_asc',     label: 'Nome A → Z',       icon: '↑',  desc: 'Ordem alfabética',    apiSort: 'name' as ContentSortField,        apiOrder: 'asc' as const },
 ];
@@ -470,7 +489,9 @@ export default defineComponent({
             sortById: 'score_desc',
             filterCatStatuses: [] as string[],
             filterGenres: [] as string[],
-            filterRecentOnly: false,
+            filterScoreMin: 0,
+            filterYearMin: null as number | null,
+            filterYearMax: null as number | null,
             filterIsAdult: null as boolean | null,
             searchTimer: null as ReturnType<typeof setTimeout> | null,
             isSortOpen: false,
@@ -509,12 +530,12 @@ export default defineComponent({
             let n = 0;
             if (this.filterCatStatuses.length) n++;
             if (this.filterGenres.length) n++;
-            if (this.filterRecentOnly) n++;
+            if (this.filterScoreMin > 0) n++;
+            if (this.filterYearMin != null || this.filterYearMax != null) n++;
             if (this.filterIsAdult != null) n++;
             return n;
         },
         hasActiveFilters(): boolean { return !!(this.query || this.activeType || this.activeFilterCount > 0); },
-        isAdmin(): boolean { return authStore.user?.role === 'admin'; },
         homeSections(): HomeSection[] {
             if (!this.homeData) return [];
             const d = this.homeData;
@@ -582,9 +603,11 @@ export default defineComponent({
                 type: this.activeType ?? undefined,
                 search: this.query.trim() || undefined,
                 sort: opt.apiSort, order: opt.apiOrder, per_page: 18,
-                ...(this.filterCatStatuses.length === 1 ? { status: this.filterCatStatuses[0] as ContentCatalogStatus } : {}),
+                ...(this.filterCatStatuses.length ? { status: this.filterCatStatuses as ContentCatalogStatus[] } : {}),
                 ...(this.filterGenres.length ? { genres: this.filterGenres } : {}),
-                ...(this.filterRecentOnly ? { recent: true } : {}),
+                ...(this.filterScoreMin > 0 ? { rating_min: this.filterScoreMin } : {}),
+                ...(this.filterYearMin != null ? { year_min: this.filterYearMin } : {}),
+                ...(this.filterYearMax != null ? { year_max: this.filterYearMax } : {}),
                 ...(this.filterIsAdult != null ? { is_adult: this.filterIsAdult } : {}),
             };
         },
@@ -640,8 +663,16 @@ export default defineComponent({
         clearAdvancedFilters() {
             this.filterCatStatuses = [];
             this.filterGenres = [];
-            this.filterRecentOnly = false;
+            this.filterScoreMin = 0;
+            this.filterYearMin = null;
+            this.filterYearMax = null;
             this.filterIsAdult = null;
+        },
+        parseYear(v: string): number | null {
+            const t = (v ?? '').trim();
+            if (!t) return null;
+            const n = parseInt(t, 10);
+            return Number.isFinite(n) ? n : null;
         },
 
         resetFilters() {

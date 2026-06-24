@@ -127,8 +127,8 @@
 
                         <!-- Progress — hidden for movie -->
                         <template v-if="!isMovie">
-                            <!-- Season (TV) — 100% largura -->
-                            <div v-if="isTv" style="margin-bottom: 16px; width: 100%;">
+                            <!-- Season (TV apenas) — anime usa entradas separadas por temporada -->
+                            <div v-if="contentType === 'tv'" style="margin-bottom: 16px; width: 100%;">
                                 <div :style="sectionLabelStyle">Temporada atual</div>
                                 <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
                                     <button :style="stepBtnStyle(false)" :disabled="saving || (userContent.current_season ?? 1) <= 1" @click="decrementSeason">−</button>
@@ -389,7 +389,7 @@ import {
 import {
     userContentService, UserContent, ContentStatus, STATUS_LABELS, getStatusLabel,
 } from '@/services/userContentService';
-import { siteService, Site } from '@/services/siteService';
+import { userSiteService, UserSite } from '@/services/userSiteService';
 
 const TYPE_BADGE_COLOR: Record<ContentType, string> = {
     manga: '#f5a623',
@@ -427,7 +427,7 @@ export default defineComponent({
             actionLoading: false,
             content: null as Content | null,
             userContent: null as UserContent | null,
-            sites: [] as Site[],
+            sites: [] as UserSite[],
             editingUnits: false,
             unitsInput: 0,
             selectedSiteId: '' as string | number,
@@ -599,9 +599,7 @@ export default defineComponent({
                     this.userContent = uc ?? null;
                     if (uc) {
                         this.content.is_in_library = true;
-                        this.selectedSiteId = uc.user_site?.id
-                            ? String(uc.user_site.id)
-                            : uc.site?.id ? String(uc.site.id) : '';
+                        this.selectedSiteId = uc.user_site?.id ? String(uc.user_site.id) : '';
                         // Fill catalog fields that the detail endpoint may omit
                         // but the /user-contents endpoint eagerly loads on the nested content
                         if (uc.content) {
@@ -621,7 +619,7 @@ export default defineComponent({
                 }
 
                 // Step 3: sites are non-critical, don't block render
-                siteService.getAll()
+                userSiteService.getAll()
                     .then((s) => { this.sites = Array.isArray(s) ? s : []; })
                     .catch(() => { this.sites = []; });
             }
@@ -698,18 +696,25 @@ export default defineComponent({
             if (!this.userContent || this.userContent.status === status) return;
             this.saving = true;
 
-            // Auto-preenchimento ao marcar como Completo (espelhado no backend)
+            // Auto-preenchimento ao marcar como Completo (espelhado no backend).
+            // TV com episódios por temporada: usa a última temporada; senão, total geral.
             const payload: Partial<Pick<UserContent, 'status' | 'current_units' | 'current_season'>> = { status };
             if (status === 'completed' && this.content) {
-                if (this.content.total_units)   payload.current_units  = this.content.total_units;
-                if (this.content.total_seasons) payload.current_season = this.content.total_seasons;
+                const c = this.content;
+                if (c.total_seasons) payload.current_season = c.total_seasons;
+                const lastKey = String(c.total_seasons ?? 1);
+                const lastEps = c.season_episodes?.[lastKey];
+                if (c.type === 'tv' && lastEps != null) {
+                    payload.current_units = lastEps;
+                } else if (c.total_units != null) {
+                    payload.current_units = c.total_units;
+                }
             }
 
             try {
                 this.patchUserContent(await userContentService.update(this.userContent.id, payload));
-                if (status === 'completed' && this.content?.total_units) {
-                    const unit = this.unitShort;
-                    await this.showSuccess(`✓ Marcado como completo — ${unit} ${this.content.total_units}/${this.content.total_units}`);
+                if (status === 'completed' && payload.current_units != null) {
+                    await this.showSuccess(`✓ Marcado como completo — ${this.unitShort} ${payload.current_units}/${payload.current_units}`);
                 }
             }
             catch { await this.showError('Falha ao atualizar status.'); }
@@ -729,7 +734,7 @@ export default defineComponent({
             this.saving = true;
             try {
                 this.patchUserContent(await userContentService.update(this.userContent.id, {
-                    site_id: this.selectedSiteId ? Number(this.selectedSiteId) : undefined,
+                    user_site_id: this.selectedSiteId ? Number(this.selectedSiteId) : null,
                 }));
             }
             catch { await this.showError('Falha ao atualizar fonte.'); }

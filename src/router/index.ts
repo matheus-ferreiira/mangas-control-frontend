@@ -57,32 +57,13 @@ const routes: Array<RouteRecordRaw> = [
     },
     {
         path: '/content/:id',
-        component: () => import('@/views/MangaDetailPage.vue'),
+        component: () => import('@/views/CatalogDetailPage.vue'),
         meta: { requiresAuth: true },
     },
     {
         path: '/catalog/:id',
         component: () => import('@/views/CatalogDetailPage.vue'),
         meta: { requiresAuth: true },
-    },
-    {
-        path: '/manage-contents',
-        component: () => import('@/views/ManageMangasPage.vue'),
-        meta: { requiresAuth: true, requiresAdmin: true },
-    },
-    {
-        path: '/content-requests',
-        component: () => import('@/views/ContentRequestsPage.vue'),
-        meta: { requiresAuth: true },
-    },
-    // aliases para compatibilidade com links antigos
-    {
-        path: '/manga/:id',
-        redirect: (to) => `/content/${to.params.id}`,
-    },
-    {
-        path: '/manage-mangas',
-        redirect: '/manage-contents',
     },
 ];
 
