@@ -40,7 +40,7 @@
                         >
                             <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(245,158,11,0.12); display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
                                 <img v-if="site.logo_url" :src="site.logo_url" style="width: 100%; height: 100%; object-fit: contain;" />
-                                <span v-else style="font-size: 18px;">⭐</span>
+                                <IonIcon v-else :icon="globeOutline" style="font-size: 18px; color: rgba(233,237,242,0.42);" />
                             </div>
                             <div style="flex: 1; min-width: 0;">
                                 <div style="font-size: 14px; font-weight: 700; color: #e9edf2;">{{ site.name }}</div>
@@ -63,7 +63,7 @@
                         >
                             <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(245,166,35,0.08); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: rgba(233,237,242,0.42); font-size: 18px; overflow: hidden;">
                                 <img v-if="site.logo_url" :src="site.logo_url" style="width: 100%; height: 100%; object-fit: contain;" />
-                                <span v-else>{{ site.type === 'app' ? '📱' : '🌐' }}</span>
+                                <IonIcon v-else :icon="globeOutline" style="font-size: 18px; color: rgba(233,237,242,0.42);" />
                             </div>
                             <div style="flex: 1; min-width: 0;">
                                 <div style="font-size: 14px; font-weight: 700; color: #e9edf2;">{{ site.name }}</div>
@@ -190,16 +190,18 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import {
-    IonPage, IonContent, IonSpinner, IonButton, IonInput, IonModal,
+    IonPage, IonContent, IonSpinner, IonButton, IonInput, IonModal, IonIcon,
     toastController, alertController,
 } from '@ionic/vue';
+import { globeOutline } from 'ionicons/icons';
 import { userSiteService, UserSite } from '@/services/userSiteService';
 
 export default defineComponent({
     name: 'ManageSitesPage',
-    components: { IonPage, IonContent, IonSpinner, IonButton, IonInput, IonModal },
+    components: { IonPage, IonContent, IonSpinner, IonButton, IonInput, IonModal, IonIcon },
     data() {
         return {
+            globeOutline,
             loading: false,
             saving: false,
             uploadingLogo: false,

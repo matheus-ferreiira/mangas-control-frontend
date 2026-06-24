@@ -1,54 +1,38 @@
 <template>
-    <div v-if="showInstallPrompt" class="fixed bottom-24 left-5 right-5 bg-neon-surface border border-neon-accent rounded-2xl p-4 shadow-lg z-50 animate-slideUp">
-        <div class="flex items-start gap-3">
-            <div class="flex-1">
-                <h3 class="text-sm font-bold text-neon-text mb-1">Instalar Neon Curator</h3>
-                <p class="text-xs text-neon-muted">Instale o app para acesso rápido e funcionalidade offline</p>
+    <div v-if="showInstallPrompt" class="pwa-overlay" @click.self="dismissPrompt">
+        <div class="pwa-sheet">
+            <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px;">
+                <img src="/icon-192.png" alt="Neon Curator" style="width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0; object-fit: cover;" />
+                <div style="min-width: 0;">
+                    <div style="font-size: 1rem; font-weight: 600; color: var(--text-primary); line-height: 1.25;">Instalar Neon Curator</div>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 2px;">Acesso rápido e offline</div>
+                </div>
             </div>
-            <button
-                class="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded bg-neon-elevated border border-neon-border text-neon-muted cursor-pointer hover:bg-neon-border transition-colors"
-                @click="dismissPrompt"
-            >
-                <IonIcon :icon="closeOutline" class="text-sm" />
-            </button>
-        </div>
-        <div class="flex gap-2 mt-3">
-            <IonButton
-                fill="clear"
-                size="small"
-                class="flex-1 btn-secondary-sm"
-                @click="dismissPrompt"
-            >
-                Depois
-            </IonButton>
-            <IonButton
-                fill="solid"
-                size="small"
-                class="flex-1 btn-primary-sm"
-                @click="installPWA"
-            >
-                Instalar
-            </IonButton>
+            <div style="display: flex; gap: 12px;">
+                <button class="pwa-btn-ghost" @click="dismissPrompt">Agora não</button>
+                <button class="pwa-btn-primary" @click="installPWA">
+                    <IonIcon :icon="downloadOutline" style="font-size: 16px;" /> Instalar
+                </button>
+            </div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { IonButton, IonIcon } from '@ionic/vue';
-import { closeOutline } from 'ionicons/icons';
+import { IonIcon } from '@ionic/vue';
+import { downloadOutline } from 'ionicons/icons';
 
 export default defineComponent({
     name: 'PWAInstallPrompt',
     components: {
-        IonButton,
         IonIcon,
     },
     data() {
         return {
             showInstallPrompt: false,
             dismissedTimes: 0,
-            closeOutline,
+            downloadOutline,
         };
     },
     mounted() {
@@ -87,7 +71,6 @@ export default defineComponent({
 
         onPWAInstalled() {
             this.showInstallPrompt = false;
-            console.log('App instalado com sucesso!');
         },
 
         checkPWASupport() {
@@ -101,35 +84,63 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.btn-primary-sm {
-    --background: var(--neon-accent);
-    --color: #050608;
-    --border-radius: 10px;
+.pwa-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: flex-end;
+    animation: pwaFade 0.3s ease-out;
+}
+
+.pwa-sheet {
+    width: 100%;
+    margin: 12px;
+    margin-bottom: max(12px, env(safe-area-inset-bottom, 12px));
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-default);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.5);
+    animation: pwaSlideUp 0.3s ease-out;
+}
+
+.pwa-btn-ghost {
+    flex: 1;
+    padding: 12px 20px;
+    border-radius: 8px;
+    background: transparent;
+    border: 1px solid var(--border-default);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
     font-weight: 600;
-    font-size: 12px;
+    cursor: pointer;
 }
 
-.btn-secondary-sm {
-    --background: transparent;
-    --color: var(--neon-text);
-    --border-radius: 10px;
+.pwa-btn-primary {
+    flex: 1;
+    padding: 12px 20px;
+    border-radius: 8px;
+    background: var(--accent-primary);
+    border: none;
+    color: #000000;
+    font-size: 0.9rem;
     font-weight: 600;
-    font-size: 12px;
-    border: 1px solid var(--neon-border);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
 }
 
-@keyframes slideUp {
-    from {
-        transform: translateY(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
+@keyframes pwaFade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
 }
 
-.animate-slideUp {
-    animation: slideUp 0.3s ease-out;
+@keyframes pwaSlideUp {
+    from { transform: translateY(100%); opacity: 0; }
+    to   { transform: translateY(0); opacity: 1; }
 }
 </style>

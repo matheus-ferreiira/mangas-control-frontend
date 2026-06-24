@@ -11,20 +11,9 @@
                     <div style="font-size: 10px; color: rgba(233,237,242,0.42); font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; margin-bottom: 4px;">Atividade</div>
                     <div style="font-size: 28px; font-weight: 800; letter-spacing: -0.04em; line-height: 1.1; font-family: 'Sora', system-ui, sans-serif; background: linear-gradient(135deg, #f5a623, #ff6b35); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Histórico</div>
 
-                    <!-- Stats row — airy, hairline dividers -->
-                    <div v-if="!loading && allItems.length > 0" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 16px;">
-                        <div style="background: rgba(245,197,66,0.07); border: 1px solid rgba(245,197,66,0.18); border-radius: 12px; padding: 14px 8px; text-align: center;">
-                            <div style="font-size: 26px; font-weight: 800; color: #F5C542; letter-spacing: -0.03em; line-height: 1; font-family: 'Sora', system-ui, sans-serif;">{{ stats.streak }}</div>
-                            <div style="font-size: 9px; color: rgba(233,237,242,0.42); font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; margin-top: 5px;">Streak</div>
-                        </div>
-                        <div style="background: rgba(124,174,255,0.07); border: 1px solid rgba(124,174,255,0.18); border-radius: 12px; padding: 14px 8px; text-align: center;">
-                            <div style="font-size: 26px; font-weight: 800; color: #7CAEFF; letter-spacing: -0.03em; line-height: 1; font-family: 'Sora', system-ui, sans-serif;">{{ stats.thisWeek }}</div>
-                            <div style="font-size: 9px; color: rgba(233,237,242,0.42); font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; margin-top: 5px;">Semana</div>
-                        </div>
-                        <div :style="{ background: typeColor(stats.favType) + '12', border: '1px solid ' + typeColor(stats.favType) + '28', borderRadius: '12px', padding: '14px 8px', textAlign: 'center' }">
-                            <div :style="{ fontSize: '17px', fontWeight: '800', color: typeColor(stats.favType), letterSpacing: '-0.02em', lineHeight: '1.2', fontFamily: '\'Sora\', system-ui, sans-serif' }">{{ favTypeLabel }}</div>
-                            <div style="font-size: 9px; color: rgba(233,237,242,0.42); font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; margin-top: 5px;">Fav. tipo</div>
-                        </div>
+                    <!-- Stats header compacto -->
+                    <div v-if="!loading && allItems.length > 0" style="margin-top: 16px;">
+                        <StatsHeader :stats="statHeaderItems" />
                     </div>
                 </div>
 
@@ -39,6 +28,35 @@
                         >{{ chip.label }}<span style="margin-left: 5px; font-size: 10px; opacity: 0.55; font-weight: 600;">{{ chip.count }}</span></button>
                     </div>
                 </div>
+
+                <!-- ─── Toolbar padronizada (FilterBar) ─── -->
+                <FilterBar
+                    v-if="!loading && allItems.length > 0"
+                    :count="filteredItems.length"
+                    unit="registro"
+                    :active-count="(sortDir === 'oldest' ? 1 : 0) + (activeType ? 1 : 0)"
+                >
+                    <div style="margin-bottom: 22px;">
+                        <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px;">Ordenar por</div>
+                        <button
+                            v-for="opt in sortDirOptions"
+                            :key="opt.value"
+                            style="width: 100%; text-align: left; padding: 12px 4px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; font-size: 14px; font-weight: 600;"
+                            :style="{ color: sortDir === opt.value ? '#f5a623' : '#e9edf2' }"
+                            @click="setSortDir(opt.value)"
+                        >
+                            <span>{{ opt.label }}</span>
+                            <span v-if="sortDir === opt.value" style="color: #f5a623;">✓</span>
+                        </button>
+                    </div>
+                    <!-- Tipo (apenas os que o usuário tem) -->
+                    <div>
+                        <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px;">Tipo</div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                            <button v-for="chip in typeChips" :key="chip.value ?? 'all'" :style="sheetChipStyle(activeType === chip.value)" @click="setType(chip.value)">{{ chip.label }}</button>
+                        </div>
+                    </div>
+                </FilterBar>
 
                 <!-- ─── Novidades não lidas ─── -->
                 <div v-if="!loading && unreadFiltered.length" style="padding: 4px 16px 10px;">
@@ -136,6 +154,14 @@
                                         <span style="font-size: 11px; color: rgba(233,237,242,0.28);">·</span>
                                         <span style="font-size: 11px; color: rgba(233,237,242,0.42);">{{ item.timeAgo }}</span>
                                     </div>
+                                    <!-- Fonte (se houver) -->
+                                    <div v-if="item.raw.user_site" style="display: flex; align-items: center; gap: 5px; margin-top: 3px;">
+                                        <span style="width: 14px; height: 14px; border-radius: 3px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                                            <img v-if="item.raw.user_site.logo_url" :src="item.raw.user_site.logo_url" alt="" style="width: 100%; height: 100%; object-fit: contain;" />
+                                            <IonIcon v-else :icon="globeOutline" style="font-size: 12px; color: var(--text-muted);" />
+                                        </span>
+                                        <span style="font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ item.raw.user_site.name }}</span>
+                                    </div>
                                 </div>
 
                                 <!-- +1 rápido (leitura em andamento) -->
@@ -159,9 +185,12 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { IonPage, IonContent, IonRefresher, IonRefresherContent, toastController } from '@ionic/vue';
+import { IonPage, IonContent, IonRefresher, IonRefresherContent, IonIcon, toastController } from '@ionic/vue';
+import { globeOutline } from 'ionicons/icons';
 import { userContentService, UserContent } from '@/services/userContentService';
 import { ContentType } from '@/services/contentService';
+import FilterBar from '@/components/FilterBar.vue';
+import StatsHeader from '@/components/StatsHeader.vue';
 
 interface ActivityItem {
     id: number;
@@ -181,13 +210,16 @@ const TYPE_SHORT: Record<string, string>  = { manga: 'M', anime: 'A', novel: 'N'
 const TYPE_COLORS: Record<string, string> = { manga: '#f5a623', anime: '#B8A4FF', novel: '#F5C542', movie: '#FF7EC7', tv: '#7CAEFF' };
 const TYPE_LABELS: Record<string, string> = { manga: 'Manga', anime: 'Anime', novel: 'Novel', movie: 'Filme', tv: 'Série' };
 
-function fmtTimeAgo(iso: string): string {
-    const d = (Date.now() - new Date(iso).getTime()) / 1000;
-    if (d < 60)     return 'agora';
-    if (d < 3600)   return `${Math.floor(d / 60)}min`;
-    if (d < 86400)  return `${Math.floor(d / 3600)}h`;
-    if (d < 604800) return `${Math.floor(d / 86400)}d`;
-    return `${Math.floor(d / 604800)}sem`;
+function fmtActivityDate(iso: string): string {
+    const d = new Date(iso);
+    const now = new Date();
+    const diffMin = (now.getTime() - d.getTime()) / 60000;
+    if (diffMin < 1) return 'agora';
+    if (diffMin < 60) return `há ${Math.floor(diffMin)} min`;
+    const hh = String(d.getHours()).padStart(2, '0');
+    const mm = String(d.getMinutes()).padStart(2, '0');
+    if (d.toDateString() === now.toDateString()) return `às ${hh}:${mm}`;
+    return `${d.toLocaleDateString('pt-BR')} às ${hh}:${mm}`;
 }
 
 function dayKey(iso: string): string {
@@ -207,7 +239,7 @@ const DAY_ORDER = ['Hoje', 'Ontem', 'Esta semana', 'Este mês', 'Mais antigo'];
 
 export default defineComponent({
     name: 'ActivityPage',
-    components: { IonPage, IonContent, IonRefresher, IonRefresherContent },
+    components: { IonPage, IonContent, IonRefresher, IonRefresherContent, IonIcon, FilterBar, StatsHeader },
     data() {
         return {
             loading: false,
@@ -216,6 +248,12 @@ export default defineComponent({
             unread: [] as UserContent[],
             incrementingId: null as number | null,
             activeType: (localStorage.getItem('activity_type_filter') || null) as ContentType | null,
+            sortDir: (localStorage.getItem('activity_sort_dir') || 'recent') as 'recent' | 'oldest',
+            sortDirOptions: [
+                { value: 'recent', label: 'Mais recente' },
+                { value: 'oldest', label: 'Mais antigo' },
+            ] as { value: 'recent' | 'oldest'; label: string }[],
+            globeOutline,
         };
     },
     computed: {
@@ -246,6 +284,13 @@ export default defineComponent({
             const t = this.stats.favType;
             return t ? (TYPE_LABELS[t] ?? t) : '–';
         },
+        statHeaderItems(): { value: string | number; label: string; accent?: boolean }[] {
+            return [
+                { value: this.stats.streak, label: 'Streak', accent: true },
+                { value: this.stats.thisWeek, label: 'Semana', accent: true },
+                { value: this.favTypeLabel, label: 'Tipo favorito' },
+            ];
+        },
         typeChips(): { value: ContentType | null; label: string; color: string; count: number }[] {
             const countMap: Record<string, number> = {};
             for (const i of this.allItems) { countMap[i.type] = (countMap[i.type] ?? 0) + 1; }
@@ -263,11 +308,13 @@ export default defineComponent({
             return this.activeType ? this.allItems.filter(i => i.type === this.activeType) : this.allItems;
         },
         groupedActivity(): { day: string; items: ActivityItem[] }[] {
+            const items = this.sortDir === 'oldest' ? [...this.filteredItems].reverse() : this.filteredItems;
             const groups: Record<string, ActivityItem[]> = {};
-            for (const item of this.filteredItems) {
+            for (const item of items) {
                 (groups[item.dayKey] = groups[item.dayKey] || []).push(item);
             }
-            return DAY_ORDER.filter(d => groups[d]?.length).map(d => ({ day: d, items: groups[d] }));
+            const ordered = DAY_ORDER.filter(d => groups[d]?.length).map(d => ({ day: d, items: groups[d] }));
+            return this.sortDir === 'oldest' ? ordered.reverse() : ordered;
         },
         unreadFiltered(): UserContent[] {
             return this.activeType
@@ -295,6 +342,20 @@ export default defineComponent({
         setType(val: ContentType | null) {
             this.activeType = val;
             localStorage.setItem('activity_type_filter', val ?? '');
+        },
+        setSortDir(val: 'recent' | 'oldest') {
+            this.sortDir = val;
+            localStorage.setItem('activity_sort_dir', val);
+        },
+        sheetChipStyle(active: boolean): Record<string, string> {
+            return {
+                padding: '6px 12px', borderRadius: '20px', cursor: 'pointer',
+                fontSize: '11px', fontWeight: '600',
+                border: `1px solid ${active ? 'var(--accent-primary)' : 'var(--border-default)'}`,
+                background: active ? 'var(--accent-primary)' : 'var(--bg-tertiary)',
+                color: active ? '#000' : 'var(--text-secondary)',
+                transition: 'all 0.15s',
+            };
         },
         canIncrement(uc: UserContent): boolean {
             const t = uc.content?.type;
@@ -366,7 +427,7 @@ export default defineComponent({
                     type,
                     eventType,
                     description,
-                    timeAgo: fmtTimeAgo(dateStr),
+                    timeAgo: fmtActivityDate(dateStr),
                     sortDate: new Date(dateStr).getTime(),
                     dayKey: dayKey(dateStr),
                     raw: uc,
