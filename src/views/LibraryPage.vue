@@ -67,6 +67,15 @@
                         {{ sortedFiltered.length }} {{ sortedFiltered.length === 1 ? 'obra' : 'obras' }}
                     </div>
                     <div style="display: flex; gap: 8px; align-items: center;">
+                        <!-- Toggle grid / lista -->
+                        <div style="display: flex; border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; overflow: hidden;">
+                            <button :style="viewToggleStyle('grid')" aria-label="Grade" @click="setView('grid')">
+                                <IonIcon :icon="gridOutline" style="font-size: 15px;" />
+                            </button>
+                            <button :style="viewToggleStyle('list')" aria-label="Lista" @click="setView('list')">
+                                <IonIcon :icon="listOutline" style="font-size: 15px;" />
+                            </button>
+                        </div>
                         <button
                             v-if="activeFilterCount > 0"
                             :style="filterBtnStyle(true)"
@@ -128,7 +137,7 @@
                             </div>
                         </div>
                         <!-- Responsive poster grid (6/4/2) -->
-                        <div class="poster-grid" style="padding: 0 18px;">
+                        <div v-if="viewMode === 'grid'" class="poster-grid" style="padding: 0 18px;">
                             <div
                                 v-for="item in group.items"
                                 :key="item.id"
@@ -155,7 +164,7 @@
                                         </div>
                                     </div>
                                     <!-- Type badge — top left (rgba black bg, texto branco) -->
-                                    <span style="position: absolute; top: 6px; left: 6px; padding: 2px 6px; border-radius: 3px; background: rgba(0,0,0,0.65); color: #ffffff; font-size: 0.6rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; line-height: 1.4;">{{ typeBadgeLabel(item.content?.type) }}</span>
+                                    <span style="position: absolute; top: 6px; left: 6px; padding: 2px 6px; border-radius: 3px; background: rgba(0,0,0,0.75); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); color: #ffffff; font-size: 0.6rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; line-height: 1.4; text-shadow: 0 1px 3px rgba(0,0,0,0.9);">{{ typeBadgeLabel(item.content?.type) }}</span>
                                     <!-- Status dot — top right -->
                                     <span style="position: absolute; top: 7px; right: 7px; width: 9px; height: 9px; border-radius: 5px; box-shadow: 0 0 0 2px rgba(0,0,0,0.55);"
                                           :style="{ background: group.color }"></span>
@@ -189,6 +198,61 @@
                                     <div v-else-if="item.status === 'completed'" style="font-size: 0.8rem; color: var(--dot-new); font-weight: 600; margin-top: 3px;">
                                         ✓ Completo<span v-if="item.rating != null" style="color: var(--text-muted); font-weight: 500;"> · ★ {{ item.rating }}/10</span>
                                     </div>
+
+                                    <!-- Fonte (só quando cadastrada) -->
+                                    <div v-if="item.user_site" style="display: flex; align-items: center; gap: 4px; font-size: 0.72rem; color: var(--text-muted); margin-top: 3px; white-space: nowrap; overflow: hidden;">
+                                        <IonIcon :icon="globeOutline" style="font-size: 0.85rem; flex-shrink: 0;" />
+                                        <span style="overflow: hidden; text-overflow: ellipsis;">{{ item.user_site.name }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- List layout (estilo ToonLivre) -->
+                        <div v-else style="padding: 0 18px; display: flex; flex-direction: column; gap: 8px;">
+                            <div
+                                v-for="item in group.items"
+                                :key="item.id"
+                                style="display: flex; gap: 12px; padding: 8px; border-radius: 12px; background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.06); cursor: pointer;"
+                                @click="$router.push(`/catalog/${item.content?.id ?? item.content_id}`)"
+                            >
+                                <!-- Capa 64×96 -->
+                                <div style="width: 64px; height: 96px; border-radius: 6px; overflow: hidden; flex-shrink: 0; position: relative; background: rgba(255,255,255,0.04);">
+                                    <img v-if="item.content?.cover" :src="item.content.cover" :alt="item.content?.name" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
+                                    <div v-else style="position: absolute; inset: 0;" :style="{ background: `linear-gradient(155deg, ${typeGrad(item.content?.type ?? '')[0]}, ${typeGrad(item.content?.type ?? '')[1]})` }"></div>
+                                </div>
+                                <!-- Info -->
+                                <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 5px;">
+                                    <div style="font-size: 0.9rem; font-weight: 700; color: var(--text-title-card); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ item.content?.name }}</div>
+                                    <div style="display: flex; align-items: center; gap: 6px;">
+                                        <span style="font-size: 0.6rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: rgba(233,237,242,0.62); background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; flex-shrink: 0;">{{ typeBadgeLabel(item.content?.type) }}</span>
+                                        <span style="display: inline-flex; align-items: center; gap: 4px; font-size: 0.72rem; color: var(--text-muted); min-width: 0;">
+                                            <span style="width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;" :style="{ background: group.color }"></span>
+                                            <span style="overflow: hidden; text-overflow: ellipsis;">{{ listStatusLabel(item) }}</span>
+                                        </span>
+                                    </div>
+                                    <!-- Linha de progresso: unidade atual + data (1 ponto real disponível) -->
+                                    <div v-if="item.status === 'reading' && item.content?.type !== 'movie'" style="display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden;">
+                                        <span style="width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;" :style="{ background: isRecentUpdate(item) ? 'var(--dot-new)' : 'var(--text-muted)' }"></span>
+                                        <span style="overflow: hidden; text-overflow: ellipsis;">
+                                            <template v-if="item.content?.type === 'tv'">T{{ item.current_season ?? 1 }} · Ep. {{ item.current_units }}<template v-if="seasonLimit(item)"> / {{ seasonLimit(item) }}</template></template>
+                                            <template v-else>{{ unitLabel(item.content?.type) }}. {{ item.current_units }}<template v-if="item.content?.total_units"> / {{ item.content.total_units }}</template></template>
+                                        </span>
+                                        <span v-if="listDate(item)" style="margin-left: auto; color: var(--text-muted); flex-shrink: 0; padding-left: 8px;">{{ listDate(item) }}</span>
+                                    </div>
+                                    <!-- Fonte -->
+                                    <div v-if="item.user_site" style="display: flex; align-items: center; gap: 4px; font-size: 0.72rem; color: var(--text-muted); white-space: nowrap; overflow: hidden;">
+                                        <IonIcon :icon="globeOutline" style="font-size: 0.85rem; flex-shrink: 0;" />
+                                        <span style="overflow: hidden; text-overflow: ellipsis;">{{ item.user_site.name }}</span>
+                                    </div>
+                                </div>
+                                <!-- +1 -->
+                                <div v-if="showQuickAdd(item)" style="display: flex; align-items: center; flex-shrink: 0;">
+                                    <button
+                                        :aria-label="`+1 ${unitLabel(item.content?.type)}`"
+                                        style="width: 36px; height: 36px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.04); color: #f5a623; font-size: 20px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center;"
+                                        @click.stop="incrementItem(item.id)"
+                                    >+</button>
                                 </div>
                             </div>
                         </div>
@@ -257,6 +321,13 @@
             </IonHeader>
             <IonContent class="sheet-content">
                 <div style="padding: 0 18px 120px;">
+                    <div v-if="sites.length" style="margin-bottom: 22px;">
+                        <div class="filter-label">Fonte</div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                            <button :style="sourceChipStyle(null)" @click="activeSiteId = null">Todas as fontes</button>
+                            <button v-for="s in sites" :key="s.id" :style="sourceChipStyle(s.id)" @click="activeSiteId = s.id">{{ s.name }}</button>
+                        </div>
+                    </div>
                     <div style="margin-bottom: 22px;">
                         <div class="filter-label">Gêneros</div>
                         <div style="display: flex; flex-wrap: wrap; gap: 6px;">
@@ -295,10 +366,12 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import {
-    IonPage, IonContent, IonModal, IonHeader, IonFooter,
+    IonPage, IonContent, IonModal, IonHeader, IonFooter, IonIcon,
     IonRefresher, IonRefresherContent, toastController,
 } from '@ionic/vue';
-import { userContentService, UserContent, ContentStatus } from '@/services/userContentService';
+import { globeOutline, gridOutline, listOutline } from 'ionicons/icons';
+import { userContentService, UserContent, ContentStatus, getStatusLabel } from '@/services/userContentService';
+import { userSiteService, UserSite } from '@/services/userSiteService';
 import { ContentType, CONTENT_TYPE_LABELS } from '@/services/contentService';
 
 const SORT_OPTIONS = [
@@ -323,9 +396,13 @@ const COVER_PALETTES = [
 
 export default defineComponent({
     name: 'LibraryPage',
-    components: { IonPage, IonContent, IonModal, IonHeader, IonFooter, IonRefresher, IonRefresherContent },
+    components: { IonPage, IonContent, IonModal, IonHeader, IonFooter, IonIcon, IonRefresher, IonRefresherContent },
     data() {
         return {
+            globeOutline,
+            gridOutline,
+            listOutline,
+            viewMode: ((localStorage.getItem('library_view_mode') as 'grid' | 'list') || 'grid') as 'grid' | 'list',
             loading: false,
             userContents: [] as UserContent[],
             search: '',
@@ -336,6 +413,8 @@ export default defineComponent({
             filterGenres: [] as string[],
             filterRecentOnly: false,
             filterHasRating: false,
+            sites: [] as UserSite[],
+            activeSiteId: null as number | null,
             sortOptions: SORT_OPTIONS,
             genresList: GENRES_LIST,
         };
@@ -358,6 +437,7 @@ export default defineComponent({
             if (this.filterGenres.length) n++;
             if (this.filterRecentOnly)    n++;
             if (this.filterHasRating)     n++;
+            if (this.activeSiteId != null) n++;
             return n;
         },
         typeChips(): { value: ContentType | null; label: string; count: number }[] {
@@ -405,6 +485,8 @@ export default defineComponent({
 
             if (this.activeType) result = result.filter(i => i.content?.type === this.activeType);
 
+            if (this.activeSiteId != null) result = result.filter(i => (i.user_site?.id ?? null) === this.activeSiteId);
+
             if (this.search.trim()) {
                 const q = this.search.toLowerCase();
                 result = result.filter(i =>
@@ -448,6 +530,9 @@ export default defineComponent({
             this.loading = true;
             try {
                 this.userContents = await userContentService.getAll();
+                userSiteService.getAll()
+                    .then((s) => { this.sites = Array.isArray(s) ? s : []; })
+                    .catch(() => { /* não-bloqueante */ });
             } catch {
                 const toast = await toastController.create({
                     message: 'Falha ao carregar biblioteca.',
@@ -527,6 +612,42 @@ export default defineComponent({
             if (type === 'movie') return '';
             return 'Cap';
         },
+        setView(mode: 'grid' | 'list') {
+            this.viewMode = mode;
+            localStorage.setItem('library_view_mode', mode);
+        },
+        viewToggleStyle(mode: 'grid' | 'list'): Record<string, string> {
+            const active = this.viewMode === mode;
+            return {
+                width: '34px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                border: 'none', cursor: 'pointer', transition: 'all 0.15s',
+                background: active ? 'rgba(245,166,35,0.15)' : 'transparent',
+                color: active ? '#f5a623' : 'rgba(233,237,242,0.42)',
+            };
+        },
+        // Atualização nas últimas 24h → dot verde; senão cinza.
+        isRecentUpdate(uc: UserContent): boolean {
+            const raw = uc.last_unit_update ?? uc.last_interacted_at ?? uc.content?.last_unit_update;
+            if (!raw) return false;
+            return (Date.now() - new Date(raw).getTime()) < 86400000;
+        },
+        // Data relativa (< 24h) ou DD/MM/AAAA (≥ 24h) — estilo ToonLivre.
+        listDate(uc: UserContent): string {
+            const raw = uc.last_unit_update ?? uc.last_interacted_at ?? uc.content?.last_unit_update;
+            if (!raw) return '';
+            const d = new Date(raw);
+            const diffMs = Date.now() - d.getTime();
+            if (diffMs < 86400000) {
+                const mins = Math.floor(diffMs / 60000);
+                if (mins < 1) return 'Agora';
+                if (mins < 60) return `Há ${mins} min`;
+                return `Há ${Math.floor(mins / 60)}h`;
+            }
+            return d.toLocaleDateString('pt-BR');
+        },
+        listStatusLabel(uc: UserContent): string {
+            return getStatusLabel(uc.status, uc.content?.type);
+        },
         onSearch(ev: Event) {
             this.search = (ev.target as HTMLInputElement).value;
         },
@@ -543,6 +664,7 @@ export default defineComponent({
             this.filterGenres = [];
             this.filterRecentOnly = false;
             this.filterHasRating = false;
+            this.activeSiteId = null;
         },
         async incrementItem(itemId: number) {
             try {
@@ -584,6 +706,17 @@ export default defineComponent({
         },
         genreChipStyle(g: string): Record<string, string> {
             const active = this.filterGenres.includes(g);
+            return {
+                padding: '6px 11px', borderRadius: '999px', cursor: 'pointer',
+                fontSize: '11px', fontWeight: '600', whiteSpace: 'nowrap',
+                border: `1px solid ${active ? 'rgba(245,166,35,0.66)' : 'rgba(255,255,255,0.06)'}`,
+                background: active ? 'rgba(245,166,35,0.10)' : 'transparent',
+                color: active ? '#f5a623' : 'rgba(233,237,242,0.62)',
+                transition: 'all 0.15s',
+            };
+        },
+        sourceChipStyle(id: number | null): Record<string, string> {
+            const active = this.activeSiteId === id;
             return {
                 padding: '6px 11px', borderRadius: '999px', cursor: 'pointer',
                 fontSize: '11px', fontWeight: '600', whiteSpace: 'nowrap',

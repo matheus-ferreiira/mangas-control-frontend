@@ -38,12 +38,13 @@
                             :key="site.id"
                             :style="siteCardStyle(site)"
                         >
-                            <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(245,158,11,0.12); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                <span style="font-size: 18px;">⭐</span>
+                            <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(245,158,11,0.12); display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
+                                <img v-if="site.logo_url" :src="site.logo_url" style="width: 100%; height: 100%; object-fit: contain;" />
+                                <span v-else style="font-size: 18px;">⭐</span>
                             </div>
                             <div style="flex: 1; min-width: 0;">
                                 <div style="font-size: 14px; font-weight: 700; color: #e9edf2;">{{ site.name }}</div>
-                                <div style="font-size: 11px; color: rgba(233,237,242,0.42); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ site.url }}</div>
+                                <div style="font-size: 11px; color: rgba(233,237,242,0.42); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ site.url || (site.type === 'app' ? 'Aplicativo' : 'Site') }}</div>
                             </div>
                             <div style="display: flex; gap: 6px; flex-shrink: 0;">
                                 <button :style="actionBtnStyle('#e6b85c')" title="Remover dos favoritos" @click="toggleFavorite(site)">★</button>
@@ -60,12 +61,13 @@
                             :key="site.id"
                             :style="siteCardStyle(site)"
                         >
-                            <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(245,166,35,0.08); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: rgba(233,237,242,0.42); font-size: 18px;">
-                                🌐
+                            <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(245,166,35,0.08); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: rgba(233,237,242,0.42); font-size: 18px; overflow: hidden;">
+                                <img v-if="site.logo_url" :src="site.logo_url" style="width: 100%; height: 100%; object-fit: contain;" />
+                                <span v-else>{{ site.type === 'app' ? '📱' : '🌐' }}</span>
                             </div>
                             <div style="flex: 1; min-width: 0;">
                                 <div style="font-size: 14px; font-weight: 700; color: #e9edf2;">{{ site.name }}</div>
-                                <div style="font-size: 11px; color: rgba(233,237,242,0.42); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ site.url }}</div>
+                                <div style="font-size: 11px; color: rgba(233,237,242,0.42); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ site.url || (site.type === 'app' ? 'Aplicativo' : 'Site') }}</div>
                             </div>
                             <div style="display: flex; gap: 6px; flex-shrink: 0;">
                                 <button :style="actionBtnStyle('rgba(233,237,242,0.42)')" title="Marcar como favorito" @click="toggleFavorite(site)">☆</button>
@@ -103,8 +105,20 @@
                         />
                     </div>
 
+                    <!-- Tipo -->
                     <div style="margin-bottom: 16px;">
-                        <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.22em; color: rgba(233,237,242,0.42); text-transform: uppercase; margin-bottom: 8px;">URL</div>
+                        <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.22em; color: rgba(233,237,242,0.42); text-transform: uppercase; margin-bottom: 8px;">Tipo</div>
+                        <div style="display: flex; gap: 8px;">
+                            <button :style="typeBtnStyle('website')" @click="form.type = 'website'">🌐 Site</button>
+                            <button :style="typeBtnStyle('app')" @click="form.type = 'app'">📱 Aplicativo</button>
+                        </div>
+                    </div>
+
+                    <!-- URL (opcional) -->
+                    <div style="margin-bottom: 16px;">
+                        <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.22em; color: rgba(233,237,242,0.42); text-transform: uppercase; margin-bottom: 8px;">
+                            URL <span style="font-weight: 600; color: rgba(233,237,242,0.28); text-transform: none; letter-spacing: 0;">(opcional)</span>
+                        </div>
                         <IonInput
                             v-model="form.url"
                             placeholder="https://..."
@@ -114,6 +128,35 @@
                             class="neon-input"
                         />
                         <div v-if="urlError" style="font-size: 11px; color: #ef6b6b; margin-top: 4px;">{{ urlError }}</div>
+                    </div>
+
+                    <!-- Logo (opcional): upload ou colar URL -->
+                    <div style="margin-bottom: 16px;">
+                        <div style="font-size: 10px; font-weight: 800; letter-spacing: 0.22em; color: rgba(233,237,242,0.42); text-transform: uppercase; margin-bottom: 8px;">
+                            Logo <span style="font-weight: 600; color: rgba(233,237,242,0.28); text-transform: none; letter-spacing: 0;">(opcional)</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                                <img v-if="form.logo_url" :src="form.logo_url" style="width: 100%; height: 100%; object-fit: contain;" />
+                                <span v-else style="font-size: 15px; opacity: 0.4;">🖼️</span>
+                            </div>
+                            <IonInput
+                                v-model="form.logo_url"
+                                placeholder="Cole a URL ou envie um arquivo"
+                                fill="outline"
+                                class="neon-input"
+                                style="flex: 1;"
+                            />
+                            <button
+                                :disabled="uploadingLogo"
+                                style="height: 48px; min-width: 64px; padding: 0 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.025); color: #f5a623; font-size: 12px; font-weight: 700; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center;"
+                                @click="triggerLogoUpload"
+                            >
+                                <IonSpinner v-if="uploadingLogo" name="crescent" style="width: 18px; height: 18px;" />
+                                <span v-else>Enviar</span>
+                            </button>
+                        </div>
+                        <input ref="logoInput" type="file" accept="image/jpeg,image/png,image/webp,image/svg+xml" style="display: none;" @change="onLogoFile" />
                     </div>
 
                     <!-- Favorite toggle -->
@@ -159,15 +202,17 @@ export default defineComponent({
         return {
             loading: false,
             saving: false,
+            uploadingLogo: false,
             sites: [] as UserSite[],
             isFormOpen: false,
             editingId: null as number | null,
-            form: { name: '', url: '', is_favorite: false },
+            form: { name: '', url: '', logo_url: '', type: 'website' as 'website' | 'app', is_favorite: false },
         };
     },
     computed: {
         canSubmit(): boolean {
-            return !!(this.form.name.trim() && this.form.url.trim());
+            // URL é opcional (apps não têm URL). Só o nome é obrigatório.
+            return !!this.form.name.trim() && !this.urlError;
         },
         urlError(): string {
             if (!this.form.url.trim()) return '';
@@ -191,10 +236,16 @@ export default defineComponent({
         openForm(site: UserSite | null) {
             if (site) {
                 this.editingId = site.id;
-                this.form = { name: site.name, url: site.url, is_favorite: site.is_favorite };
+                this.form = {
+                    name: site.name,
+                    url: site.url ?? '',
+                    logo_url: site.logo_url ?? '',
+                    type: site.type ?? 'website',
+                    is_favorite: site.is_favorite,
+                };
             } else {
                 this.editingId = null;
-                this.form = { name: '', url: '', is_favorite: false };
+                this.form = { name: '', url: '', logo_url: '', type: 'website', is_favorite: false };
             }
             this.isFormOpen = true;
         },
@@ -202,21 +253,28 @@ export default defineComponent({
         closeForm() {
             this.isFormOpen = false;
             this.editingId = null;
-            this.form = { name: '', url: '', is_favorite: false };
+            this.form = { name: '', url: '', logo_url: '', type: 'website', is_favorite: false };
         },
 
         async saveSite() {
             if (!this.canSubmit || this.urlError) return;
             this.saving = true;
+            const payload = {
+                name: this.form.name.trim(),
+                url: this.form.url.trim() || null,
+                logo_url: this.form.logo_url.trim() || null,
+                type: this.form.type,
+                is_favorite: this.form.is_favorite,
+            };
             try {
                 if (this.editingId) {
-                    const updated = await userSiteService.update(this.editingId, this.form);
+                    const updated = await userSiteService.update(this.editingId, payload);
                     const idx = this.sites.findIndex((s) => s.id === this.editingId);
                     if (idx !== -1) this.sites[idx] = updated;
                     this.sites = [...this.sites].sort((a, b) => (b.is_favorite ? 1 : 0) - (a.is_favorite ? 1 : 0));
                     await this.toast('Fonte atualizada!', 'success');
                 } else {
-                    const site = await userSiteService.create(this.form);
+                    const site = await userSiteService.create(payload);
                     this.sites = [...this.sites, site].sort((a, b) => (b.is_favorite ? 1 : 0) - (a.is_favorite ? 1 : 0));
                     await this.toast('Fonte adicionada!', 'success');
                 }
@@ -257,6 +315,43 @@ export default defineComponent({
         async toast(message: string, color: string) {
             const t = await toastController.create({ message, duration: 2000, color, position: 'top' });
             await t.present();
+        },
+
+        triggerLogoUpload() {
+            (this.$refs.logoInput as HTMLInputElement | undefined)?.click();
+        },
+
+        async onLogoFile(event: Event) {
+            const input = event.target as HTMLInputElement;
+            const file = input.files?.[0];
+            input.value = ''; // permite reenviar o mesmo arquivo
+            if (!file) return;
+
+            if (file.size > 500 * 1024) {
+                await this.toast('A logo deve ter no máximo 500KB.', 'danger');
+                return;
+            }
+
+            this.uploadingLogo = true;
+            try {
+                this.form.logo_url = await userSiteService.uploadLogo(file);
+            } catch {
+                await this.toast('Falha ao enviar a logo.', 'danger');
+            } finally {
+                this.uploadingLogo = false;
+            }
+        },
+
+        typeBtnStyle(t: 'website' | 'app'): Record<string, string> {
+            const active = this.form.type === t;
+            return {
+                flex: '1', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                height: '42px', borderRadius: '12px', cursor: 'pointer', fontSize: '13px', fontWeight: '700',
+                border: `1px solid ${active ? 'rgba(245,166,35,0.66)' : 'rgba(255,255,255,0.06)'}`,
+                background: active ? 'rgba(245,166,35,0.10)' : 'rgba(255,255,255,0.025)',
+                color: active ? '#f5a623' : 'rgba(233,237,242,0.62)',
+                transition: 'all 0.15s',
+            };
         },
 
         siteCardStyle(site: UserSite): Record<string, string> {

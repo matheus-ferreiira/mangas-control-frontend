@@ -35,8 +35,39 @@
                             v-for="chip in typeChips"
                             :key="chip.value ?? 'all'"
                             :style="typeChipStyle(chip.value)"
-                            @click="activeType = chip.value"
+                            @click="setType(chip.value)"
                         >{{ chip.label }}<span style="margin-left: 5px; font-size: 10px; opacity: 0.55; font-weight: 600;">{{ chip.count }}</span></button>
+                    </div>
+                </div>
+
+                <!-- ─── Novidades não lidas ─── -->
+                <div v-if="!loading && unreadFiltered.length" style="padding: 4px 16px 10px;">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px; padding: 0 2px;">
+                        <span style="font-size: 12px; font-weight: 800; color: #f5a623; letter-spacing: 0.02em;">📬 Novidades não lidas</span>
+                        <span style="font-size: 10px; font-weight: 800; color: #050608; background: #f5a623; border-radius: 10px; padding: 1px 7px;">{{ unreadFiltered.length }}</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <div
+                            v-for="uc in unreadFiltered"
+                            :key="uc.id"
+                            style="display: flex; gap: 12px; align-items: center; padding: 10px; border-radius: 12px; background: rgba(245,166,35,0.06); border: 1px solid rgba(245,166,35,0.22); border-left: 3px solid #f5a623; cursor: pointer;"
+                            @click="$router.push(`/catalog/${uc.content?.id ?? uc.content_id}`)"
+                        >
+                            <div style="width: 48px; height: 68px; border-radius: 8px; overflow: hidden; flex-shrink: 0; position: relative; background: rgba(255,255,255,0.04); display: flex; align-items: center; justify-content: center;">
+                                <img v-if="uc.content?.cover" :src="uc.content.cover" :alt="uc.content?.name" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
+                                <span v-else :style="{ color: typeColor(uc.content?.type ?? 'manga'), fontWeight: '900', fontSize: '15px' }">{{ typeShort(uc.content?.type ?? 'manga') }}</span>
+                            </div>
+                            <div style="flex: 1; min-width: 0;">
+                                <div style="font-size: 13px; font-weight: 700; color: #e9edf2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ uc.content?.name }}</div>
+                                <div style="font-size: 11px; color: rgba(233,237,242,0.42); margin-top: 3px;">{{ unreadProgressText(uc) }}</div>
+                            </div>
+                            <button
+                                v-if="canIncrement(uc)"
+                                :disabled="incrementingId === uc.id"
+                                style="width: 34px; height: 34px; border-radius: 17px; border: 1px solid rgba(245,166,35,0.35); background: rgba(245,166,35,0.12); color: #f5a623; font-size: 19px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"
+                                @click.stop="incrementUc(uc)"
+                            >+</button>
+                        </div>
                     </div>
                 </div>
 
@@ -107,6 +138,14 @@
                                     </div>
                                 </div>
 
+                                <!-- +1 rápido (leitura em andamento) -->
+                                <button
+                                    v-if="canIncrement(item.raw)"
+                                    :disabled="incrementingId === item.id"
+                                    :aria-label="`+1 ${item.title}`"
+                                    style="width: 34px; height: 34px; border-radius: 17px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.04); color: #f5a623; font-size: 19px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"
+                                    @click.stop="incrementUc(item.raw)"
+                                >+</button>
                                 <!-- Chevron -->
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(233,237,242,0.28)" stroke-width="1.7" stroke-linecap="round" style="flex-shrink: 0;"><path d="m9 6 6 6-6 6"/></svg>
                             </div>
@@ -120,7 +159,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { IonPage, IonContent, IonRefresher, IonRefresherContent } from '@ionic/vue';
+import { IonPage, IonContent, IonRefresher, IonRefresherContent, toastController } from '@ionic/vue';
 import { userContentService, UserContent } from '@/services/userContentService';
 import { ContentType } from '@/services/contentService';
 
@@ -135,6 +174,7 @@ interface ActivityItem {
     timeAgo: string;
     sortDate: number;
     dayKey: string;
+    raw: UserContent;
 }
 
 const TYPE_SHORT: Record<string, string>  = { manga: 'M', anime: 'A', novel: 'N', movie: 'F', tv: 'S' };
@@ -172,7 +212,10 @@ export default defineComponent({
         return {
             loading: false,
             allItems: [] as ActivityItem[],
-            activeType: null as ContentType | null,
+            rawContents: [] as UserContent[],
+            unread: [] as UserContent[],
+            incrementingId: null as number | null,
+            activeType: (localStorage.getItem('activity_type_filter') || null) as ContentType | null,
         };
     },
     computed: {
@@ -226,6 +269,11 @@ export default defineComponent({
             }
             return DAY_ORDER.filter(d => groups[d]?.length).map(d => ({ day: d, items: groups[d] }));
         },
+        unreadFiltered(): UserContent[] {
+            return this.activeType
+                ? this.unread.filter(u => (u.content?.type ?? '') === this.activeType)
+                : this.unread;
+        },
     },
     async ionViewWillEnter() {
         await this.loadActivity();
@@ -235,10 +283,53 @@ export default defineComponent({
             this.loading = true;
             try {
                 const contents = await userContentService.getAll();
+                this.rawContents = contents;
                 this.allItems = this.buildActivityItems(contents);
             } catch { /* silent */ } finally {
                 this.loading = false;
             }
+            userContentService.getWithUpdates()
+                .then((items) => { this.unread = items; })
+                .catch(() => { this.unread = []; });
+        },
+        setType(val: ContentType | null) {
+            this.activeType = val;
+            localStorage.setItem('activity_type_filter', val ?? '');
+        },
+        canIncrement(uc: UserContent): boolean {
+            const t = uc.content?.type;
+            if (t === 'movie' || uc.status !== 'reading') return false;
+            const se = uc.content?.season_episodes;
+            if (t === 'tv' && se) {
+                const lim = se[String(uc.current_season ?? 1)];
+                if (lim != null) return uc.current_units < lim;
+            }
+            const total = uc.content?.total_units;
+            return total != null ? uc.current_units < total : true;
+        },
+        async incrementUc(uc: UserContent) {
+            if (this.incrementingId) return;
+            this.incrementingId = uc.id;
+            try {
+                const updated = await userContentService.increment(uc.id);
+                const idx = this.rawContents.findIndex((c) => c.id === updated.id);
+                if (idx >= 0) this.rawContents.splice(idx, 1, updated);
+                else this.rawContents.push(updated);
+                this.allItems = this.buildActivityItems(this.rawContents);
+                this.unread = this.unread.filter((u) => u.id !== updated.id);
+            } catch (e: any) {
+                const msg = e?.response?.data?.message ?? 'Não foi possível atualizar.';
+                const t = await toastController.create({ message: msg, duration: 2000, color: 'warning', position: 'top' });
+                await t.present();
+            } finally {
+                this.incrementingId = null;
+            }
+        },
+        unreadProgressText(uc: UserContent): string {
+            const t = uc.content?.type;
+            const unit = (t === 'anime' || t === 'tv') ? 'Ep' : 'Cap';
+            const total = uc.content?.total_units;
+            return total ? `${unit}. ${uc.current_units} / ${total}` : `${unit}. ${uc.current_units}`;
         },
         buildActivityItems(contents: UserContent[]): ActivityItem[] {
             const items: ActivityItem[] = [];
@@ -278,6 +369,7 @@ export default defineComponent({
                     timeAgo: fmtTimeAgo(dateStr),
                     sortDate: new Date(dateStr).getTime(),
                     dayKey: dayKey(dateStr),
+                    raw: uc,
                 });
             }
             return items.sort((a, b) => b.sortDate - a.sortDate);
