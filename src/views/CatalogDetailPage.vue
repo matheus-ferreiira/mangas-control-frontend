@@ -136,7 +136,7 @@
                                         <div style="font-size: 2.5rem; font-weight: 700; color: var(--text-primary); line-height: 1;">{{ userContent.current_season ?? 1 }}</div>
                                         <span style="display: block; text-align: center; font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">de {{ content.total_seasons ?? '?' }} temp.</span>
                                     </div>
-                                    <button :style="stepBtnStyle(true)" :disabled="saving" @click="incrementSeason">+</button>
+                                    <button :style="atSeasonLimit ? stepBtnStyleDisabled : stepBtnStyle(true)" :disabled="saving || atSeasonLimit" @click="incrementSeason">+</button>
                                 </div>
                             </div>
 
@@ -205,18 +205,7 @@
                         <!-- Site -->
                         <div v-if="sites.length">
                             <div :style="sectionLabelStyle">Fonte de leitura</div>
-                            <IonSelect
-                                v-model="selectedSiteId"
-                                :compareWith="compareSiteId"
-                                placeholder="Sem fonte"
-                                fill="outline"
-                                interface="action-sheet"
-                                class="neon-select"
-                                @ionChange="changeSite"
-                            >
-                                <IonSelectOption value="">Sem fonte</IonSelectOption>
-                                <IonSelectOption v-for="site in sites" :key="site.id" :value="site.id">{{ site.name }}</IonSelectOption>
-                            </IonSelect>
+                            <SourceSelect :model-value="selectedSiteId" :sites="sites" @update:model-value="onSiteChange" />
                         </div>
                     </div>
 
@@ -378,9 +367,10 @@
 import { defineComponent, nextTick } from 'vue';
 import {
     IonPage, IonContent, IonIcon, IonLoading,
-    IonSelect, IonSelectOption, IonInput,
+    IonInput,
     toastController, alertController,
 } from '@ionic/vue';
+import SourceSelect from '@/components/SourceSelect.vue';
 import { trashOutline } from 'ionicons/icons';
 import {
     contentService, Content, ContentType,
@@ -419,7 +409,7 @@ const MOVIE_STATUSES: ContentStatus[] = ['plan_to_read', 'reading', 'completed']
 
 export default defineComponent({
     name: 'CatalogDetailPage',
-    components: { IonPage, IonContent, IonIcon, IonLoading, IonSelect, IonSelectOption, IonInput },
+    components: { IonPage, IonContent, IonIcon, IonLoading, IonInput, SourceSelect },
     data() {
         return {
             loading: false,
@@ -430,7 +420,7 @@ export default defineComponent({
             sites: [] as UserSite[],
             editingUnits: false,
             unitsInput: 0,
-            selectedSiteId: '' as string | number,
+            selectedSiteId: null as number | null,
             synopsisExpanded: false,
             ratingOptions: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
             trashOutline,
@@ -498,6 +488,11 @@ export default defineComponent({
             const total = this.content?.total_units;
             if (!total) return false;
             return (this.userContent?.current_units ?? 0) >= total;
+        },
+        atSeasonLimit(): boolean {
+            const total = this.content?.total_seasons;
+            if (!total) return false;
+            return (this.userContent?.current_season ?? 1) >= total;
         },
         availableStatuses(): { value: ContentStatus; label: string }[] {
             const keys: ContentStatus[] = this.isMovie ? MOVIE_STATUSES : (Object.keys(STATUS_LABELS) as ContentStatus[]);
@@ -599,7 +594,7 @@ export default defineComponent({
                     this.userContent = uc ?? null;
                     if (uc) {
                         this.content.is_in_library = true;
-                        this.selectedSiteId = uc.user_site?.id ? String(uc.user_site.id) : '';
+                        this.selectedSiteId = uc.user_site?.id ?? null;
                         // Fill catalog fields that the detail endpoint may omit
                         // but the /user-contents endpoint eagerly loads on the nested content
                         if (uc.content) {
@@ -634,7 +629,10 @@ export default defineComponent({
         },
 
         getStatusColor(status: ContentStatus): string { return STATUS_COLORS[status] ?? '#5a6480'; },
-        compareSiteId: (o1: any, o2: any) => Number(o1) === Number(o2),
+        onSiteChange(val: number | null) {
+            this.selectedSiteId = val;
+            this.changeSite();
+        },
 
         formatVotes(v: number): string {
             if (v >= 1_000_000) return (v / 1_000_000).toFixed(1) + 'M';
@@ -659,7 +657,7 @@ export default defineComponent({
         },
 
         async incrementSeason() {
-            if (!this.userContent) return;
+            if (!this.userContent || this.atSeasonLimit) return;
             this.saving = true;
             try { this.patchUserContent(await userContentService.update(this.userContent.id, { current_season: (this.userContent.current_season ?? 1) + 1, current_units: 0 })); }
             catch { await this.showError('Falha ao atualizar temporada.'); }

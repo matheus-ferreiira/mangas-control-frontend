@@ -75,7 +75,9 @@ export interface UserContent {
     user_site?: {
         id: number;
         name: string;
-        url: string;
+        url?: string | null;
+        logo_url?: string | null;
+        type?: 'website' | 'app';
         is_favorite: boolean;
     };
 }

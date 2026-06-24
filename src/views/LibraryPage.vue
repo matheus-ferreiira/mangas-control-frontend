@@ -61,13 +61,9 @@
                     </div>
                 </div>
 
-                <!-- ─── Toolbar ─── -->
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 18px 14px;">
-                    <div style="font-size: 11px; color: rgba(233,237,242,0.42); font-weight: 700; letter-spacing: 0.04em;">
-                        {{ sortedFiltered.length }} {{ sortedFiltered.length === 1 ? 'obra' : 'obras' }}
-                    </div>
-                    <div style="display: flex; gap: 8px; align-items: center;">
-                        <!-- Toggle grid / lista -->
+                <!-- ─── Toolbar padronizada (FilterBar) ─── -->
+                <FilterBar :count="sortedFiltered.length" :active-count="activeFilterCount" @clear="clearFilters">
+                    <template #actions>
                         <div style="display: flex; border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; overflow: hidden;">
                             <button :style="viewToggleStyle('grid')" aria-label="Grade" @click="setView('grid')">
                                 <IonIcon :icon="gridOutline" style="font-size: 15px;" />
@@ -76,22 +72,63 @@
                                 <IonIcon :icon="listOutline" style="font-size: 15px;" />
                             </button>
                         </div>
+                    </template>
+
+                    <!-- Ordenar por -->
+                    <div style="margin-bottom: 22px;">
+                        <div class="filter-label">Ordenar por</div>
                         <button
-                            v-if="activeFilterCount > 0"
-                            :style="filterBtnStyle(true)"
-                            @click="isFilterOpen = true"
+                            v-for="opt in sortOptions"
+                            :key="opt.id"
+                            style="width: 100%; text-align: left; padding: 12px 4px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; font-size: 14px; font-weight: 600;"
+                            :style="{ color: sortBy === opt.id ? '#f5a623' : '#e9edf2' }"
+                            @click="sortBy = opt.id"
                         >
-                            <span style="opacity: 0.7;">≡</span> Filtros
-                            <span style="min-width: 16px; height: 16px; padding: 0 4px; border-radius: 8px; background: #f5a623; color: #050608; font-size: 9px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center;">{{ activeFilterCount }}</span>
-                        </button>
-                        <button
-                            style="background: transparent; border: none; cursor: pointer; color: rgba(233,237,242,0.62); font-size: 11px; font-weight: 700; letter-spacing: 0.04em; display: flex; align-items: center; gap: 6px; padding: 4px 8px;"
-                            @click="isSortOpen = true"
-                        >
-                            <span style="opacity: 0.6;">↕</span> {{ sortMeta.label }}
+                            <span>{{ opt.label }}</span>
+                            <span v-if="sortBy === opt.id" style="color: #f5a623;">✓</span>
                         </button>
                     </div>
-                </div>
+
+                    <!-- Status da leitura -->
+                    <div style="margin-bottom: 22px;">
+                        <div class="filter-label">Status da leitura</div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                            <button v-for="s in statusFilterOptions" :key="s.value" :style="statusChipStyle(s.value)" @click="toggleStatusFilter(s.value)">{{ s.label }}</button>
+                        </div>
+                    </div>
+
+                    <!-- Fonte -->
+                    <div v-if="sites.length" style="margin-bottom: 22px;">
+                        <div class="filter-label">Fonte</div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                            <button :style="sourceChipStyle(null)" @click="activeSiteId = null">Todas as fontes</button>
+                            <button v-for="s in sites" :key="s.id" :style="sourceChipStyle(s.id)" @click="activeSiteId = s.id">{{ s.name }}</button>
+                        </div>
+                    </div>
+
+                    <!-- Gêneros -->
+                    <div style="margin-bottom: 22px;">
+                        <div class="filter-label">Gêneros</div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                            <button v-for="g in genresList" :key="g" :style="genreChipStyle(g)" @click="toggleGenre(g)">{{ g }}</button>
+                        </div>
+                    </div>
+
+                    <!-- Outros -->
+                    <div>
+                        <div class="filter-label">Outros</div>
+                        <label style="display: flex; align-items: center; gap: 10px; padding: 12px 0; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.06);">
+                            <span :style="toggleTrackStyle(filterRecentOnly)"><span :style="toggleKnobStyle(filterRecentOnly)"></span></span>
+                            <span style="flex: 1; font-size: 13px; color: #e9edf2; font-weight: 600;">Atualizados recentemente</span>
+                            <input type="checkbox" :checked="filterRecentOnly" @change="filterRecentOnly = !filterRecentOnly" style="display: none;" />
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 10px; padding: 12px 0; cursor: pointer;">
+                            <span :style="toggleTrackStyle(filterHasRating)"><span :style="toggleKnobStyle(filterHasRating)"></span></span>
+                            <span style="flex: 1; font-size: 13px; color: #e9edf2; font-weight: 600;">★ Com avaliação</span>
+                            <input type="checkbox" :checked="filterHasRating" @change="filterHasRating = !filterHasRating" style="display: none;" />
+                        </label>
+                    </div>
+                </FilterBar>
 
                 <!-- ─── Loading skeleton ─── -->
                 <div v-if="loading" style="padding: 0 18px;">
@@ -164,7 +201,7 @@
                                         </div>
                                     </div>
                                     <!-- Type badge — top left (rgba black bg, texto branco) -->
-                                    <span style="position: absolute; top: 6px; left: 6px; padding: 2px 6px; border-radius: 3px; background: rgba(0,0,0,0.75); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); color: #ffffff; font-size: 0.6rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; line-height: 1.4; text-shadow: 0 1px 3px rgba(0,0,0,0.9);">{{ typeBadgeLabel(item.content?.type) }}</span>
+                                    <ContentTypeBadge :type="item.content?.type" />
                                     <!-- Status dot — top right -->
                                     <span style="position: absolute; top: 7px; right: 7px; width: 9px; height: 9px; border-radius: 5px; box-shadow: 0 0 0 2px rgba(0,0,0,0.55);"
                                           :style="{ background: group.color }"></span>
@@ -201,7 +238,10 @@
 
                                     <!-- Fonte (só quando cadastrada) -->
                                     <div v-if="item.user_site" style="display: flex; align-items: center; gap: 4px; font-size: 0.72rem; color: var(--text-muted); margin-top: 3px; white-space: nowrap; overflow: hidden;">
-                                        <IonIcon :icon="globeOutline" style="font-size: 0.85rem; flex-shrink: 0;" />
+                                        <span style="width: 16px; height: 16px; border-radius: 3px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                                            <img v-if="item.user_site.logo_url" :src="item.user_site.logo_url" alt="" style="width: 100%; height: 100%; object-fit: contain;" />
+                                            <IonIcon v-else :icon="globeOutline" style="font-size: 14px;" />
+                                        </span>
                                         <span style="overflow: hidden; text-overflow: ellipsis;">{{ item.user_site.name }}</span>
                                     </div>
                                 </div>
@@ -242,7 +282,10 @@
                                     </div>
                                     <!-- Fonte -->
                                     <div v-if="item.user_site" style="display: flex; align-items: center; gap: 4px; font-size: 0.72rem; color: var(--text-muted); white-space: nowrap; overflow: hidden;">
-                                        <IonIcon :icon="globeOutline" style="font-size: 0.85rem; flex-shrink: 0;" />
+                                        <span style="width: 16px; height: 16px; border-radius: 3px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                                            <img v-if="item.user_site.logo_url" :src="item.user_site.logo_url" alt="" style="width: 100%; height: 100%; object-fit: contain;" />
+                                            <IonIcon v-else :icon="globeOutline" style="font-size: 14px;" />
+                                        </span>
                                         <span style="overflow: hidden; text-overflow: ellipsis;">{{ item.user_site.name }}</span>
                                     </div>
                                 </div>
@@ -261,105 +304,6 @@
             </div>
         </IonContent>
 
-        <!-- ─── Sort Sheet ─── -->
-        <IonModal
-            :is-open="isSortOpen"
-            :initial-breakpoint="0.55"
-            :breakpoints="[0, 0.55, 1]"
-            :handle="true"
-            handle-behavior="cycle"
-            class="bottom-sheet-modal"
-            @didDismiss="isSortOpen = false"
-        >
-            <IonContent class="sheet-content">
-                <div style="padding: 4px 8px 24px;">
-                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 18px 14px;">
-                        <div style="font-size: 18px; font-weight: 800; color: #e9edf2; letter-spacing: -0.02em;">Ordenar</div>
-                        <button style="background: transparent; border: none; cursor: pointer; color: rgba(233,237,242,0.42); font-size: 11px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase;" @click="isSortOpen = false">Fechar</button>
-                    </div>
-                    <button
-                        v-for="opt in sortOptions"
-                        :key="opt.id"
-                        @click="setSort(opt.id)"
-                        style="width: 100%; text-align: left; padding: 14px 18px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; font-size: 14px; font-weight: 600; transition: color 0.15s;"
-                        :style="{ color: sortBy === opt.id ? '#f5a623' : '#e9edf2' }"
-                    >
-                        <span>{{ opt.label }}</span>
-                        <span v-if="sortBy === opt.id" style="color: #f5a623;">✓</span>
-                    </button>
-                </div>
-            </IonContent>
-        </IonModal>
-
-        <!-- ─── Filter Sheet ─── -->
-        <IonModal
-            :is-open="isFilterOpen"
-            :initial-breakpoint="0.88"
-            :breakpoints="[0, 0.88, 1]"
-            :handle="true"
-            handle-behavior="cycle"
-            class="bottom-sheet-modal"
-            @didDismiss="isFilterOpen = false"
-        >
-            <IonHeader class="sheet-header">
-                <div style="padding: 8px 18px 0;">
-                    <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 14px;">
-                        <div style="font-size: 18px; font-weight: 800; color: #e9edf2; letter-spacing: -0.02em;">Filtros</div>
-                        <div style="display: flex; gap: 8px;">
-                            <button
-                                style="background: transparent; border: none; cursor: pointer; font-size: 11px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; transition: color 0.15s;"
-                                :style="{ color: activeFilterCount > 0 ? '#f5a623' : 'rgba(233,237,242,0.42)' }"
-                                @click="clearFilters"
-                            >Limpar</button>
-                            <button
-                                style="background: transparent; border: none; cursor: pointer; color: rgba(233,237,242,0.42); font-size: 11px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase;"
-                                @click="isFilterOpen = false"
-                            >Fechar</button>
-                        </div>
-                    </div>
-                </div>
-            </IonHeader>
-            <IonContent class="sheet-content">
-                <div style="padding: 0 18px 120px;">
-                    <div v-if="sites.length" style="margin-bottom: 22px;">
-                        <div class="filter-label">Fonte</div>
-                        <div style="display: flex; flex-wrap: wrap; gap: 6px;">
-                            <button :style="sourceChipStyle(null)" @click="activeSiteId = null">Todas as fontes</button>
-                            <button v-for="s in sites" :key="s.id" :style="sourceChipStyle(s.id)" @click="activeSiteId = s.id">{{ s.name }}</button>
-                        </div>
-                    </div>
-                    <div style="margin-bottom: 22px;">
-                        <div class="filter-label">Gêneros</div>
-                        <div style="display: flex; flex-wrap: wrap; gap: 6px;">
-                            <button v-for="g in genresList" :key="g" :style="genreChipStyle(g)" @click="toggleGenre(g)">{{ g }}</button>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="filter-label">Outros</div>
-                        <label style="display: flex; align-items: center; gap: 10px; padding: 12px 0; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.06);">
-                            <span :style="toggleTrackStyle(filterRecentOnly)"><span :style="toggleKnobStyle(filterRecentOnly)"></span></span>
-                            <span style="flex: 1; font-size: 13px; color: #e9edf2; font-weight: 600;">Atualizados recentemente</span>
-                            <input type="checkbox" :checked="filterRecentOnly" @change="filterRecentOnly = !filterRecentOnly" style="display: none;" />
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 10px; padding: 12px 0; cursor: pointer;">
-                            <span :style="toggleTrackStyle(filterHasRating)"><span :style="toggleKnobStyle(filterHasRating)"></span></span>
-                            <span style="flex: 1; font-size: 13px; color: #e9edf2; font-weight: 600;">★ Com avaliação</span>
-                            <input type="checkbox" :checked="filterHasRating" @change="filterHasRating = !filterHasRating" style="display: none;" />
-                        </label>
-                    </div>
-                </div>
-            </IonContent>
-            <IonFooter class="sheet-footer">
-                <div style="padding: 14px 18px;">
-                    <button
-                        style="width: 100%; padding: 13px; border-radius: 12px; border: none; background: #f5a623; color: #050608; font-size: 14px; font-weight: 800; cursor: pointer; box-shadow: 0 6px 22px hsl(38 91% 55% / 0.45); display: flex; align-items: center; justify-content: center; gap: 8px;"
-                        @click="isFilterOpen = false"
-                    >
-                        Aplicar{{ activeFilterCount > 0 ? ` · ${activeFilterCount}` : '' }}
-                    </button>
-                </div>
-            </IonFooter>
-        </IonModal>
     </IonPage>
 </template>
 
@@ -373,6 +317,8 @@ import { globeOutline, gridOutline, listOutline } from 'ionicons/icons';
 import { userContentService, UserContent, ContentStatus, getStatusLabel } from '@/services/userContentService';
 import { userSiteService, UserSite } from '@/services/userSiteService';
 import { ContentType, CONTENT_TYPE_LABELS } from '@/services/contentService';
+import ContentTypeBadge from '@/components/ContentTypeBadge.vue';
+import FilterBar from '@/components/FilterBar.vue';
 
 const SORT_OPTIONS = [
     { id: 'updated_desc', label: 'Atualizado recentemente' },
@@ -396,7 +342,7 @@ const COVER_PALETTES = [
 
 export default defineComponent({
     name: 'LibraryPage',
-    components: { IonPage, IonContent, IonModal, IonHeader, IonFooter, IonIcon, IonRefresher, IonRefresherContent },
+    components: { IonPage, IonContent, IonModal, IonHeader, IonFooter, IonIcon, IonRefresher, IonRefresherContent, ContentTypeBadge, FilterBar },
     data() {
         return {
             globeOutline,
@@ -413,10 +359,18 @@ export default defineComponent({
             filterGenres: [] as string[],
             filterRecentOnly: false,
             filterHasRating: false,
+            filterStatuses: [] as ContentStatus[],
             sites: [] as UserSite[],
             activeSiteId: null as number | null,
             sortOptions: SORT_OPTIONS,
             genresList: GENRES_LIST,
+            statusFilterOptions: [
+                { value: 'reading', label: 'Lendo' },
+                { value: 'plan_to_read', label: 'Quero ler' },
+                { value: 'completed', label: 'Completo' },
+                { value: 'paused', label: 'Pausado' },
+                { value: 'dropped', label: 'Abandonado' },
+            ] as { value: ContentStatus; label: string }[],
         };
     },
     computed: {
@@ -438,6 +392,7 @@ export default defineComponent({
             if (this.filterRecentOnly)    n++;
             if (this.filterHasRating)     n++;
             if (this.activeSiteId != null) n++;
+            if (this.filterStatuses.length) n++;
             return n;
         },
         typeChips(): { value: ContentType | null; label: string; count: number }[] {
@@ -486,6 +441,8 @@ export default defineComponent({
             if (this.activeType) result = result.filter(i => i.content?.type === this.activeType);
 
             if (this.activeSiteId != null) result = result.filter(i => (i.user_site?.id ?? null) === this.activeSiteId);
+
+            if (this.filterStatuses.length) result = result.filter(i => this.filterStatuses.includes(i.status));
 
             if (this.search.trim()) {
                 const q = this.search.toLowerCase();
@@ -660,11 +617,28 @@ export default defineComponent({
             if (idx >= 0) this.filterGenres.splice(idx, 1);
             else this.filterGenres.push(g);
         },
+        toggleStatusFilter(value: ContentStatus) {
+            const idx = this.filterStatuses.indexOf(value);
+            if (idx >= 0) this.filterStatuses.splice(idx, 1);
+            else this.filterStatuses.push(value);
+        },
+        statusChipStyle(value: ContentStatus): Record<string, string> {
+            const active = this.filterStatuses.includes(value);
+            return {
+                padding: '6px 11px', borderRadius: '999px', cursor: 'pointer',
+                fontSize: '11px', fontWeight: '600', whiteSpace: 'nowrap',
+                border: `1px solid ${active ? 'var(--accent-primary)' : 'var(--border-default)'}`,
+                background: active ? 'var(--accent-primary)' : 'var(--bg-tertiary)',
+                color: active ? '#000' : 'var(--text-secondary)',
+                transition: 'all 0.15s',
+            };
+        },
         clearFilters() {
             this.filterGenres = [];
             this.filterRecentOnly = false;
             this.filterHasRating = false;
             this.activeSiteId = null;
+            this.filterStatuses = [];
         },
         async incrementItem(itemId: number) {
             try {
@@ -709,9 +683,9 @@ export default defineComponent({
             return {
                 padding: '6px 11px', borderRadius: '999px', cursor: 'pointer',
                 fontSize: '11px', fontWeight: '600', whiteSpace: 'nowrap',
-                border: `1px solid ${active ? 'rgba(245,166,35,0.66)' : 'rgba(255,255,255,0.06)'}`,
-                background: active ? 'rgba(245,166,35,0.10)' : 'transparent',
-                color: active ? '#f5a623' : 'rgba(233,237,242,0.62)',
+                border: `1px solid ${active ? 'var(--accent-primary)' : 'var(--border-default)'}`,
+                background: active ? 'var(--accent-primary)' : 'var(--bg-tertiary)',
+                color: active ? '#000' : 'var(--text-secondary)',
                 transition: 'all 0.15s',
             };
         },
@@ -720,16 +694,16 @@ export default defineComponent({
             return {
                 padding: '6px 11px', borderRadius: '999px', cursor: 'pointer',
                 fontSize: '11px', fontWeight: '600', whiteSpace: 'nowrap',
-                border: `1px solid ${active ? 'rgba(245,166,35,0.66)' : 'rgba(255,255,255,0.06)'}`,
-                background: active ? 'rgba(245,166,35,0.10)' : 'transparent',
-                color: active ? '#f5a623' : 'rgba(233,237,242,0.62)',
+                border: `1px solid ${active ? 'var(--accent-primary)' : 'var(--border-default)'}`,
+                background: active ? 'var(--accent-primary)' : 'var(--bg-tertiary)',
+                color: active ? '#000' : 'var(--text-secondary)',
                 transition: 'all 0.15s',
             };
         },
         toggleTrackStyle(active: boolean): Record<string, string> {
             return {
                 width: '38px', height: '22px', borderRadius: '11px', padding: '2px',
-                background: active ? '#f5a623' : 'rgba(255,255,255,0.06)',
+                background: active ? 'var(--accent-primary)' : 'var(--bg-tertiary)',
                 transition: 'background 0.15s', flexShrink: '0', position: 'relative',
                 display: 'inline-block',
             };

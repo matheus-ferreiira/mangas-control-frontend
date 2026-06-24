@@ -129,9 +129,7 @@
                                             <img v-if="ci.cover" :src="ci.cover" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
                                             <div v-else :style="heroFallbackStyle(ci.type)" style="width: 100%; height: 100%;"></div>
                                             <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(5,7,11,0) 30%, rgba(5,7,11,0.96) 100%);"></div>
-                                            <div style="position: absolute; top: 8px; left: 8px;">
-                                                <span :style="typePillStyle(ci.type)" style="font-size: 8px; padding: 2px 6px;">{{ typeLabel(ci.type) }}</span>
-                                            </div>
+                                            <ContentTypeBadge :type="ci.type" />
                                             <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 8px 10px;">
                                                 <div style="font-size: 12px; font-weight: 800; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-bottom: 6px;">{{ ci.title }}</div>
                                                 <div style="height: 3px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
@@ -207,9 +205,7 @@
                                             <!-- Bottom gradient -->
                                             <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 70px; background: linear-gradient(0deg, rgba(13,17,23,0.85) 0%, transparent 100%); pointer-events: none;"></div>
                                             <!-- Type pill -->
-                                            <div style="position: absolute; top: 6px; left: 6px;">
-                                                <span :style="typePillStyle(item.type)" style="font-size: 8px; padding: 2px 6px;">{{ typeLabel(item.type) }}</span>
-                                            </div>
+                                            <ContentTypeBadge :type="item.type" />
                                             <!-- Score badge -->
                                             <div v-if="item.rating && item.rating > 0" style="position: absolute; top: 6px; right: 6px; padding: 2px 6px; border-radius: 10px; background: rgba(13,17,23,0.85); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); font-size: 9px; font-weight: 800; display: flex; align-items: center; gap: 2px;" :style="{ color: item.rating >= 8.5 ? '#fbbf24' : '#e2e8f0' }">
                                                 ★ {{ item.rating.toFixed(1) }}
@@ -234,24 +230,75 @@
 
                 <!-- ─── SEARCH / FILTER MODE ──────────────────────────────────── -->
                 <template v-else>
-                    <!-- Toolbar: count + sort + filter -->
-                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 18px 12px;">
-                        <span style="font-size: 12px; font-weight: 600; color: rgba(233,237,242,0.42);">
-                            <template v-if="meta.total > 0">{{ meta.total.toLocaleString('pt-BR') }} obras</template>
-                            <template v-else-if="!loading">Nenhum resultado</template>
-                        </span>
-                        <div style="display: flex; gap: 8px;">
-                            <button :style="sortBtnStyle" @click="isSortOpen = true">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" :stroke="isSortDefault ? 'rgba(233,237,242,0.42)' : '#f5a623'" stroke-width="1.7" stroke-linecap="round"><path d="M3 7h13M3 12h9M3 17h5M17 17V7M14 14l3 3 3-3"/></svg>
-                                <span :style="{ fontSize: '11px', fontWeight: '700', color: isSortDefault ? 'rgba(233,237,242,0.42)' : '#f5a623', maxWidth: '80px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }">{{ sortMeta.label }}</span>
-                            </button>
-                            <button :style="filterBtnStyle" @click="isFilterOpen = true">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" :stroke="activeFilterCount > 0 ? '#B8A4FF' : 'rgba(233,237,242,0.42)'" stroke-width="1.7" stroke-linecap="round"><path d="M3 5h18M6 12h12M10 19h4"/></svg>
-                                <span :style="{ fontSize: '11px', fontWeight: '700', color: activeFilterCount > 0 ? '#B8A4FF' : 'rgba(233,237,242,0.42)' }">Filtros</span>
-                                <span v-if="activeFilterCount > 0" style="width: 16px; height: 16px; border-radius: 8px; background: #B8A4FF; color: #05070b; font-size: 9px; font-weight: 800; display: flex; align-items: center; justify-content: center;">{{ activeFilterCount }}</span>
+                    <!-- Toolbar padronizada (FilterBar) -->
+                    <FilterBar :count="meta.total" :active-count="activeFilterCount" @apply="loadContents" @clear="clearAdvancedFilters">
+                        <!-- Ordenar por -->
+                        <div style="margin-bottom: 22px;">
+                            <div class="filter-label">Ordenar por</div>
+                            <button v-for="opt in sortOptions" :key="opt.id" :style="sortOptionStyle(opt.id)" @click="sortById = opt.id">
+                                <div :style="sortIconStyle(opt.id)">{{ opt.icon }}</div>
+                                <div style="flex: 1; text-align: left;">
+                                    <div :style="{ fontSize: '13px', fontWeight: '700', color: sortById === opt.id ? '#f5a623' : '#e9edf2' }">{{ opt.label }}</div>
+                                    <div style="font-size: 11px; color: rgba(233,237,242,0.42); margin-top: 1px;">{{ opt.desc }}</div>
+                                </div>
+                                <svg v-if="sortById === opt.id" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f5a623" stroke-width="2" stroke-linecap="round"><path d="m4 12 5 5 11-11"/></svg>
                             </button>
                         </div>
-                    </div>
+                        <!-- Nota mínima -->
+                        <div style="margin-bottom: 22px;">
+                            <div class="filter-label">Nota mínima</div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <input
+                                    type="range" min="0" max="10" step="0.5" :value="filterScoreMin"
+                                    style="flex: 1; min-width: 0; accent-color: #f5a623;"
+                                    @input="filterScoreMin = Number(($event.target as HTMLInputElement).value)"
+                                />
+                                <span style="min-width: 70px; text-align: right; font-size: 13px; font-weight: 700;" :style="{ color: filterScoreMin > 0 ? '#f5a623' : 'rgba(233,237,242,0.42)' }">{{ filterScoreMin > 0 ? `★ ${filterScoreMin.toFixed(1)}+` : 'Qualquer' }}</span>
+                            </div>
+                        </div>
+                        <!-- Status -->
+                        <div style="margin-bottom: 22px;">
+                            <div class="filter-label">Status de publicação</div>
+                            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                <button v-for="[key, val] in Object.entries(catStatusOptions)" :key="key" :style="catStatusChipStyle(key)" @click="toggleCatStatus(key)">
+                                    <span :style="{ width: '7px', height: '7px', borderRadius: '50%', background: filterCatStatuses.includes(key) ? val.color : '#6b738a' }"></span>
+                                    {{ val.label }}
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Ano de lançamento -->
+                        <div style="margin-bottom: 22px;">
+                            <div class="filter-label">Ano de lançamento</div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <input
+                                    type="number" inputmode="numeric" placeholder="De" min="1900" max="2100" :value="filterYearMin ?? ''"
+                                    style="flex: 1; min-width: 0; padding: 11px 12px; border-radius: 10px; border: 1px solid var(--border-default); background: var(--bg-tertiary); color: var(--text-primary); font-size: 13px; outline: none; box-sizing: border-box;"
+                                    @input="filterYearMin = parseYear(($event.target as HTMLInputElement).value)"
+                                />
+                                <span style="color: rgba(233,237,242,0.42);">—</span>
+                                <input
+                                    type="number" inputmode="numeric" placeholder="Até" min="1900" max="2100" :value="filterYearMax ?? ''"
+                                    style="flex: 1; min-width: 0; padding: 11px 12px; border-radius: 10px; border: 1px solid var(--border-default); background: var(--bg-tertiary); color: var(--text-primary); font-size: 13px; outline: none; box-sizing: border-box;"
+                                    @input="filterYearMax = parseYear(($event.target as HTMLInputElement).value)"
+                                />
+                            </div>
+                        </div>
+                        <!-- Gêneros -->
+                        <div style="margin-bottom: 22px;">
+                            <div class="filter-label">Gêneros</div>
+                            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                <button v-for="g in genresList" :key="g" :style="genreChipStyle(g)" @click="toggleGenre(g)">{{ g }}</button>
+                            </div>
+                        </div>
+                        <!-- Outros -->
+                        <div>
+                            <div class="filter-label">Outros</div>
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-radius: 12px; background: var(--bg-tertiary); border: 1px solid var(--border-default); cursor: pointer;" @click="filterIsAdult = filterIsAdult === true ? null : true">
+                                <div style="font-size: 13px; font-weight: 700; color: var(--text-primary);">+18 apenas</div>
+                                <div :style="toggleTrack(filterIsAdult === true)"><div :style="toggleKnob(filterIsAdult === true)"></div></div>
+                            </div>
+                        </div>
+                    </FilterBar>
 
                     <!-- Skeleton grid -->
                     <div v-if="loading && contents.length === 0" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 0 14px; align-items: start;">
@@ -291,9 +338,7 @@
                                 <!-- Bottom gradient -->
                                 <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 60px; background: linear-gradient(0deg, rgba(13,17,23,0.85) 0%, transparent 100%); pointer-events: none;"></div>
                                 <!-- Type pill -->
-                                <div style="position: absolute; top: 5px; left: 5px;">
-                                    <span :style="typePillStyle(content.type)" style="font-size: 8px; padding: 1px 5px;">{{ typeLabel(content.type) }}</span>
-                                </div>
+                                <ContentTypeBadge :type="content.type" />
                                 <!-- Score -->
                                 <div v-if="content.rating && content.rating > 0" style="position: absolute; top: 5px; right: 5px; padding: 2px 5px; border-radius: 8px; background: rgba(13,17,23,0.85); font-size: 9px; font-weight: 800;" :style="{ color: content.rating >= 8.5 ? '#fbbf24' : '#e2e8f0' }">★ {{ content.rating.toFixed(1) }}</div>
                                 <!-- In library -->
@@ -321,113 +366,6 @@
             </div>
         </IonContent>
 
-        <!-- ── Sort Sheet ─────────────────────────────────────────────────── -->
-        <IonModal :is-open="isSortOpen" :initial-breakpoint="0.65" :breakpoints="[0, 0.65, 1]" :handle="true" handle-behavior="cycle" class="bottom-sheet-modal" @didDismiss="isSortOpen = false">
-            <IonContent class="sheet-content">
-                <div style="padding: 4px 16px 32px;">
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
-                        <div style="font-size: 16px; font-weight: 800; color: #e9edf2; letter-spacing: -0.02em;">Ordenar por</div>
-                        <button style="width: 30px; height: 30px; border-radius: 15px; border: none; background: rgba(255,255,255,0.06); color: rgba(233,237,242,0.62); cursor: pointer; display: flex; align-items: center; justify-content: center;" @click="isSortOpen = false">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M5 5l14 14M19 5 5 19"/></svg>
-                        </button>
-                    </div>
-                    <button v-for="opt in sortOptions" :key="opt.id" :style="sortOptionStyle(opt.id)" @click="setSort(opt.id)">
-                        <div :style="sortIconStyle(opt.id)">{{ opt.icon }}</div>
-                        <div style="flex: 1; text-align: left;">
-                            <div :style="{ fontSize: '13px', fontWeight: '700', color: sortById === opt.id ? '#f5a623' : '#e9edf2' }">{{ opt.label }}</div>
-                            <div style="font-size: 11px; color: rgba(233,237,242,0.42); margin-top: 1px;">{{ opt.desc }}</div>
-                        </div>
-                        <svg v-if="sortById === opt.id" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f5a623" stroke-width="2" stroke-linecap="round"><path d="m4 12 5 5 11-11"/></svg>
-                    </button>
-                </div>
-            </IonContent>
-        </IonModal>
-
-        <!-- ── Filter Sheet ────────────────────────────────────────────────── -->
-        <IonModal :is-open="isFilterOpen" :initial-breakpoint="0.9" :breakpoints="[0, 0.9, 1]" :handle="true" handle-behavior="cycle" class="bottom-sheet-modal" @didDismiss="isFilterOpen = false">
-            <IonHeader class="sheet-header">
-                <div style="padding: 8px 20px 0;">
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                        <div>
-                            <div style="font-size: 18px; font-weight: 800; color: #e9edf2; letter-spacing: -0.02em;">Filtros avançados</div>
-                            <div v-if="activeFilterCount > 0" style="font-size: 11px; color: #f5a623; font-weight: 600; margin-top: 2px;">{{ activeFilterCount }} ativo{{ activeFilterCount > 1 ? 's' : '' }}</div>
-                        </div>
-                        <div style="display: flex; gap: 8px;">
-                            <button style="padding: 7px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06); background: transparent; color: rgba(233,237,242,0.42); cursor: pointer; font-size: 12px; font-weight: 700;" @click="clearAdvancedFilters">Limpar</button>
-                            <button style="width: 32px; height: 32px; border-radius: 16px; border: none; background: rgba(255,255,255,0.06); color: rgba(233,237,242,0.62); cursor: pointer; display: flex; align-items: center; justify-content: center;" @click="isFilterOpen = false">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M5 5l14 14M19 5 5 19"/></svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </IonHeader>
-            <IonContent class="sheet-content">
-                <div style="padding: 0 20px 120px;">
-                    <!-- Nota mínima -->
-                    <div style="margin-bottom: 22px;">
-                        <div class="filter-label">Nota mínima</div>
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <input
-                                type="range" min="0" max="10" step="0.5" :value="filterScoreMin"
-                                style="flex: 1; min-width: 0; accent-color: #f5a623;"
-                                @input="filterScoreMin = Number(($event.target as HTMLInputElement).value)"
-                            />
-                            <span style="min-width: 70px; text-align: right; font-size: 13px; font-weight: 700;" :style="{ color: filterScoreMin > 0 ? '#f5a623' : 'rgba(233,237,242,0.42)' }">{{ filterScoreMin > 0 ? `★ ${filterScoreMin.toFixed(1)}+` : 'Qualquer' }}</span>
-                        </div>
-                    </div>
-                    <!-- Status -->
-                    <div style="margin-bottom: 22px;">
-                        <div class="filter-label">Status de publicação</div>
-                        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                            <button v-for="[key, val] in Object.entries(catStatusOptions)" :key="key" :style="catStatusChipStyle(key, val.color)" @click="toggleCatStatus(key)">
-                                <span :style="{ width: '7px', height: '7px', borderRadius: '50%', background: filterCatStatuses.includes(key) ? val.color : '#6b738a' }"></span>
-                                {{ val.label }}
-                            </button>
-                        </div>
-                    </div>
-                    <!-- Ano de lançamento -->
-                    <div style="margin-bottom: 22px;">
-                        <div class="filter-label">Ano de lançamento</div>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <input
-                                type="number" inputmode="numeric" placeholder="De" min="1900" max="2100" :value="filterYearMin ?? ''"
-                                style="flex: 1; min-width: 0; padding: 11px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.025); color: #e9edf2; font-size: 13px; outline: none; box-sizing: border-box;"
-                                @input="filterYearMin = parseYear(($event.target as HTMLInputElement).value)"
-                            />
-                            <span style="color: rgba(233,237,242,0.42);">—</span>
-                            <input
-                                type="number" inputmode="numeric" placeholder="Até" min="1900" max="2100" :value="filterYearMax ?? ''"
-                                style="flex: 1; min-width: 0; padding: 11px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.025); color: #e9edf2; font-size: 13px; outline: none; box-sizing: border-box;"
-                                @input="filterYearMax = parseYear(($event.target as HTMLInputElement).value)"
-                            />
-                        </div>
-                    </div>
-                    <!-- Gêneros -->
-                    <div style="margin-bottom: 22px;">
-                        <div class="filter-label">Gêneros</div>
-                        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                            <button v-for="g in genresList" :key="g" :style="genreChipStyle(g)" @click="toggleGenre(g)">{{ g }}</button>
-                        </div>
-                    </div>
-                    <!-- Outros -->
-                    <div>
-                        <div class="filter-label">Outros</div>
-                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-radius: 12px; background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.06); cursor: pointer;" @click="filterIsAdult = filterIsAdult === true ? null : true">
-                            <div style="font-size: 13px; font-weight: 700; color: #e9edf2;">+18 apenas</div>
-                            <div :style="toggleTrack(filterIsAdult === true)"><div :style="toggleKnob(filterIsAdult === true)"></div></div>
-                        </div>
-                    </div>
-                </div>
-            </IonContent>
-            <IonFooter class="sheet-footer">
-                <div style="padding: 12px 20px;">
-                    <button style="width: 100%; padding: 13px; border-radius: 12px; border: none; background: #f5a623; color: #050608; font-size: 14px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 0 24px hsl(38 91% 55% / 0.45);" @click="applyFilters">
-                        Aplicar filtros
-                        <span v-if="activeFilterCount > 0" style="background: rgba(0,0,0,0.2); border-radius: 10px; padding: 2px 8px; font-size: 11px;">{{ activeFilterCount }}</span>
-                    </button>
-                </div>
-            </IonFooter>
-        </IonModal>
     </IonPage>
 </template>
 
@@ -439,6 +377,8 @@ import {
 } from '@ionic/vue';
 import { contentService, Content, ContentMeta, ContentType, ContentCatalogStatus, ContentSortField } from '@/services/contentService';
 import { discoverService, DiscoverHome } from '@/services/discoverService';
+import ContentTypeBadge from '@/components/ContentTypeBadge.vue';
+import FilterBar from '@/components/FilterBar.vue';
 
 const SORT_OPTIONS = [
     { id: 'score_desc',   label: 'Mais relevantes',  icon: '◆', desc: 'Score combinado',      apiSort: 'score' as ContentSortField,       apiOrder: 'desc' as const },
@@ -477,7 +417,7 @@ interface HomeSection {
 
 export default defineComponent({
     name: 'DiscoverPage',
-    components: { IonPage, IonContent, IonInfiniteScroll, IonInfiniteScrollContent, IonModal, IonHeader, IonFooter },
+    components: { IonPage, IonContent, IonInfiniteScroll, IonInfiniteScrollContent, IonModal, IonHeader, IonFooter, ContentTypeBadge, FilterBar },
     data() {
         return {
             // Search/filter mode
@@ -722,24 +662,23 @@ export default defineComponent({
             const col = TYPE_META[type]?.color ?? '#f5a623';
             return { background: `linear-gradient(135deg, ${col}22, rgba(255,255,255,0.02))` };
         },
-        sortOptionStyle(id: string): Record<string, string> {
-            const active = this.sortById === id;
-            return { width: '100%', display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 14px', borderRadius: '12px', border: 'none', cursor: 'pointer', marginBottom: '4px', background: active ? 'hsl(38 91% 55% / 0.08)' : 'transparent', outline: active ? '1px solid hsl(38 91% 55% / 0.3)' : '1px solid hsl(0 0% 100% / 0.06)', textAlign: 'left', transition: 'all 0.15s' };
+        sortOptionStyle(_id: string): Record<string, string> {
+            return { width: '100%', display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 14px', borderRadius: '12px', cursor: 'pointer', marginBottom: '4px', background: 'transparent', border: '1px solid var(--border-default)', textAlign: 'left', transition: 'all 0.15s' };
         },
         sortIconStyle(id: string): Record<string, string> {
             const active = this.sortById === id;
-            return { width: '36px', height: '36px', borderRadius: '10px', flexShrink: '0', background: active ? 'hsl(38 91% 55% / 0.15)' : 'rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '15px', color: active ? '#f5a623' : 'hsl(213 10% 45%)' };
+            return { width: '36px', height: '36px', borderRadius: '10px', flexShrink: '0', background: 'var(--bg-tertiary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '15px', color: active ? 'var(--accent-primary)' : 'var(--text-muted)' };
         },
-        catStatusChipStyle(key: string, color: string): Record<string, string> {
+        catStatusChipStyle(key: string): Record<string, string> {
             const active = this.filterCatStatuses.includes(key);
-            return { display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px', borderRadius: '20px', border: 'none', cursor: 'pointer', fontSize: '11px', fontWeight: '700', background: active ? color + '22' : 'hsl(222 24% 7%)', color: active ? color : 'hsl(213 15% 65%)', outline: active ? `1.5px solid ${color}55` : '1px solid hsl(0 0% 100% / 0.06)', transition: 'all 0.15s' };
+            return { display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px', borderRadius: '20px', cursor: 'pointer', fontSize: '11px', fontWeight: '700', background: active ? 'var(--accent-primary)' : 'var(--bg-tertiary)', color: active ? '#000' : 'var(--text-secondary)', border: `1px solid ${active ? 'var(--accent-primary)' : 'var(--border-default)'}`, transition: 'all 0.15s' };
         },
         genreChipStyle(g: string): Record<string, string> {
             const active = this.filterGenres.includes(g);
-            return { padding: '6px 12px', borderRadius: '20px', border: 'none', cursor: 'pointer', fontSize: '11px', fontWeight: '600', background: active ? 'hsl(38 91% 55% / 0.12)' : 'hsl(222 24% 7%)', color: active ? '#f5a623' : 'hsl(213 15% 65%)', outline: active ? '1.5px solid hsl(38 91% 55% / 0.35)' : '1px solid hsl(0 0% 100% / 0.06)', transition: 'all 0.15s' };
+            return { padding: '6px 12px', borderRadius: '20px', cursor: 'pointer', fontSize: '11px', fontWeight: '600', background: active ? 'var(--accent-primary)' : 'var(--bg-tertiary)', color: active ? '#000' : 'var(--text-secondary)', border: `1px solid ${active ? 'var(--accent-primary)' : 'var(--border-default)'}`, transition: 'all 0.15s' };
         },
         toggleTrack(active: boolean): Record<string, string> {
-            return { width: '44px', height: '26px', borderRadius: '13px', position: 'relative', background: active ? '#f5a623' : 'hsl(0 0% 100% / 0.08)', transition: 'background 0.2s', flexShrink: '0' };
+            return { width: '44px', height: '26px', borderRadius: '13px', position: 'relative', background: active ? 'var(--accent-primary)' : 'var(--bg-tertiary)', transition: 'background 0.2s', flexShrink: '0' };
         },
         toggleKnob(active: boolean): Record<string, string> {
             return { position: 'absolute', top: '3px', borderRadius: '10px', left: active ? '21px' : '3px', width: '20px', height: '20px', background: '#fff', transition: 'left 0.2s', boxShadow: '0 1px 4px rgba(0,0,0,0.3)' };

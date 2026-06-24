@@ -218,16 +218,7 @@
                     <!-- ── Site ── -->
                     <div style="margin-bottom: 28px;">
                         <div :style="sectionLabelStyle">Fonte <span style="font-weight: 600; color: rgba(233,237,242,0.28); text-transform: none; letter-spacing: 0;">(opcional)</span></div>
-                        <IonSelect
-                            v-model="form.site_id"
-                            placeholder="Sem fonte"
-                            fill="outline"
-                            interface="action-sheet"
-                            class="neon-select"
-                        >
-                            <IonSelectOption value="">Sem fonte</IonSelectOption>
-                            <IonSelectOption v-for="s in sites" :key="s.id" :value="s.id">{{ s.name }}</IonSelectOption>
-                        </IonSelect>
+                        <SourceSelect :model-value="form.site_id" :sites="sites" @update:model-value="(v) => form.site_id = v ?? ''" />
                     </div>
 
                     <IonButton expand="block" :disabled="saving || !canSubmit" @click="addContent" class="btn-primary" style="margin-bottom: 10px;">
@@ -246,9 +237,10 @@
 import { defineComponent } from 'vue';
 import {
     IonPage, IonContent,
-    IonButton, IonIcon, IonSpinner, IonInput, IonSelect, IonSelectOption,
+    IonButton, IonIcon, IonSpinner, IonInput,
     toastController,
 } from '@ionic/vue';
+import SourceSelect from '@/components/SourceSelect.vue';
 import { bookOutline, tvOutline, libraryOutline, filmOutline, desktopOutline } from 'ionicons/icons';
 import {
     contentService, Content, ContentType, ContentCatalogStatus,
@@ -285,7 +277,7 @@ const MOVIE_STATUSES: ContentStatus[] = ['plan_to_read', 'reading', 'completed']
 
 export default defineComponent({
     name: 'AddUserMangaPage',
-    components: { IonPage, IonContent, IonButton, IonIcon, IonSpinner, IonInput, IonSelect, IonSelectOption },
+    components: { IonPage, IonContent, IonButton, IonIcon, IonSpinner, IonInput, SourceSelect },
     data() {
         return {
             saving: false,

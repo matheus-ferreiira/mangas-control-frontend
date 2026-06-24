@@ -31,16 +31,9 @@
                     </div>
                 </div>
 
-                <!-- Stats row — airy, hairline dividers -->
-                <div style="margin: 0 18px 20px; border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; overflow: hidden; display: flex; align-items: stretch;">
-                    <div
-                        v-for="(s, i) in statsCards"
-                        :key="s.label"
-                        :style="{ flex: '1', padding: '16px 10px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', borderLeft: i > 0 ? '1px solid rgba(255,255,255,0.06)' : 'none' }"
-                    >
-                        <div :style="{ fontSize: '26px', fontWeight: '800', color: s.color, letterSpacing: '-0.03em', lineHeight: '1', fontFamily: '\'Sora\', system-ui, sans-serif' }">{{ s.value }}</div>
-                        <div style="font-size: 9px; color: rgba(233,237,242,0.42); font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; margin-top: 5px;">{{ s.label }}</div>
-                    </div>
+                <!-- Stats header compacto -->
+                <div style="margin: 0 18px 20px;">
+                    <StatsHeader :stats="statsCards" />
                 </div>
 
                 <!-- Activity metrics — ghost surface -->
@@ -182,6 +175,7 @@ import {
 import { authStore } from '@/store/auth';
 import { authService } from '@/services/authService';
 import { userContentService, UserContent } from '@/services/userContentService';
+import StatsHeader from '@/components/StatsHeader.vue';
 
 const TYPE_META: Record<string, { label: string; color: string }> = {
     manga:  { label: 'Manga',  color: '#f5a623' },
@@ -193,7 +187,7 @@ const TYPE_META: Record<string, { label: string; color: string }> = {
 
 export default defineComponent({
     name: 'ProfilePage',
-    components: { IonPage, IonContent, IonRefresher, IonRefresherContent },
+    components: { IonPage, IonContent, IonRefresher, IonRefresherContent, StatsHeader },
     data() {
         return {
             userContents: [] as UserContent[],
