@@ -262,8 +262,12 @@ export default defineComponent({
                 "if(!A.length){alert('Nenhum lancamento coletado.');return;}" +
                 "var x=await fetch('" + apiBase + "/user/sync-chapters',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json','Authorization':'Bearer " + token + "'},body:JSON.stringify({releases:A})});" +
                 'var j=await x.json();' +
-                'var nc=(j&&j.data&&j.data.new_chapters)||[];' +
-                "alert('Sincronizado: '+A.length+' lancamentos, '+nc.length+' obra(s) com capitulo novo.');" +
+                'var dt=(j&&j.data)||{};' +
+                'var nc=dt.new_chapters||[];' +
+                'var um=dt.unmatched||[];' +
+                "var msg='Sincronizado: '+A.length+' lancamentos do site.\\n'+(dt.linked||0)+' obra(s) vinculadas ao ToonLivre, '+(dt.retitled||0)+' titulo(s) corrigido(s).\\n'+nc.length+' obra(s) com capitulo novo.';" +
+                "if(um.length)msg+='\\n\\nSem correspondencia ('+um.length+'): '+um.join(', ');" +
+                'alert(msg);' +
                 "}catch(e){alert('Erro: '+(e&&e.message));}})();";
             return 'javascript:' + js;
         },
