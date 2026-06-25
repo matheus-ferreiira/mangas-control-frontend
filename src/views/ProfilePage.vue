@@ -265,7 +265,7 @@ export default defineComponent({
                 'var dt=(j&&j.data)||{};' +
                 'var nc=dt.new_chapters||[];' +
                 'var um=dt.unmatched||[];' +
-                "var msg='Sincronizado: '+A.length+' lancamentos do site.\\n'+(dt.linked||0)+' obra(s) vinculadas ao ToonLivre, '+(dt.retitled||0)+' titulo(s) corrigido(s).\\n'+nc.length+' obra(s) com capitulo novo.';" +
+                "var msg=(dt.total_linked||0)+' obra(s) vinculadas ao ToonLivre.\\n'+nc.length+' com capitulo novo, '+((dt.total_linked||0)-nc.length)+' em dia.\\n\\n('+A.length+' lancamentos lidos do site, '+(dt.linked||0)+' nova(s) vinculacao(oes), '+(dt.retitled||0)+' titulo(s) corrigido(s).)';" +
                 "if(um.length)msg+='\\n\\nSem correspondencia ('+um.length+'): '+um.join(', ');" +
                 'alert(msg);' +
                 "}catch(e){alert('Erro: '+(e&&e.message));}})();";
