@@ -123,7 +123,7 @@
                             <IonIcon :icon="refreshOutline" style="font-size: 16px; color: var(--dot-new);" />
                         </div>
                         <div style="flex: 1; min-width: 0;">
-                            <div style="font-size: 13px; font-weight: 700; color: var(--text-primary);">{{ checkingChapters ? 'Verificando...' : 'Verificar Atualizações' }}</div>
+                            <div style="font-size: 13px; font-weight: 700; color: var(--text-primary);">{{ checkingChapters ? (checkPage ? `Verificando... (página ${checkPage})` : 'Verificando...') : 'Verificar Atualizações' }}</div>
                             <div style="font-size: 10px; color: var(--text-muted); margin-top: 1px;">Busca novos capítulos nos sites de leitura</div>
                         </div>
                         <IonSpinner v-if="checkingChapters" name="crescent" style="width: 18px; height: 18px;" />
@@ -212,6 +212,7 @@ export default defineComponent({
             canInstall: false,
             adultSaving: false,
             checkingChapters: false,
+            checkPage: 0,
             refreshOutline,
         };
     },
@@ -369,19 +370,65 @@ export default defineComponent({
         async installPwa() {
             await (window as any).installPWA?.();
         },
+        async toastMsg(message: string, color: 'success' | 'danger' = 'success') {
+            const t = await toastController.create({ message, duration: 2500, color, position: 'top' });
+            await t.present();
+        },
         async checkChapters() {
             if (this.checkingChapters) return;
             this.checkingChapters = true;
+            this.checkPage = 0;
             try {
-                await authService.checkChapters();
+                // 1. Busca os lançamentos direto do site (no navegador/app — passa pela proteção)
+                const all: { alternativeTitle: string; chapter: string }[] = [];
+                let page = 1;
+                let hasNext = true;
+                while (hasNext && page <= 20) {
+                    this.checkPage = page;
+                    let data: any;
+                    try {
+                        const resp = await fetch(`https://toonlivre.net/api/mangas/releases?page=${page}&limit=48`, {
+                            headers: { Accept: 'application/json' },
+                        });
+                        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                        data = await resp.json();
+                    } catch (e) {
+                        // não quebra o fluxo: usa o que já coletou
+                        console.error('Falha ao buscar página', page, e);
+                        break;
+                    }
+                    const list: any[] = Array.isArray(data) ? data : (data?.mangas ?? []);
+                    for (const item of list) {
+                        const title = item?.alternativeTitle;
+                        const chapter = item?.recentChapters?.[0]?.number;
+                        if (title && chapter != null) {
+                            all.push({ alternativeTitle: String(title), chapter: String(chapter) });
+                        }
+                    }
+                    hasNext = !!data?.pagination?.hasNextPage && page < 20;
+                    page++;
+                }
+
+                if (!all.length) {
+                    await this.toastMsg('Não foi possível obter os lançamentos do site.', 'danger');
+                    return;
+                }
+
+                // 2. Backend faz o match com a biblioteca
+                const result = await userContentService.syncChapters(all);
                 await this.loadUserContents();
-                const t = await toastController.create({ message: 'Verificação concluída! A biblioteca foi atualizada.', duration: 2500, color: 'success', position: 'top' });
-                await t.present();
+
+                // 3. Feedback
+                if (result.new_chapters.length > 0) {
+                    await this.toastMsg(`${result.new_chapters.length} obra(s) com novos capítulos!`, 'success');
+                } else {
+                    await this.toastMsg('Tudo atualizado. Nenhum capítulo novo.', 'success');
+                }
             } catch {
-                const t = await toastController.create({ message: 'Falha ao verificar atualizações.', duration: 2500, color: 'danger', position: 'top' });
-                await t.present();
+                await this.toastMsg('Erro ao verificar atualizações. Tente novamente.', 'danger');
             } finally {
                 this.checkingChapters = false;
+                this.checkPage = 0;
             }
         },
         async logout() {
