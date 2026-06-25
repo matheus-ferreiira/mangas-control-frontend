@@ -241,14 +241,19 @@
                                         <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--dot-new); flex-shrink: 0;"></span>
                                         Cap. {{ item.site_last_chapter }} disponível
                                     </div>
+                                    <!-- Em dia com a fonte -->
+                                    <div v-else-if="isUpToDate(item)" style="display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; font-size: 0.72rem; font-weight: 600; color: var(--text-muted);">
+                                        <span style="font-size: 0.82rem; line-height: 1; flex-shrink: 0;">✓</span>
+                                        Em dia
+                                    </div>
 
                                     <!-- Fonte (só quando cadastrada) -->
-                                    <div v-if="item.user_site" style="display: flex; align-items: center; gap: 4px; font-size: 0.72rem; color: var(--text-muted); margin-top: 3px; white-space: nowrap; overflow: hidden;">
+                                    <div v-if="item.user_site || item.site" style="display: flex; align-items: center; gap: 4px; font-size: 0.72rem; color: var(--text-muted); margin-top: 3px; white-space: nowrap; overflow: hidden;">
                                         <span style="width: 16px; height: 16px; border-radius: 3px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-                                            <img v-if="item.user_site.logo_url" :src="item.user_site.logo_url" alt="" style="width: 100%; height: 100%; object-fit: contain;" />
+                                            <img v-if="item.user_site?.logo_url" :src="item.user_site.logo_url" alt="" style="width: 100%; height: 100%; object-fit: contain;" />
                                             <IonIcon v-else :icon="globeOutline" style="font-size: 14px;" />
                                         </span>
-                                        <span style="overflow: hidden; text-overflow: ellipsis;">{{ item.user_site.name }}</span>
+                                        <span style="overflow: hidden; text-overflow: ellipsis;">{{ item.user_site?.name ?? item.site?.name }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -291,13 +296,18 @@
                                         <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--dot-new); flex-shrink: 0;"></span>
                                         Cap. {{ item.site_last_chapter }} disponível
                                     </div>
+                                    <!-- Em dia com a fonte -->
+                                    <div v-else-if="isUpToDate(item)" style="display: inline-flex; align-items: center; gap: 4px; margin-top: 3px; font-size: 0.72rem; font-weight: 600; color: var(--text-muted);">
+                                        <span style="font-size: 0.82rem; line-height: 1; flex-shrink: 0;">✓</span>
+                                        Em dia
+                                    </div>
                                     <!-- Fonte -->
-                                    <div v-if="item.user_site" style="display: flex; align-items: center; gap: 4px; font-size: 0.72rem; color: var(--text-muted); white-space: nowrap; overflow: hidden;">
+                                    <div v-if="item.user_site || item.site" style="display: flex; align-items: center; gap: 4px; font-size: 0.72rem; color: var(--text-muted); white-space: nowrap; overflow: hidden;">
                                         <span style="width: 16px; height: 16px; border-radius: 3px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-                                            <img v-if="item.user_site.logo_url" :src="item.user_site.logo_url" alt="" style="width: 100%; height: 100%; object-fit: contain;" />
+                                            <img v-if="item.user_site?.logo_url" :src="item.user_site.logo_url" alt="" style="width: 100%; height: 100%; object-fit: contain;" />
                                             <IonIcon v-else :icon="globeOutline" style="font-size: 14px;" />
                                         </span>
-                                        <span style="overflow: hidden; text-overflow: ellipsis;">{{ item.user_site.name }}</span>
+                                        <span style="overflow: hidden; text-overflow: ellipsis;">{{ item.user_site?.name ?? item.site?.name }}</span>
                                     </div>
                                 </div>
                                 <!-- +1 -->
@@ -543,8 +553,13 @@ export default defineComponent({
             if (last == null || last === '') return false;
             return parseFloat(String(last).replace(',', '.')) > uc.current_units;
         },
+        isUpToDate(uc: UserContent): boolean {
+            const last = uc.site_last_chapter;
+            if (last == null || last === '') return false;
+            return parseFloat(String(last).replace(',', '.')) <= uc.current_units;
+        },
         openSiteFor(uc: UserContent) {
-            const url = uc.user_site?.url;
+            const url = uc.user_site?.url ?? uc.site?.url;
             if (url) window.open(url, '_blank');
         },
         // Ação rápida p/ Assistindo/Lendo — visível mesmo sem total definido
