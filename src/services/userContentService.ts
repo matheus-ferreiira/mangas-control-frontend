@@ -93,15 +93,6 @@ export const userContentService = {
         return [];
     },
 
-    async syncChapters(releases: { alternativeTitle: string; chapter: string }[]): Promise<{
-        checked: number;
-        updated: number;
-        new_chapters: { title: string | null; site_title: string; current: number; available: string }[];
-    }> {
-        const { data } = await api.post('/user/sync-chapters', { releases });
-        return data;
-    },
-
     async getWithUpdates(): Promise<UserContent[]> {
         const { data } = await api.get('/user-contents/with-updates');
         if (Array.isArray(data)) return data as UserContent[];
