@@ -112,22 +112,33 @@
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(233,237,242,0.28)" stroke-width="1.7" stroke-linecap="round" style="flex-shrink: 0;"><path d="m9 6 6 6-6 6"/></svg>
                     </div>
 
-                    <!-- Verificar novos capítulos (apenas admin) -->
-                    <button
-                        v-if="isAdmin"
-                        :disabled="checkingChapters"
-                        style="width: 100%; background: var(--bg-tertiary); border: 1px solid var(--border-default); border-radius: 8px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; color: var(--text-primary); text-align: left;"
-                        @click="checkChapters"
-                    >
-                        <div style="width: 34px; height: 34px; border-radius: 10px; background: rgba(74,222,128,0.10); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                            <IonIcon :icon="refreshOutline" style="font-size: 16px; color: var(--dot-new);" />
+                    <!-- Sincronizar capítulos via bookmarklet (apenas admin) -->
+                    <div v-if="isAdmin" style="background: var(--bg-tertiary); border: 1px solid var(--border-default); border-radius: 8px; padding: 14px 16px;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                            <div style="width: 34px; height: 34px; border-radius: 10px; background: rgba(74,222,128,0.10); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <IonIcon :icon="refreshOutline" style="font-size: 16px; color: var(--dot-new);" />
+                            </div>
+                            <div style="flex: 1; min-width: 0;">
+                                <div style="font-size: 13px; font-weight: 700; color: var(--text-primary);">Sincronizar capítulos (ToonLivre)</div>
+                                <div style="font-size: 10px; color: var(--text-muted); margin-top: 1px;">O site bloqueia o servidor — roda no seu navegador via bookmarklet</div>
+                            </div>
                         </div>
-                        <div style="flex: 1; min-width: 0;">
-                            <div style="font-size: 13px; font-weight: 700; color: var(--text-primary);">{{ checkingChapters ? (checkPage ? `Verificando... (página ${checkPage})` : 'Verificando...') : 'Verificar Atualizações' }}</div>
-                            <div style="font-size: 10px; color: var(--text-muted); margin-top: 1px;">Busca novos capítulos nos sites de leitura</div>
-                        </div>
-                        <IonSpinner v-if="checkingChapters" name="crescent" style="width: 18px; height: 18px;" />
-                    </button>
+                        <a
+                            :href="bookmarkletHref"
+                            @click.prevent
+                            style="display: block; text-align: center; background: var(--accent-primary); color: #000; font-weight: 700; font-size: 13px; padding: 10px; border-radius: 8px; text-decoration: none; cursor: grab; margin-bottom: 8px;"
+                        >🔖 Sincronizar ToonLivre</a>
+                        <button
+                            style="width: 100%; background: transparent; border: 1px solid var(--border-default); color: var(--text-secondary); font-size: 12px; font-weight: 600; padding: 8px; border-radius: 8px; cursor: pointer;"
+                            @click="copyBookmarklet"
+                        >{{ bookmarkletCopied ? '✓ Copiado!' : 'Copiar bookmarklet' }}</button>
+                        <ol style="font-size: 11px; color: var(--text-muted); margin: 10px 0 0; padding-left: 18px; line-height: 1.7;">
+                            <li><strong>Arraste</strong> o botão laranja para a barra de favoritos (ou copie e crie um favorito colando como URL).</li>
+                            <li>Abra <strong>toonlivre.net</strong> e clique no favorito.</li>
+                            <li>Ele sincroniza e mostra um alerta com o resultado.</li>
+                            <li>Volte aqui e recarregue — os badges "Cap. X disponível" aparecem.</li>
+                        </ol>
+                    </div>
                 </div>
 
                 <!-- PWA install -->
@@ -211,8 +222,7 @@ export default defineComponent({
             userContents: [] as UserContent[],
             canInstall: false,
             adultSaving: false,
-            checkingChapters: false,
-            checkPage: 0,
+            bookmarkletCopied: false,
             refreshOutline,
         };
     },
@@ -235,6 +245,28 @@ export default defineComponent({
     computed: {
         user() { return authStore.user; },
         isAdmin(): boolean { return authStore.user?.role === 'admin'; },
+        bookmarkletHref(): string {
+            const apiBase = (import.meta as any).env.VITE_API_URL;
+            const token = authStore.token ?? '';
+            const js =
+                '(async()=>{try{' +
+                'var A=[],p=1,n=true;' +
+                'while(n&&p<=20){' +
+                "var r=await fetch('/api/mangas/releases?page='+p+'&limit=48',{headers:{Accept:'application/json'}});" +
+                'if(!r.ok)break;' +
+                'var d=await r.json();' +
+                'var l=Array.isArray(d)?d:(d.mangas||[]);' +
+                'for(var i=0;i<l.length;i++){var it=l[i];var t=it&&it.alternativeTitle;var c=it&&it.recentChapters&&it.recentChapters[0]&&it.recentChapters[0].number;if(t&&c!=null)A.push({alternativeTitle:String(t),chapter:String(c)});}' +
+                'n=!!(d&&d.pagination&&d.pagination.hasNextPage)&&p<20;p++;' +
+                '}' +
+                "if(!A.length){alert('Nenhum lancamento coletado.');return;}" +
+                "var x=await fetch('" + apiBase + "/user/sync-chapters',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json','Authorization':'Bearer " + token + "'},body:JSON.stringify({releases:A})});" +
+                'var j=await x.json();' +
+                'var nc=(j&&j.data&&j.data.new_chapters)||[];' +
+                "alert('Sincronizado: '+A.length+' lancamentos, '+nc.length+' obra(s) com capitulo novo.');" +
+                "}catch(e){alert('Erro: '+(e&&e.message));}})();";
+            return 'javascript:' + js;
+        },
         userInitial(): string {
             return (authStore.user?.name ?? '').charAt(0).toUpperCase() || 'U';
         },
@@ -370,65 +402,14 @@ export default defineComponent({
         async installPwa() {
             await (window as any).installPWA?.();
         },
-        async toastMsg(message: string, color: 'success' | 'danger' = 'success') {
-            const t = await toastController.create({ message, duration: 2500, color, position: 'top' });
-            await t.present();
-        },
-        async checkChapters() {
-            if (this.checkingChapters) return;
-            this.checkingChapters = true;
-            this.checkPage = 0;
+        async copyBookmarklet() {
             try {
-                // 1. Busca os lançamentos direto do site (no navegador/app — passa pela proteção)
-                const all: { alternativeTitle: string; chapter: string }[] = [];
-                let page = 1;
-                let hasNext = true;
-                while (hasNext && page <= 20) {
-                    this.checkPage = page;
-                    let data: any;
-                    try {
-                        const resp = await fetch(`https://toonlivre.net/api/mangas/releases?page=${page}&limit=48`, {
-                            headers: { Accept: 'application/json' },
-                        });
-                        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-                        data = await resp.json();
-                    } catch (e) {
-                        // não quebra o fluxo: usa o que já coletou
-                        console.error('Falha ao buscar página', page, e);
-                        break;
-                    }
-                    const list: any[] = Array.isArray(data) ? data : (data?.mangas ?? []);
-                    for (const item of list) {
-                        const title = item?.alternativeTitle;
-                        const chapter = item?.recentChapters?.[0]?.number;
-                        if (title && chapter != null) {
-                            all.push({ alternativeTitle: String(title), chapter: String(chapter) });
-                        }
-                    }
-                    hasNext = !!data?.pagination?.hasNextPage && page < 20;
-                    page++;
-                }
-
-                if (!all.length) {
-                    await this.toastMsg('Não foi possível obter os lançamentos do site.', 'danger');
-                    return;
-                }
-
-                // 2. Backend faz o match com a biblioteca
-                const result = await userContentService.syncChapters(all);
-                await this.loadUserContents();
-
-                // 3. Feedback
-                if (result.new_chapters.length > 0) {
-                    await this.toastMsg(`${result.new_chapters.length} obra(s) com novos capítulos!`, 'success');
-                } else {
-                    await this.toastMsg('Tudo atualizado. Nenhum capítulo novo.', 'success');
-                }
+                await navigator.clipboard.writeText(this.bookmarkletHref);
+                this.bookmarkletCopied = true;
+                setTimeout(() => { this.bookmarkletCopied = false; }, 2500);
             } catch {
-                await this.toastMsg('Erro ao verificar atualizações. Tente novamente.', 'danger');
-            } finally {
-                this.checkingChapters = false;
-                this.checkPage = 0;
+                const t = await toastController.create({ message: 'Não foi possível copiar. Arraste o botão para os favoritos.', duration: 2500, color: 'danger', position: 'top' });
+                await t.present();
             }
         },
         async logout() {
