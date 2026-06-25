@@ -236,6 +236,12 @@
                                         ✓ Completo<span v-if="item.rating != null" style="color: var(--text-muted); font-weight: 500;"> · ★ {{ item.rating }}/10</span>
                                     </div>
 
+                                    <!-- Novo capítulo disponível -->
+                                    <div v-if="hasNewChapter(item)" style="display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; font-size: 0.72rem; font-weight: 700; color: var(--dot-new); cursor: pointer;" @click.stop="openSiteFor(item)">
+                                        <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--dot-new); flex-shrink: 0;"></span>
+                                        Cap. {{ item.site_last_chapter }} disponível
+                                    </div>
+
                                     <!-- Fonte (só quando cadastrada) -->
                                     <div v-if="item.user_site" style="display: flex; align-items: center; gap: 4px; font-size: 0.72rem; color: var(--text-muted); margin-top: 3px; white-space: nowrap; overflow: hidden;">
                                         <span style="width: 16px; height: 16px; border-radius: 3px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; overflow: hidden;">
@@ -279,6 +285,11 @@
                                             <template v-else>{{ unitLabel(item.content?.type) }}. {{ item.current_units }}<template v-if="item.content?.total_units"> / {{ item.content.total_units }}</template></template>
                                         </span>
                                         <span v-if="listDate(item)" style="margin-left: auto; color: var(--text-muted); flex-shrink: 0; padding-left: 8px;">{{ listDate(item) }}</span>
+                                    </div>
+                                    <!-- Novo capítulo disponível -->
+                                    <div v-if="hasNewChapter(item)" style="display: inline-flex; align-items: center; gap: 4px; margin-top: 3px; font-size: 0.72rem; font-weight: 700; color: var(--dot-new); cursor: pointer;" @click.stop="openSiteFor(item)">
+                                        <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--dot-new); flex-shrink: 0;"></span>
+                                        Cap. {{ item.site_last_chapter }} disponível
                                     </div>
                                     <!-- Fonte -->
                                     <div v-if="item.user_site" style="display: flex; align-items: center; gap: 4px; font-size: 0.72rem; color: var(--text-muted); white-space: nowrap; overflow: hidden;">
@@ -526,6 +537,15 @@ export default defineComponent({
         // Tem total conhecido → mostra barra de progresso (caso contrário, é serializado/ongoing)
         hasProgress(uc: UserContent): boolean {
             return !!this.seasonLimit(uc);
+        },
+        hasNewChapter(uc: UserContent): boolean {
+            const last = uc.site_last_chapter;
+            if (last == null || last === '') return false;
+            return parseFloat(String(last).replace(',', '.')) > uc.current_units;
+        },
+        openSiteFor(uc: UserContent) {
+            const url = uc.user_site?.url;
+            if (url) window.open(url, '_blank');
         },
         // Ação rápida p/ Assistindo/Lendo — visível mesmo sem total definido
         // (ex.: One Piece, em andamento). Só esconde p/ filme ou quando no limite.

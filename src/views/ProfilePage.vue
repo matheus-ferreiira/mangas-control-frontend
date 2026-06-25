@@ -111,6 +111,23 @@
                         </div>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(233,237,242,0.28)" stroke-width="1.7" stroke-linecap="round" style="flex-shrink: 0;"><path d="m9 6 6 6-6 6"/></svg>
                     </div>
+
+                    <!-- Verificar novos capítulos (apenas admin) -->
+                    <button
+                        v-if="isAdmin"
+                        :disabled="checkingChapters"
+                        style="width: 100%; background: var(--bg-tertiary); border: 1px solid var(--border-default); border-radius: 8px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; color: var(--text-primary); text-align: left;"
+                        @click="checkChapters"
+                    >
+                        <div style="width: 34px; height: 34px; border-radius: 10px; background: rgba(74,222,128,0.10); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <IonIcon :icon="refreshOutline" style="font-size: 16px; color: var(--dot-new);" />
+                        </div>
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="font-size: 13px; font-weight: 700; color: var(--text-primary);">{{ checkingChapters ? 'Verificando...' : 'Verificar Atualizações' }}</div>
+                            <div style="font-size: 10px; color: var(--text-muted); margin-top: 1px;">Busca novos capítulos nos sites de leitura</div>
+                        </div>
+                        <IonSpinner v-if="checkingChapters" name="crescent" style="width: 18px; height: 18px;" />
+                    </button>
                 </div>
 
                 <!-- PWA install -->
@@ -170,8 +187,9 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import {
-    IonPage, IonContent, IonRefresher, IonRefresherContent, alertController, toastController,
+    IonPage, IonContent, IonRefresher, IonRefresherContent, IonIcon, IonSpinner, alertController, toastController,
 } from '@ionic/vue';
+import { refreshOutline } from 'ionicons/icons';
 import { authStore } from '@/store/auth';
 import { authService } from '@/services/authService';
 import { userContentService, UserContent } from '@/services/userContentService';
@@ -187,12 +205,14 @@ const TYPE_META: Record<string, { label: string; color: string }> = {
 
 export default defineComponent({
     name: 'ProfilePage',
-    components: { IonPage, IonContent, IonRefresher, IonRefresherContent, StatsHeader },
+    components: { IonPage, IonContent, IonRefresher, IonRefresherContent, IonIcon, IonSpinner, StatsHeader },
     data() {
         return {
             userContents: [] as UserContent[],
             canInstall: false,
             adultSaving: false,
+            checkingChapters: false,
+            refreshOutline,
         };
     },
     mounted() {
@@ -348,6 +368,21 @@ export default defineComponent({
         },
         async installPwa() {
             await (window as any).installPWA?.();
+        },
+        async checkChapters() {
+            if (this.checkingChapters) return;
+            this.checkingChapters = true;
+            try {
+                await authService.checkChapters();
+                await this.loadUserContents();
+                const t = await toastController.create({ message: 'Verificação concluída! A biblioteca foi atualizada.', duration: 2500, color: 'success', position: 'top' });
+                await t.present();
+            } catch {
+                const t = await toastController.create({ message: 'Falha ao verificar atualizações.', duration: 2500, color: 'danger', position: 'top' });
+                await t.present();
+            } finally {
+                this.checkingChapters = false;
+            }
         },
         async logout() {
             try {

@@ -216,9 +216,21 @@
                     </div>
 
                     <!-- ── Site ── -->
-                    <div style="margin-bottom: 28px;">
+                    <div style="margin-bottom: 20px;">
                         <div :style="sectionLabelStyle">Fonte <span style="font-weight: 600; color: rgba(233,237,242,0.28); text-transform: none; letter-spacing: 0;">(opcional)</span></div>
                         <SourceSelect :model-value="form.site_id" :sites="sites" @update:model-value="(v) => form.site_id = v ?? ''" />
+                    </div>
+
+                    <!-- ── Título no site de leitura (verificação de capítulos) ── -->
+                    <div v-if="!isMovie" style="margin-bottom: 28px;">
+                        <div :style="sectionLabelStyle">Título no site de leitura <span style="font-weight: 600; color: rgba(233,237,242,0.28); text-transform: none; letter-spacing: 0;">(para verificação de capítulos)</span></div>
+                        <input
+                            v-model="form.site_title"
+                            type="text"
+                            placeholder="Ex: Nano Machine, Reborn Rich"
+                            style="width: 100%; box-sizing: border-box; background: var(--bg-tertiary); border: 1px solid var(--border-default); border-radius: 12px; padding: 12px 14px; font-size: 14px; color: var(--text-primary); outline: none;"
+                        />
+                        <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px; line-height: 1.4;">Informe o título alternativo em inglês como aparece no seu site de leitura</div>
                     </div>
 
                     <IonButton expand="block" :disabled="saving || !canSubmit" @click="addContent" class="btn-primary" style="margin-bottom: 10px;">
@@ -291,6 +303,7 @@ export default defineComponent({
             form: {
                 content_id: null as number | null,
                 site_id: '' as string | number,
+                site_title: '',
                 status: 'plan_to_read' as ContentStatus,
                 current_units: 0,
                 current_season: 1,
@@ -415,7 +428,7 @@ export default defineComponent({
         },
 
         resetForm() {
-            this.form = { content_id: null, site_id: '', status: 'plan_to_read', current_units: 0, current_season: 1, rating: null };
+            this.form = { content_id: null, site_id: '', site_title: '', status: 'plan_to_read', current_units: 0, current_season: 1, rating: null };
             this.selectedContentData = null;
             this.searchResults = [];
             this.contentSearch = '';
@@ -436,6 +449,7 @@ export default defineComponent({
                     if (this.isTv) payload.current_season = this.form.current_season;
                 }
                 if (this.form.rating != null) payload.rating = this.form.rating;
+                if (this.form.site_title.trim()) payload.site_title = this.form.site_title.trim();
                 await userContentService.create(payload);
                 const toast = await toastController.create({ message: 'Adicionado à biblioteca!', duration: 2000, color: 'success', position: 'top' });
                 await toast.present();

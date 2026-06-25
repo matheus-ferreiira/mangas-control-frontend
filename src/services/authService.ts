@@ -11,6 +11,11 @@ export interface User {
 }
 
 export const authService = {
+    async checkChapters(): Promise<{ output?: string }> {
+        const { data } = await api.post('/user/check-chapters');
+        return (data ?? {}) as { output?: string };
+    },
+
     async loginWithGoogle(token: string): Promise<{ token: string; user: User }> {
         const { data } = await api.post('/auth/google', { token });
         return { token: data.access_token as string, user: data.user as User };

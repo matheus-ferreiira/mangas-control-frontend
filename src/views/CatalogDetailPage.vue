@@ -111,6 +111,18 @@
                             </div>
                         </div>
 
+                        <!-- Novo capítulo disponível -->
+                        <button
+                            v-if="hasNewChapter"
+                            type="button"
+                            style="width: 100%; margin-bottom: 16px; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px; border-radius: 10px; border: 1px solid var(--dot-new); background: rgba(74,222,128,0.10); color: var(--dot-new); font-size: 13px; font-weight: 700; cursor: pointer;"
+                            @click="openSite"
+                        >
+                            <IonIcon :icon="sparklesOutline" style="font-size: 15px;" />
+                            Cap. {{ userContent.site_last_chapter }} disponível
+                            <IonIcon v-if="siteLink" :icon="openOutline" style="font-size: 14px; opacity: 0.8;" />
+                        </button>
+
                         <!-- Status selector — só fundo muda (DESIGN_SYSTEM §5.2) -->
                         <div style="margin-bottom: 18px;">
                             <div :style="sectionLabelStyle">Status</div>
@@ -203,9 +215,22 @@
                         </div>
 
                         <!-- Site -->
-                        <div v-if="sites.length">
+                        <div v-if="sites.length" style="margin-bottom: 18px;">
                             <div :style="sectionLabelStyle">Fonte de leitura</div>
                             <SourceSelect :model-value="selectedSiteId" :sites="sites" @update:model-value="onSiteChange" />
+                        </div>
+
+                        <!-- Título no site de leitura (verificação de capítulos) -->
+                        <div v-if="!isMovie">
+                            <div :style="sectionLabelStyle">Título no site de leitura</div>
+                            <input
+                                :value="userContent.site_title ?? ''"
+                                type="text"
+                                placeholder="Ex: Nano Machine, Reborn Rich"
+                                style="width: 100%; box-sizing: border-box; background: var(--bg-tertiary); border: 1px solid var(--border-default); border-radius: 12px; padding: 12px 14px; font-size: 14px; color: var(--text-primary); outline: none;"
+                                @change="changeSiteTitle(($event.target as HTMLInputElement).value)"
+                            />
+                            <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px; line-height: 1.4;">Para verificação automática de novos capítulos</div>
                         </div>
                     </div>
 
@@ -371,7 +396,7 @@ import {
     toastController, alertController,
 } from '@ionic/vue';
 import SourceSelect from '@/components/SourceSelect.vue';
-import { trashOutline } from 'ionicons/icons';
+import { trashOutline, sparklesOutline, openOutline } from 'ionicons/icons';
 import {
     contentService, Content, ContentType,
     CONTENT_TYPE_LABELS, CATALOG_STATUS_LABELS, CATALOG_STATUS_COLORS, UNIT_LABEL,
@@ -424,6 +449,8 @@ export default defineComponent({
             synopsisExpanded: false,
             ratingOptions: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
             trashOutline,
+            sparklesOutline,
+            openOutline,
         };
     },
 
@@ -493,6 +520,14 @@ export default defineComponent({
             const total = this.content?.total_seasons;
             if (!total) return false;
             return (this.userContent?.current_season ?? 1) >= total;
+        },
+        hasNewChapter(): boolean {
+            const last = this.userContent?.site_last_chapter;
+            if (last == null || last === '') return false;
+            return parseFloat(String(last).replace(',', '.')) > (this.userContent?.current_units ?? 0);
+        },
+        siteLink(): string | null {
+            return this.userContent?.user_site?.url ?? null;
         },
         availableStatuses(): { value: ContentStatus; label: string }[] {
             const keys: ContentStatus[] = this.isMovie ? MOVIE_STATUSES : (Object.keys(STATUS_LABELS) as ContentStatus[]);
@@ -632,6 +667,18 @@ export default defineComponent({
         onSiteChange(val: number | null) {
             this.selectedSiteId = val;
             this.changeSite();
+        },
+        openSite() {
+            if (this.siteLink) window.open(this.siteLink, '_blank');
+        },
+        async changeSiteTitle(val: string) {
+            if (!this.userContent) return;
+            const v = val.trim();
+            if ((this.userContent.site_title ?? '') === v) return;
+            this.saving = true;
+            try { this.patchUserContent(await userContentService.update(this.userContent.id, { site_title: v || null })); }
+            catch { await this.showError('Falha ao salvar o título do site.'); }
+            finally { this.saving = false; }
         },
 
         formatVotes(v: number): string {

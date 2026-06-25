@@ -24,6 +24,8 @@ export interface UserContent {
     content_id: number;
     site_id?: number;
     user_site_id?: number;
+    site_title?: string | null;
+    site_last_chapter?: string | null;
     current_units: number;
     current_season?: number;
     progress_percent?: number | null;
@@ -107,6 +109,7 @@ export const userContentService = {
         content_id: number;
         site_id?: number;
         user_site_id?: number;
+        site_title?: string | null;
         current_units?: number;
         current_season?: number;
         status: ContentStatus;
@@ -124,6 +127,7 @@ export const userContentService = {
             status?: ContentStatus;
             site_id?: number | null;
             user_site_id?: number | null;
+            site_title?: string | null;
             rating?: number | null;
         }
     ): Promise<UserContent> {
