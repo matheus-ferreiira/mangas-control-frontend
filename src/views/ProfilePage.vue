@@ -256,7 +256,8 @@ export default defineComponent({
                 'if(!r.ok)break;' +
                 'var d=await r.json();' +
                 'var l=Array.isArray(d)?d:(d.mangas||[]);' +
-                'for(var i=0;i<l.length;i++){var it=l[i];var t=it&&it.alternativeTitle;var c=it&&it.recentChapters&&it.recentChapters[0]&&it.recentChapters[0].number;if(t&&c!=null)A.push({alternativeTitle:String(t),chapter:String(c)});}' +
+                // id + título PT + ano permitem o vínculo automático no back (ChapterMatchService)
+                'for(var i=0;i<l.length;i++){var it=l[i];if(!it)continue;var t=it.alternativeTitle,pt=it.title;var c=it.recentChapters&&it.recentChapters[0]&&it.recentChapters[0].number;if((t||pt)&&c!=null)A.push({id:it.id!=null?String(it.id):null,alternativeTitle:t?String(t):null,title:pt?String(pt):null,releaseYear:it.releaseYear!=null?String(it.releaseYear):null,chapter:String(c)});}' +
                 'n=!!(d&&d.pagination&&d.pagination.hasNextPage)&&p<20;p++;' +
                 '}' +
                 "if(!A.length){alert('Nenhum lancamento coletado.');return;}" +
@@ -266,6 +267,9 @@ export default defineComponent({
                 'var nc=dt.new_chapters||[];' +
                 'var um=dt.unmatched||[];' +
                 "var msg=(dt.total_linked||0)+' obra(s) vinculadas ao ToonLivre.\\n'+nc.length+' com capitulo novo, '+((dt.total_linked||0)-nc.length)+' em dia.\\n\\n('+A.length+' lancamentos lidos do site, '+(dt.linked||0)+' nova(s) vinculacao(oes), '+(dt.retitled||0)+' titulo(s) corrigido(s).)';" +
+                'var al=dt.auto_linked||[];var am=dt.ambiguous||[];' +
+                "if(al.length)msg+='\\n\\nVinculadas por semelhanca, confira ('+al.length+'): '+al.map(function(a){return a.title+' = '+a.site_title;}).join('; ');" +
+                "if(am.length)msg+='\\n\\nAmbiguas, ajuste o titulo no site ('+am.length+'): '+am.map(function(a){return a.title;}).join(', ');" +
                 "if(um.length)msg+='\\n\\nSem correspondencia ('+um.length+'): '+um.join(', ');" +
                 'alert(msg);' +
                 "}catch(e){alert('Erro: '+(e&&e.message));}})();";
