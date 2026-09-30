@@ -167,8 +167,8 @@
                     <div style="background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 14px 16px;">
                         <div style="display: flex; align-items: center; gap: 12px; cursor: pointer;" @click="toggleAdult">
                             <div style="flex: 1; min-width: 0;">
-                                <div style="font-size: 0.9rem; font-weight: 700; color: #f0f0f0;">Exibir conteúdo adulto (+18)</div>
-                                <div style="font-size: 0.75rem; color: #606060; margin-top: 3px; line-height: 1.4;">Conteúdo explícito será exibido em todo o app</div>
+                                <div style="font-size: 0.9rem; font-weight: 700; color: #f0f0f0;">Modo +18</div>
+                                <div style="font-size: 0.75rem; color: #606060; margin-top: 3px; line-height: 1.4;">Ativado: o app mostra somente conteúdo adulto. Desativado: nenhum conteúdo adulto aparece.</div>
                             </div>
                             <div :style="adultTrackStyle">
                                 <div :style="adultKnobStyle"></div>
@@ -395,7 +395,7 @@ export default defineComponent({
                 const updated = await authService.updateProfile({ show_adult_content: next });
                 authStore.setUser(updated);
                 const toast = await toastController.create({
-                    message: next ? 'Conteúdo adulto ativado' : 'Conteúdo adulto ocultado',
+                    message: next ? 'Modo +18 ativado: somente conteúdo adulto' : 'Modo +18 desativado: conteúdo adulto oculto',
                     duration: 1800, color: 'success', position: 'top',
                 });
                 await toast.present();

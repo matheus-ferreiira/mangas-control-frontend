@@ -109,7 +109,6 @@ export interface ContentFilters {
     votes_min?: number;
     language?: string;
     country?: string;
-    is_adult?: boolean;
     page?: number;
     per_page?: number;
     sort?: ContentSortField;
@@ -140,7 +139,6 @@ export const contentService = {
         if (filters?.votes_min != null && filters.votes_min > 0) params.votes_min = filters.votes_min;
         if (filters?.language) params.language = filters.language;
         if (filters?.country) params.country = filters.country;
-        if (filters?.is_adult != null) params.is_adult = filters.is_adult;
         if (filters?.page) params.page = filters.page;
         if (filters?.per_page) params.per_page = filters.per_page;
         if (filters?.sort) params.sort = filters.sort;

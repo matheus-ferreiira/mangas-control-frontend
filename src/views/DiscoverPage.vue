@@ -290,14 +290,6 @@
                                 <button v-for="g in genresList" :key="g" :style="genreChipStyle(g)" @click="toggleGenre(g)">{{ g }}</button>
                             </div>
                         </div>
-                        <!-- Outros -->
-                        <div>
-                            <div class="filter-label">Outros</div>
-                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-radius: 12px; background: var(--bg-tertiary); border: 1px solid var(--border-default); cursor: pointer;" @click="filterIsAdult = filterIsAdult === true ? null : true">
-                                <div style="font-size: 13px; font-weight: 700; color: var(--text-primary);">+18 apenas</div>
-                                <div :style="toggleTrack(filterIsAdult === true)"><div :style="toggleKnob(filterIsAdult === true)"></div></div>
-                            </div>
-                        </div>
                     </FilterBar>
 
                     <!-- Skeleton grid -->
@@ -377,6 +369,7 @@ import {
 } from '@ionic/vue';
 import { contentService, Content, ContentMeta, ContentType, ContentCatalogStatus, ContentSortField } from '@/services/contentService';
 import { discoverService, DiscoverHome } from '@/services/discoverService';
+import { authStore } from '@/store/auth';
 import ContentTypeBadge from '@/components/ContentTypeBadge.vue';
 import FilterBar from '@/components/FilterBar.vue';
 
@@ -432,7 +425,6 @@ export default defineComponent({
             filterScoreMin: 0,
             filterYearMin: null as number | null,
             filterYearMax: null as number | null,
-            filterIsAdult: null as boolean | null,
             searchTimer: null as ReturnType<typeof setTimeout> | null,
             isSortOpen: false,
             isFilterOpen: false,
@@ -441,6 +433,7 @@ export default defineComponent({
             // Home mode
             homeLoading: false,
             homeData: null as DiscoverHome | null,
+            loadedAdultMode: null as boolean | null,
             // Statics
             sortOptions: SORT_OPTIONS,
             catStatusOptions: CAT_STATUS,
@@ -472,7 +465,6 @@ export default defineComponent({
             if (this.filterGenres.length) n++;
             if (this.filterScoreMin > 0) n++;
             if (this.filterYearMin != null || this.filterYearMax != null) n++;
-            if (this.filterIsAdult != null) n++;
             return n;
         },
         hasActiveFilters(): boolean { return !!(this.query || this.activeType || this.activeFilterCount > 0); },
@@ -523,6 +515,12 @@ export default defineComponent({
         },
     },
     async ionViewWillEnter() {
+        // Modo +18 trocado no Perfil: descarta a home e a busca carregadas no outro modo.
+        const adultChanged = this.loadedAdultMode !== null && this.loadedAdultMode !== !!authStore.user?.show_adult_content;
+        if (adultChanged) {
+            this.homeData = null;
+            if (this.isSearchMode) await this.loadContents();
+        }
         if (!this.isSearchMode && !this.homeData) {
             await this.loadHome();
         }
@@ -531,6 +529,7 @@ export default defineComponent({
         async loadHome() {
             this.homeLoading = true;
             try {
+                this.loadedAdultMode = !!authStore.user?.show_adult_content;
                 this.homeData = await discoverService.getHome();
             } catch { /* silent */ } finally {
                 this.homeLoading = false;
@@ -548,13 +547,13 @@ export default defineComponent({
                 ...(this.filterScoreMin > 0 ? { rating_min: this.filterScoreMin } : {}),
                 ...(this.filterYearMin != null ? { year_min: this.filterYearMin } : {}),
                 ...(this.filterYearMax != null ? { year_max: this.filterYearMax } : {}),
-                ...(this.filterIsAdult != null ? { is_adult: this.filterIsAdult } : {}),
             };
         },
 
         async loadContents() {
             this.loading = true;
             this.contents = [];
+            this.loadedAdultMode = !!authStore.user?.show_adult_content;
             try {
                 const result = await contentService.getAll({ ...this.buildFilters(), page: 1 });
                 this.contents = result.items;
@@ -606,7 +605,6 @@ export default defineComponent({
             this.filterScoreMin = 0;
             this.filterYearMin = null;
             this.filterYearMax = null;
-            this.filterIsAdult = null;
         },
         parseYear(v: string): number | null {
             const t = (v ?? '').trim();
@@ -676,12 +674,6 @@ export default defineComponent({
         genreChipStyle(g: string): Record<string, string> {
             const active = this.filterGenres.includes(g);
             return { padding: '6px 12px', borderRadius: '20px', cursor: 'pointer', fontSize: '11px', fontWeight: '600', background: active ? 'var(--accent-primary)' : 'var(--bg-tertiary)', color: active ? '#000' : 'var(--text-secondary)', border: `1px solid ${active ? 'var(--accent-primary)' : 'var(--border-default)'}`, transition: 'all 0.15s' };
-        },
-        toggleTrack(active: boolean): Record<string, string> {
-            return { width: '44px', height: '26px', borderRadius: '13px', position: 'relative', background: active ? 'var(--accent-primary)' : 'var(--bg-tertiary)', transition: 'background 0.2s', flexShrink: '0' };
-        },
-        toggleKnob(active: boolean): Record<string, string> {
-            return { position: 'absolute', top: '3px', borderRadius: '10px', left: active ? '21px' : '3px', width: '20px', height: '20px', background: '#fff', transition: 'left 0.2s', boxShadow: '0 1px 4px rgba(0,0,0,0.3)' };
         },
     },
 });
