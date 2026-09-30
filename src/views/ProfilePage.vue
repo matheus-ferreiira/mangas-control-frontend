@@ -250,6 +250,22 @@ export default defineComponent({
             const token = authStore.token ?? '';
             const js =
                 '(async()=>{try{' +
+                // Histórico de leitura do usuário no ToonLivre (sessão do site): /api/auth/me
+                // traz history + listas; by-ids traz título/ano/capa/último capítulo de cada obra.
+                // O back avança o progresso e importa o que não está na biblioteca/catálogo.
+                'var R=[];' +
+                "var me=await fetch('/api/auth/me',{headers:{Accept:'application/json'},credentials:'include'});" +
+                'if(me.ok){var u=await me.json()||{};var hs=u.history||[],ls={},lr={},ids=[];' +
+                "['completed','paused','dropped'].forEach(function(k){(u[k]||[]).forEach(function(i){ls[i]=k;});});" +
+                'for(var q=0;q<hs.length;q++){var h=hs[q];if(!h||!h.mangaId||lr[h.mangaId])continue;lr[h.mangaId]=h;ids.push(h.mangaId);}' +
+                "var ck=(document.cookie.match(/(?:^|; )csrf_token=([^;]*)/)||[])[1];" +
+                "var PH={'Content-Type':'application/json',Accept:'application/json'};if(ck)PH['x-csrf-token']=decodeURIComponent(ck);" +
+                'for(var s=0;s<ids.length;s+=100){' +
+                "var b=await fetch('/api/mangas/by-ids?lite=1',{method:'POST',headers:PH,credentials:'include',body:JSON.stringify({ids:ids.slice(s,s+100)})});" +
+                'if(!b.ok)continue;var L=await b.json();if(!Array.isArray(L))continue;' +
+                'for(var m=0;m<L.length;m++){var w=L[m],hh=w&&lr[w.id];if(!hh)continue;var rc=w.recentChapters&&w.recentChapters[0]&&w.recentChapters[0].number;' +
+                'R.push({id:String(w.id),title:w.title||null,alternativeTitle:w.alternativeTitle||null,releaseYear:w.releaseYear!=null?String(w.releaseYear):null,type:w.type||null,status:w.status||null,cover:w.coverUrl||null,lastRead:hh.chapterNumber!=null?String(hh.chapterNumber):null,available:rc!=null?String(rc):null,readAt:hh.timestamp||null,listStatus:ls[w.id]||null});}' +
+                '}}' +
                 'var A=[],p=1,n=true;' +
                 'while(n&&p<=20){' +
                 "var r=await fetch('/api/mangas/releases?page='+p+'&limit=48',{headers:{Accept:'application/json'}});" +
@@ -260,8 +276,8 @@ export default defineComponent({
                 'for(var i=0;i<l.length;i++){var it=l[i];if(!it)continue;var t=it.alternativeTitle,pt=it.title;var c=it.recentChapters&&it.recentChapters[0]&&it.recentChapters[0].number;if((t||pt)&&c!=null)A.push({id:it.id!=null?String(it.id):null,alternativeTitle:t?String(t):null,title:pt?String(pt):null,releaseYear:it.releaseYear!=null?String(it.releaseYear):null,chapter:String(c)});}' +
                 'n=!!(d&&d.pagination&&d.pagination.hasNextPage)&&p<20;p++;' +
                 '}' +
-                "if(!A.length){alert('Nenhum lancamento coletado.');return;}" +
-                "var x=await fetch('" + apiBase + "/user/sync-chapters',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json','Authorization':'Bearer " + token + "'},body:JSON.stringify({releases:A})});" +
+                "if(!A.length&&!R.length){alert('Nenhum lancamento ou historico coletado. Esta logado no ToonLivre?');return;}" +
+                "var x=await fetch('" + apiBase + "/user/sync-chapters',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json','Authorization':'Bearer " + token + "'},body:JSON.stringify({releases:A,reading:R})});" +
                 'var j=await x.json();' +
                 'var dt=(j&&j.data)||{};' +
                 'var nc=dt.new_chapters||[];' +
@@ -271,6 +287,11 @@ export default defineComponent({
                 "if(al.length)msg+='\\n\\nVinculadas por semelhanca, confira ('+al.length+'): '+al.map(function(a){return a.title+' = '+a.site_title;}).join('; ');" +
                 "if(am.length)msg+='\\n\\nAmbiguas, ajuste o titulo no site ('+am.length+'): '+am.map(function(a){return a.title;}).join(', ');" +
                 "if(um.length)msg+='\\n\\nSem correspondencia ('+um.length+'): '+um.join(', ');" +
+                "msg+='\\n\\nHistorico ToonLivre: '+R.length+' obra(s), '+(dt.progressed||0)+' com progresso atualizado.';" +
+                'var ad=dt.added||[],im=dt.importing||[],li=dt.last_import;' +
+                "if(ad.length)msg+='\\nAdicionadas a biblioteca ('+ad.length+'): '+ad.map(function(a){return a.title;}).join(', ');" +
+                "if(im.length)msg+='\\nImportando em segundo plano ('+im.length+'), pode fechar a aba: '+im.join(', ');" +
+                "if(li&&li.status==='done'&&li.results){var ok=li.results.filter(function(r){return r.via!=='failed';}),fl=li.results.filter(function(r){return r.via==='failed';});msg+='\\n\\nUltima importacao: '+ok.length+' importada(s)'+(fl.length?', '+fl.length+' falharam (tenta de novo no proximo sync): '+fl.map(function(r){return r.title;}).join(', '):'')+'.';}" +
                 'alert(msg);' +
                 "}catch(e){alert('Erro: '+(e&&e.message));}})();";
             return 'javascript:' + js;
