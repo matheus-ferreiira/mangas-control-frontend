@@ -405,6 +405,7 @@ import {
     userContentService, UserContent, ContentStatus, STATUS_LABELS, getStatusLabel,
 } from '@/services/userContentService';
 import { userSiteService, UserSite } from '@/services/userSiteService';
+import { libraryStore } from '@/store/library';
 
 const TYPE_BADGE_COLOR: Record<ContentType, string> = {
     manga: '#f5a623',
@@ -804,7 +805,10 @@ export default defineComponent({
             try {
                 await userContentService.delete(this.userContent.id);
                 this.userContent = null;
-                if (this.content) this.content.is_in_library = false;
+                if (this.content) {
+                    this.content.is_in_library = false;
+                    libraryStore.mark(this.content.id, false);
+                }
                 const toast = await toastController.create({ message: 'Removido da biblioteca.', duration: 2000, color: 'success', position: 'top' });
                 await toast.present();
             }

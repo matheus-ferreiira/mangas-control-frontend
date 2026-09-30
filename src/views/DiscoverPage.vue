@@ -370,6 +370,7 @@ import {
 import { contentService, Content, ContentMeta, ContentType, ContentCatalogStatus, ContentSortField } from '@/services/contentService';
 import { discoverService, DiscoverHome } from '@/services/discoverService';
 import { authStore } from '@/store/auth';
+import { libraryStore } from '@/store/library';
 import ContentTypeBadge from '@/components/ContentTypeBadge.vue';
 import FilterBar from '@/components/FilterBar.vue';
 
@@ -434,6 +435,7 @@ export default defineComponent({
             homeLoading: false,
             homeData: null as DiscoverHome | null,
             loadedAdultMode: null as boolean | null,
+            seenLibraryVersion: 0,
             // Statics
             sortOptions: SORT_OPTIONS,
             catStatusOptions: CAT_STATUS,
@@ -523,9 +525,27 @@ export default defineComponent({
         }
         if (!this.isSearchMode && !this.homeData) {
             await this.loadHome();
+        } else if (this.seenLibraryVersion !== libraryStore.version) {
+            this.applyLibraryChanges();
+            // "Continuar lendo" e recomendações dependem da biblioteca: atualiza sem piscar.
+            discoverService.getHome().then(h => { this.homeData = h; }).catch(() => { /* mantém a atual */ });
         }
+        this.seenLibraryVersion = libraryStore.version;
     },
     methods: {
+        // Marca "na biblioteca" nos cards já carregados (busca e home) com o que
+        // foi adicionado/removido em outras telas.
+        applyLibraryChanges() {
+            const changes = libraryStore.changes;
+            const patch = (c: any) => {
+                if (c && typeof c.id === 'number' && c.id in changes) c.is_in_library = changes[c.id];
+            };
+            this.contents.forEach(patch);
+            const home: any = this.homeData;
+            if (home) {
+                Object.values(home).forEach((v: any) => (Array.isArray(v) ? v.forEach(patch) : patch(v)));
+            }
+        },
         async loadHome() {
             this.homeLoading = true;
             try {

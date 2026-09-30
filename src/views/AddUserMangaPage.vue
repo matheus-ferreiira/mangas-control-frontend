@@ -260,6 +260,7 @@ import {
 } from '@/services/contentService';
 import { userSiteService, UserSite } from '@/services/userSiteService';
 import { userContentService, ContentStatus, STATUS_LABELS, getStatusLabel } from '@/services/userContentService';
+import { libraryStore } from '@/store/library';
 
 const TYPE_ICONS: Record<ContentType, string> = {
     manga: bookOutline,
@@ -351,6 +352,9 @@ export default defineComponent({
                 marginBottom: '10px',
             };
         },
+    },
+    ionViewDidLeave() {
+        this.resetForm();
     },
     async ionViewWillEnter() {
         await this.loadSites();
@@ -451,10 +455,10 @@ export default defineComponent({
                 if (this.form.rating != null) payload.rating = this.form.rating;
                 if (this.form.site_title.trim()) payload.site_title = this.form.site_title.trim();
                 await userContentService.create(payload);
+                libraryStore.mark(payload.content_id, true);
                 const toast = await toastController.create({ message: 'Adicionado à biblioteca!', duration: 2000, color: 'success', position: 'top' });
                 await toast.present();
-                this.resetForm();
-                this.$router.push('/tabs/library');
+                this.leave();
             } catch (err: any) {
                 const apiMsg = err?.response?.data?.errors?.content_id?.[0]
                     ?? err?.response?.data?.message
@@ -467,8 +471,18 @@ export default defineComponent({
         },
 
         discard() {
-            this.resetForm();
-            this.$router.push('/tabs/library');
+            this.leave();
+        },
+
+        // Volta para onde veio (ex.: detalhe da obra, que recarrega já "na biblioteca").
+        // Sem histórico, vai para a biblioteca. O formulário é limpo ao sair da tela
+        // (ionViewDidLeave): limpar antes deixava a tela vazia "Buscar no acervo" à vista.
+        leave() {
+            if (this.$route.query.content_id && window.history.length > 1) {
+                this.$router.back();
+            } else {
+                this.$router.replace('/tabs/library');
+            }
         },
 
         getStatusColor(value: string): string { return STATUS_COLORS[value] ?? '#6b738a'; },
