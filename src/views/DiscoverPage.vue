@@ -568,7 +568,8 @@ export default defineComponent({
             if (nextPage > this.meta.last_page) { (event.target as HTMLElement & { complete(): void }).complete(); return; }
             try {
                 const result = await contentService.getAll({ ...this.buildFilters(), page: nextPage });
-                this.contents.push(...result.items);
+                const seen = new Set(this.contents.map(c => c.id));
+                this.contents.push(...result.items.filter(c => !seen.has(c.id)));
                 this.meta = result.meta;
             } catch { /* silent */ } finally { (event.target as HTMLElement & { complete(): void }).complete(); }
         },
