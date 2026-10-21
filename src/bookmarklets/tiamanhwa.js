@@ -22,13 +22,16 @@
 
     const box = document.createElement('div');
     box.style.cssText = 'position:fixed;z-index:2147483647;right:16px;bottom:16px;max-width:340px;padding:12px 14px;border-radius:10px;background:#111;color:#f5a623;font:13px/1.4 system-ui,sans-serif;box-shadow:0 4px 20px rgba(0,0,0,.5)';
-    const status = (t) => { box.textContent = 'Neon Curator: ' + t; };
+    // Etapa atual: entra na mensagem de erro para saber onde parou.
+    let step = 'início';
+    const status = (t) => { step = t; box.textContent = 'Neon Curator: ' + t; };
     const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     const parser = new DOMParser();
 
     const api = async (path, opts) => {
         const r = await fetch(API + path, Object.assign({ headers: { 'Content-Type': 'application/json', Accept: 'application/json', Authorization: 'Bearer ' + TOKEN } }, opts || {}));
         const j = await r.json().catch(() => null);
+        if (r.status === 401) throw new Error('este favorito guarda um login que não vale mais. No app, abra o Perfil, copie o bookmarklet do TiaManhwa de novo e troque o favorito antigo por ele.');
         if (!r.ok || !j || j.success === false) throw new Error((j && j.message) || 'API respondeu ' + r.status);
         return j.data;
     };
@@ -369,7 +372,7 @@
         }
         alert(msg);
     } catch (e) {
-        alert('Erro: ' + (e && e.message));
+        alert('Erro (etapa: ' + step + '): ' + (e && e.message));
     } finally {
         box.remove();
     }
