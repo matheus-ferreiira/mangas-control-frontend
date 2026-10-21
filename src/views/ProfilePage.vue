@@ -113,28 +113,33 @@
                     </div>
 
                     <!-- Sincronizar capítulos via bookmarklet (apenas admin) -->
-                    <div v-if="isAdmin" style="background: var(--bg-tertiary); border: 1px solid var(--border-default); border-radius: 8px; padding: 14px 16px;">
+                    <div
+                        v-for="(bm, i) in isAdmin ? bookmarklets : []"
+                        :key="bm.key"
+                        :style="{ background: 'var(--bg-tertiary)', border: '1px solid var(--border-default)', borderRadius: '8px', padding: '14px 16px', marginTop: i ? '6px' : '0' }"
+                    >
                         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
                             <div style="width: 34px; height: 34px; border-radius: 10px; background: rgba(74,222,128,0.10); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                                 <IonIcon :icon="refreshOutline" style="font-size: 16px; color: var(--dot-new);" />
                             </div>
                             <div style="flex: 1; min-width: 0;">
-                                <div style="font-size: 13px; font-weight: 700; color: var(--text-primary);">Sincronizar capítulos (ToonLivre)</div>
+                                <div style="font-size: 13px; font-weight: 700; color: var(--text-primary);">Sincronizar capítulos ({{ bm.name }})</div>
                                 <div style="font-size: 10px; color: var(--text-muted); margin-top: 1px;">O site bloqueia o servidor — roda no seu navegador via bookmarklet</div>
                             </div>
                         </div>
                         <a
-                            :href="bookmarkletHref"
+                            :href="bm.href"
                             @click.prevent
                             style="display: block; text-align: center; background: var(--accent-primary); color: #000; font-weight: 700; font-size: 13px; padding: 10px; border-radius: 8px; text-decoration: none; cursor: grab; margin-bottom: 8px;"
-                        >🔖 Sincronizar ToonLivre</a>
+                        >🔖 Sincronizar {{ bm.name }}</a>
                         <button
                             style="width: 100%; background: transparent; border: 1px solid var(--border-default); color: var(--text-secondary); font-size: 12px; font-weight: 600; padding: 8px; border-radius: 8px; cursor: pointer;"
-                            @click="copyBookmarklet"
-                        >{{ bookmarkletCopied ? '✓ Copiado!' : 'Copiar bookmarklet' }}</button>
+                            @click="copyBookmarklet(bm.key, bm.href)"
+                        >{{ bookmarkletCopied === bm.key ? '✓ Copiado!' : 'Copiar bookmarklet' }}</button>
                         <ol style="font-size: 11px; color: var(--text-muted); margin: 10px 0 0; padding-left: 18px; line-height: 1.7;">
                             <li><strong>Arraste</strong> o botão laranja para a barra de favoritos (ou copie e crie um favorito colando como URL).</li>
-                            <li>Abra <strong>toonlivre.net</strong> e clique no favorito.</li>
+                            <li>Abra <strong>{{ bm.host }}</strong>{{ bm.login ? ' logado na sua conta' : '' }} e clique no favorito.</li>
+                            <li v-if="bm.note">{{ bm.note }}</li>
                             <li>Ele sincroniza e mostra um alerta com o resultado.</li>
                             <li>Volte aqui e recarregue — os badges "Cap. X disponível" aparecem.</li>
                         </ol>
@@ -205,6 +210,7 @@ import { authStore } from '@/store/auth';
 import { authService } from '@/services/authService';
 import { userContentService, UserContent } from '@/services/userContentService';
 import StatsHeader from '@/components/StatsHeader.vue';
+import tiaManhwaBookmarklet from '@/bookmarklets/tiamanhwa.js?raw';
 
 const TYPE_META: Record<string, { label: string; color: string }> = {
     manga:  { label: 'Manga',  color: '#f5a623' },
@@ -222,7 +228,7 @@ export default defineComponent({
             userContents: [] as UserContent[],
             canInstall: false,
             adultSaving: false,
-            bookmarkletCopied: false,
+            bookmarkletCopied: '',
             refreshOutline,
         };
     },
@@ -295,6 +301,31 @@ export default defineComponent({
                 'alert(msg);' +
                 "}catch(e){alert('Erro: '+(e&&e.message));}})();";
             return 'javascript:' + js;
+        },
+        // Fonte em src/bookmarklets/tiamanhwa.js (texto puro, fora do build): tira as
+        // linhas de comentário, injeta API/token e codifica para URL.
+        tiaBookmarkletHref(): string {
+            const js = tiaManhwaBookmarklet
+                .split('\n')
+                .map((line) => line.trim())
+                .filter((line) => line && !line.startsWith('//'))
+                .join('\n')
+                .replace("'__API_BASE__'", JSON.stringify((import.meta as any).env.VITE_API_URL))
+                .replace("'__TOKEN__'", JSON.stringify(authStore.token ?? ''));
+            return 'javascript:' + encodeURIComponent(js);
+        },
+        // TiaManhwa é +18: só aparece com o Modo +18 ligado.
+        bookmarklets(): { key: string; name: string; host: string; href: string; login: boolean; note: string }[] {
+            const list = [
+                { key: 'toonlivre', name: 'ToonLivre', host: 'toonlivre.net', href: this.bookmarkletHref, login: false, note: '' },
+            ];
+            if (this.showAdult) {
+                list.push({
+                    key: 'tiamanhwa', name: 'TiaManhwa', host: 'tiamanhwa.com', href: this.tiaBookmarkletHref, login: true,
+                    note: 'Na 1ª vez ele procura suas obras na busca do site e pode levar 1 a 2 minutos (há um aviso no canto da tela).',
+                });
+            }
+            return list;
         },
         userInitial(): string {
             return (authStore.user?.name ?? '').charAt(0).toUpperCase() || 'U';
@@ -431,11 +462,11 @@ export default defineComponent({
         async installPwa() {
             await (window as any).installPWA?.();
         },
-        async copyBookmarklet() {
+        async copyBookmarklet(key: string, href: string) {
             try {
-                await navigator.clipboard.writeText(this.bookmarkletHref);
-                this.bookmarkletCopied = true;
-                setTimeout(() => { this.bookmarkletCopied = false; }, 2500);
+                await navigator.clipboard.writeText(href);
+                this.bookmarkletCopied = key;
+                setTimeout(() => { this.bookmarkletCopied = ''; }, 2500);
             } catch {
                 const t = await toastController.create({ message: 'Não foi possível copiar. Arraste o botão para os favoritos.', duration: 2500, color: 'danger', position: 'top' });
                 await t.present();
