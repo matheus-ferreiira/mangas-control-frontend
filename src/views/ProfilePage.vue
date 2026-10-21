@@ -233,6 +233,8 @@ export default defineComponent({
             const token = authStore.token ?? '';
             const js =
                 '(async()=>{try{' +
+                // Só roda no ToonLivre: em outro site as rotas /api/... devolvem HTML.
+                "if(!/(^|\\.)toonlivre\\./.test(location.hostname)){alert('Este e o favorito do ToonLivre: abra toonlivre.net e clique nele.');return;}" +
                 // Histórico de leitura do usuário no ToonLivre (sessão do site): /api/auth/me
                 // traz history + listas; by-ids traz título/ano/capa/último capítulo de cada obra.
                 // O back avança o progresso e importa o que não está na biblioteca/catálogo.
