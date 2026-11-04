@@ -247,6 +247,12 @@
                                         Em dia
                                     </div>
 
+                                    <!-- Ler o próximo capítulo no site (link com {n}) -->
+                                    <div v-if="canReadNext(item)" style="display: flex; align-items: center; gap: 4px; margin-top: 4px; font-size: 0.72rem; font-weight: 700; color: var(--accent-primary); cursor: pointer;" @click.stop="openSiteFor(item)">
+                                        <IonIcon :icon="openOutline" style="font-size: 12px; flex-shrink: 0;" />
+                                        Ler {{ unitLabel(item.content?.type) }}. {{ nextUnitOf(item) }}
+                                    </div>
+
                                     <!-- Fonte (só quando cadastrada) -->
                                     <div v-if="item.user_site || item.site" style="display: flex; align-items: center; gap: 4px; font-size: 0.72rem; color: var(--text-muted); margin-top: 3px; white-space: nowrap; overflow: hidden;">
                                         <span style="width: 16px; height: 16px; border-radius: 3px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; overflow: hidden;">
@@ -301,6 +307,11 @@
                                         <span style="font-size: 0.82rem; line-height: 1; flex-shrink: 0;">✓</span>
                                         Em dia
                                     </div>
+                                    <!-- Ler o próximo capítulo no site (link com {n}) -->
+                                    <div v-if="canReadNext(item)" style="display: inline-flex; align-items: center; gap: 4px; font-size: 0.72rem; font-weight: 700; color: var(--accent-primary); cursor: pointer;" @click.stop="openSiteFor(item)">
+                                        <IonIcon :icon="openOutline" style="font-size: 12px; flex-shrink: 0;" />
+                                        Ler {{ unitLabel(item.content?.type) }}. {{ nextUnitOf(item) }}
+                                    </div>
                                     <!-- Fonte -->
                                     <div v-if="item.user_site || item.site" style="display: flex; align-items: center; gap: 4px; font-size: 0.72rem; color: var(--text-muted); white-space: nowrap; overflow: hidden;">
                                         <span style="width: 16px; height: 16px; border-radius: 3px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; overflow: hidden;">
@@ -334,8 +345,8 @@ import {
     IonPage, IonContent, IonModal, IonHeader, IonFooter, IonIcon,
     IonRefresher, IonRefresherContent, toastController,
 } from '@ionic/vue';
-import { globeOutline, gridOutline, listOutline } from 'ionicons/icons';
-import { userContentService, UserContent, ContentStatus, getStatusLabel } from '@/services/userContentService';
+import { globeOutline, gridOutline, listOutline, openOutline } from 'ionicons/icons';
+import { userContentService, UserContent, ContentStatus, getStatusLabel, nextUnit, readingUrl } from '@/services/userContentService';
 import { userSiteService, UserSite } from '@/services/userSiteService';
 import { ContentType, CONTENT_TYPE_LABELS } from '@/services/contentService';
 import ContentTypeBadge from '@/components/ContentTypeBadge.vue';
@@ -369,6 +380,7 @@ export default defineComponent({
             globeOutline,
             gridOutline,
             listOutline,
+            openOutline,
             viewMode: ((localStorage.getItem('library_view_mode') as 'grid' | 'list') || 'grid') as 'grid' | 'list',
             loading: false,
             userContents: [] as UserContent[],
@@ -559,8 +571,17 @@ export default defineComponent({
             return parseFloat(String(last).replace(',', '.')) <= uc.current_units;
         },
         openSiteFor(uc: UserContent) {
-            const url = uc.user_site?.url ?? uc.site?.url;
+            const url = readingUrl(uc, nextUnit(uc, this.seasonLimit(uc)));
             if (url) window.open(url, '_blank');
+        },
+        // Link de leitura com {n} cadastrado e ainda há capítulo para ler.
+        canReadNext(uc: UserContent): boolean {
+            if (!uc.chapter_url || uc.content?.type === 'movie') return false;
+            if (uc.status === 'completed' || uc.status === 'dropped') return false;
+            return !this.isAtLimit(uc);
+        },
+        nextUnitOf(uc: UserContent): number {
+            return nextUnit(uc, this.seasonLimit(uc));
         },
         // Ação rápida p/ Assistindo/Lendo — visível mesmo sem total definido
         // (ex.: One Piece, em andamento). Só esconde p/ filme ou quando no limite.
