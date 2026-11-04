@@ -193,6 +193,17 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Ler o próximo capítulo no site (link com {n}) -->
+                            <button
+                                v-if="canReadNext"
+                                type="button"
+                                style="width: 100%; margin-bottom: 18px; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 11px; border-radius: 10px; border: 1px solid var(--accent-primary); background: rgba(245,166,35,0.10); color: var(--accent-primary); font-size: 14px; font-weight: 700; cursor: pointer;"
+                                @click="openSite"
+                            >
+                                {{ readNextLabel }}
+                                <IonIcon :icon="openOutline" style="font-size: 15px;" />
+                            </button>
                         </template>
 
                         <!-- Rating 0–10 -->
@@ -231,6 +242,23 @@
                                 @change="changeSiteTitle(($event.target as HTMLInputElement).value)"
                             />
                             <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px; line-height: 1.4;">Para verificação automática de novos capítulos</div>
+                        </div>
+
+                        <!-- Link do capítulo: {n} vira o próximo capítulo -->
+                        <div v-if="!isMovie" style="margin-top: 18px;">
+                            <div :style="sectionLabelStyle">Link do capítulo</div>
+                            <input
+                                :value="userContent.chapter_url ?? ''"
+                                type="url"
+                                inputmode="url"
+                                autocapitalize="off"
+                                autocomplete="off"
+                                spellcheck="false"
+                                placeholder="https://site.com/obra/{n}/"
+                                style="width: 100%; box-sizing: border-box; background: var(--bg-tertiary); border: 1px solid var(--border-default); border-radius: 12px; padding: 12px 14px; font-size: 14px; color: var(--text-primary); outline: none;"
+                                @change="changeChapterUrl(($event.target as HTMLInputElement).value)"
+                            />
+                            <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px; line-height: 1.4;">Use {n} no lugar do número: o botão Ler abre o próximo capítulo</div>
                         </div>
                     </div>
 
@@ -402,7 +430,7 @@ import {
     CONTENT_TYPE_LABELS, CATALOG_STATUS_LABELS, CATALOG_STATUS_COLORS, UNIT_LABEL,
 } from '@/services/contentService';
 import {
-    userContentService, UserContent, ContentStatus, STATUS_LABELS, getStatusLabel,
+    userContentService, UserContent, ContentStatus, STATUS_LABELS, getStatusLabel, nextUnit, readingUrl,
 } from '@/services/userContentService';
 import { userSiteService, UserSite } from '@/services/userSiteService';
 import { libraryStore } from '@/store/library';
@@ -528,7 +556,20 @@ export default defineComponent({
             return parseFloat(String(last).replace(',', '.')) > (this.userContent?.current_units ?? 0);
         },
         siteLink(): string | null {
-            return this.userContent?.user_site?.url ?? null;
+            return this.userContent ? readingUrl(this.userContent, this.nextChapter) : null;
+        },
+        nextChapter(): number {
+            return this.userContent ? nextUnit(this.userContent, this.seasonUnitLimit) : 1;
+        },
+        // Link de leitura com {n} cadastrado e ainda há capítulo para ler.
+        canReadNext(): boolean {
+            const uc = this.userContent;
+            if (!uc?.chapter_url || this.isMovie || this.atLimit) return false;
+            return uc.status !== 'completed' && uc.status !== 'dropped';
+        },
+        readNextLabel(): string {
+            const verb = this.isTv ? 'Assistir' : 'Ler';
+            return `${verb} ${this.unitShort} ${this.nextChapter}`;
         },
         availableStatuses(): { value: ContentStatus; label: string }[] {
             const keys: ContentStatus[] = this.isMovie ? MOVIE_STATUSES : (Object.keys(STATUS_LABELS) as ContentStatus[]);
@@ -671,6 +712,19 @@ export default defineComponent({
         },
         openSite() {
             if (this.siteLink) window.open(this.siteLink, '_blank');
+        },
+        async changeChapterUrl(val: string) {
+            if (!this.userContent) return;
+            const v = val.trim();
+            if ((this.userContent.chapter_url ?? '') === v) return;
+            if (v && !/^https?:\/\/\S+$/i.test(v)) {
+                await this.showError('O link precisa começar com http:// ou https:// e não pode ter espaços.');
+                return;
+            }
+            this.saving = true;
+            try { this.patchUserContent(await userContentService.update(this.userContent.id, { chapter_url: v || null })); }
+            catch { await this.showError('Falha ao salvar o link do capítulo.'); }
+            finally { this.saving = false; }
         },
         async changeSiteTitle(val: string) {
             if (!this.userContent) return;

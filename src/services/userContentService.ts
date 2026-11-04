@@ -27,6 +27,8 @@ export interface UserContent {
     site_title?: string | null;
     site_last_chapter?: string | null;
     site_work_id?: string | null;
+    /** Link de leitura; `{n}` vira o próximo capítulo (ver readingUrl). */
+    chapter_url?: string | null;
     current_units: number;
     current_season?: number;
     progress_percent?: number | null;
@@ -85,6 +87,22 @@ export interface UserContent {
     };
 }
 
+/** Próximo capítulo/episódio a ler: o atual + 1, sem passar do total quando conhecido. */
+export function nextUnit(uc: UserContent, total: number | null = uc.content?.total_units ?? null): number {
+    const next = (uc.current_units ?? 0) + 1;
+    return total ? Math.min(next, total) : next;
+}
+
+/**
+ * Link para continuar a leitura. Com `chapter_url`, troca `{n}` pelo próximo
+ * capítulo (https://site.com/obra/{n}/ → .../449/); sem ele, a página do site.
+ */
+export function readingUrl(uc: UserContent, next: number = nextUnit(uc)): string | null {
+    const template = uc.chapter_url?.trim();
+    if (template) return template.replace(/\{n\}/g, String(next));
+    return uc.user_site?.url ?? uc.site?.url ?? null;
+}
+
 export const userContentService = {
     async getAll(params?: { type?: ContentType; status?: ContentStatus; content_id?: number }): Promise<UserContent[]> {
         const { data } = await api.get('/user-contents', { params });
@@ -111,6 +129,7 @@ export const userContentService = {
         site_id?: number;
         user_site_id?: number;
         site_title?: string | null;
+        chapter_url?: string | null;
         current_units?: number;
         current_season?: number;
         status: ContentStatus;
@@ -129,6 +148,7 @@ export const userContentService = {
             site_id?: number | null;
             user_site_id?: number | null;
             site_title?: string | null;
+            chapter_url?: string | null;
             rating?: number | null;
         }
     ): Promise<UserContent> {
