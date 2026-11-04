@@ -206,6 +206,8 @@
                             </button>
                         </template>
 
+                        <router-link v-if="content?.reader" :to="`/reader/${content.id}`" style="display: block; margin-bottom: 20px; color: var(--accent-primary); font-weight: 700;">Abrir leitor · capítulos {{ content.reader.first_chapter }}–{{ content.reader.last_chapter }} →</router-link>
+
                         <!-- Rating 0–10 -->
                         <div style="margin-bottom: 18px;">
                             <div :style="sectionLabelStyle">Minha Avaliação</div>
@@ -564,8 +566,8 @@ export default defineComponent({
         // Link de leitura com {n} cadastrado e ainda há capítulo para ler.
         canReadNext(): boolean {
             const uc = this.userContent;
-            if (!uc?.chapter_url || this.isMovie || this.atLimit) return false;
-            return uc.status !== 'completed' && uc.status !== 'dropped';
+            if ((!uc?.chapter_url && !uc?.content?.reader) || this.isMovie || this.atLimit) return false;
+            return !!this.siteLink && uc.status !== 'completed' && uc.status !== 'dropped';
         },
         readNextLabel(): string {
             const verb = this.isTv ? 'Assistir' : 'Ler';
@@ -711,7 +713,8 @@ export default defineComponent({
             this.changeSite();
         },
         openSite() {
-            if (this.siteLink) window.open(this.siteLink, '_blank');
+            if (this.siteLink?.startsWith('/reader/')) void this.$router.push(this.siteLink);
+            else if (this.siteLink) window.open(this.siteLink, '_blank', 'noopener,noreferrer');
         },
         async changeChapterUrl(val: string) {
             if (!this.userContent) return;

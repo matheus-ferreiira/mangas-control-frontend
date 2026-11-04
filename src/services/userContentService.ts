@@ -1,4 +1,5 @@
 import api from './api';
+import { readerPath, type ReaderEdition } from './novelReaderService';
 import { ContentType, ContentCatalogStatus } from './contentService';
 
 export type ContentStatus = 'reading' | 'completed' | 'paused' | 'dropped' | 'plan_to_read';
@@ -37,6 +38,7 @@ export interface UserContent {
     last_unit_update?: string;
     last_interacted_at?: string;
     content?: {
+        reader?: ReaderEdition | null;
         id: number;
         name: string;
         alternative_names?: string[];
@@ -98,6 +100,8 @@ export function nextUnit(uc: UserContent, total: number | null = uc.content?.tot
  * capítulo (https://site.com/obra/{n}/ → .../449/); sem ele, a página do site.
  */
 export function readingUrl(uc: UserContent, next: number = nextUnit(uc)): string | null {
+    const internal = uc.content ? readerPath(uc.content, next) : null;
+    if (internal) return internal;
     const template = uc.chapter_url?.trim();
     if (template) return template.replace(/\{n\}/g, String(next));
     return uc.user_site?.url ?? uc.site?.url ?? null;

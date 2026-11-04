@@ -4,6 +4,12 @@ import TabsPage from '../views/TabsPage.vue';
 
 const routes: Array<RouteRecordRaw> = [
     {
+        path: '/reader/:id/:chapter?',
+        name: 'novel-reader',
+        component: () => import('@/views/NovelReaderPage.vue'),
+        meta: { requiresAuth: true },
+    },
+    {
         path: '/',
         redirect: '/tabs/discover',
     },

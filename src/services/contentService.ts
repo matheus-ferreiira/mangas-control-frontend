@@ -1,4 +1,5 @@
 import api from './api';
+import type { ReaderEdition } from './novelReaderService';
 
 export type ContentType = 'manga' | 'anime' | 'novel' | 'movie' | 'tv';
 export type ContentCatalogStatus = 'ongoing' | 'completed' | 'hiatus' | 'cancelled';
@@ -43,6 +44,7 @@ export const UNIT_LABEL: Record<ContentType, { short: string; plural: string }> 
 };
 
 export interface Content {
+    reader?: ReaderEdition | null;
     id: number;
     name: string;
     alternative_names?: string[];
