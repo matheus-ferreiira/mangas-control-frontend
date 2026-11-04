@@ -142,7 +142,7 @@ export default defineComponent({
                     <router-link :to="`/content/${contentId}`" class="reader-back">← Voltar à novel</router-link>
                     <div class="reader-eyebrow">NEON CURATOR / LEITURA</div>
                     <h1>{{ index?.title ?? 'Leitor de novels' }}</h1>
-                    <p v-if="index" class="reader-range">Capítulos {{ index.first_chapter }}–{{ index.last_chapter }} · Original em inglês</p>
+                    <p v-if="index" class="reader-range">Capítulos {{ index.first_chapter }}–{{ index.last_chapter }} · Edição em inglês</p>
                     <ReaderToolbar v-if="index" :chapters="index.chapters" :chapter="chapter?.number ?? Number($route.params.chapter)" :font-size="fontSize" :light="light" :browser-url="chapter?.browser_url" @navigate="navigate" @font="settings($event)" @theme="settings(fontSize, !light)" />
                     <p class="translation-help">No navegador, use o menu “Traduzir” para ler em português. Marque o progresso aqui ao terminar.</p>
                 </header>
@@ -154,7 +154,7 @@ export default defineComponent({
                         <p v-for="(paragraph, i) in chapter.paragraphs" :key="i">{{ paragraph }}</p>
                     </article>
                     <footer lang="pt-BR">
-                        <p class="reader-edition">Texto original recuperado, com sugestões e comentários de edição removidos.</p>
+                        <p class="reader-edition">Edição em inglês com nomes padronizados e correções selecionadas.</p>
                         <button class="complete-button" :disabled="saving || alreadyRead" @click="complete">{{ saving ? 'Salvando…' : alreadyRead ? 'Já registrado no histórico' : `Concluí o capítulo ${chapter.number}` }}</button>
                         <p v-if="notice" role="status">{{ notice }}</p>
                         <nav class="reader-navigation" aria-label="Navegar entre capítulos">

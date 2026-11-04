@@ -2,7 +2,7 @@
 
 Abra Swordmaster's Youngest Son na biblioteca e toque em **Ler cap. 401** (ou no próximo capítulo do histórico). **Abrir leitor** nos detalhes retoma a posição salva neste dispositivo ou permite selecionar qualquer capítulo entre 401 e 1147. Marque **Concluí o capítulo** ao terminar: navegar não altera capítulos concluídos. A posição fica separada por usuário e obra; o histórico continua no backend.
 
-Fonte entre 16 e 32 px, tema claro/escuro e navegação anterior/próximo. Preferências ficam neste dispositivo. Texto inglês recuperado dos DOCX anteriores às sugestões de edição. Comentários e sugestões não entram na narrativa; não há revisão editorial integral.
+Fonte entre 16 e 32 px, tema claro/escuro e navegação anterior/próximo. Preferências ficam neste dispositivo. Texto em inglês com nomes padronizados, correções selecionadas das sugestões antigas e reparos de parágrafos. Comentários e avisos de tradução ficam fora da narrativa. Não é uma nova tradução conferida com o original coreano. Critérios e auditoria estão no backend em `docs/novel-editorial-review.md`.
 
 ## Tradução no celular
 
