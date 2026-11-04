@@ -572,13 +572,14 @@ export default defineComponent({
         },
         openSiteFor(uc: UserContent) {
             const url = readingUrl(uc, nextUnit(uc, this.seasonLimit(uc)));
-            if (url) window.open(url, '_blank');
+            if (url?.startsWith('/reader/')) void this.$router.push(url);
+            else if (url) window.open(url, '_blank', 'noopener,noreferrer');
         },
         // Link de leitura com {n} cadastrado e ainda há capítulo para ler.
         canReadNext(uc: UserContent): boolean {
-            if (!uc.chapter_url || uc.content?.type === 'movie') return false;
+            if ((!uc.chapter_url && !uc.content?.reader) || uc.content?.type === 'movie') return false;
             if (uc.status === 'completed' || uc.status === 'dropped') return false;
-            return !this.isAtLimit(uc);
+            return !this.isAtLimit(uc) && !!readingUrl(uc, nextUnit(uc, this.seasonLimit(uc)));
         },
         nextUnitOf(uc: UserContent): number {
             return nextUnit(uc, this.seasonLimit(uc));
